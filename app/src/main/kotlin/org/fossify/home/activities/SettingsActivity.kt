@@ -5,7 +5,6 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
-import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.launchMoreAppsFromUsIntent
@@ -14,15 +13,10 @@ import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.helpers.isTiramisuPlus
 import org.fossify.commons.models.FAQItem
-import org.fossify.commons.models.RadioItem
 import org.fossify.home.BuildConfig
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivitySettingsBinding
 import org.fossify.home.extensions.config
-import org.fossify.home.helpers.MAX_COLUMN_COUNT
-import org.fossify.home.helpers.MAX_ROW_COUNT
-import org.fossify.home.helpers.MIN_COLUMN_COUNT
-import org.fossify.home.helpers.MIN_ROW_COUNT
 import org.fossify.home.receivers.LockDeviceAdminReceiver
 import java.util.Locale
 import kotlin.system.exitProcess
@@ -46,27 +40,12 @@ class SettingsActivity : SimpleActivity() {
 
         setupUseEnglish()
         setupDoubleTapToLock()
-        setupCloseAppDrawerOnOtherAppOpen()
-        setupOpenKeyboardOnAppDrawer()
-        setupDrawerColumnCount()
-        setupDrawerSearchBar()
-        setupShowDrawerAppLabels()
-        setupMultilineDrawerAppLabels()
-        setupHomeRowCount()
-        setupHomeColumnCount()
-        setupShowHomeAppLabels()
-        setupMultilineHomeAppLabels()
         setupLanguage()
         setupManageHiddenIcons()
+        setupDrawerSettings()
+        setupHomeScreenSettings()
         updateTextColors(binding.settingsHolder)
-
-        arrayOf(
-            binding.settingsGeneralSettingsLabel,
-            binding.settingsDrawerSettingsLabel,
-            binding.settingsHomeScreenLabel
-        ).forEach {
-            it.setTextColor(getProperPrimaryColor())
-        }
+        binding.settingsGeneralSettingsLabel.setTextColor(getProperPrimaryColor())
     }
 
     private fun setupOptionsMenu() {
@@ -130,140 +109,15 @@ class SettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupOpenKeyboardOnAppDrawer() {
-        binding.settingsOpenKeyboardOnAppDrawerHolder.beVisibleIf(config.showSearchBar)
-        binding.settingsOpenKeyboardOnAppDrawer.isChecked = config.autoShowKeyboardInAppDrawer
-        binding.settingsOpenKeyboardOnAppDrawerHolder.setOnClickListener {
-            binding.settingsOpenKeyboardOnAppDrawer.toggle()
-            config.autoShowKeyboardInAppDrawer = binding.settingsOpenKeyboardOnAppDrawer.isChecked
+    private fun setupDrawerSettings() {
+        binding.settingsDrawerSettingsHolder.setOnClickListener {
+            startActivity(Intent(this, DrawerSettingsActivity::class.java))
         }
     }
 
-    private fun setupCloseAppDrawerOnOtherAppOpen() {
-        binding.settingsCloseAppDrawerOnOtherApp.isChecked = config.closeAppDrawer
-        binding.settingsCloseAppDrawerOnOtherAppHolder.setOnClickListener {
-            binding.settingsCloseAppDrawerOnOtherApp.toggle()
-            config.closeAppDrawer = binding.settingsCloseAppDrawerOnOtherApp.isChecked
-        }
-    }
-
-    private fun setupDrawerColumnCount() {
-        val currentColumnCount = config.drawerColumnCount
-        binding.settingsDrawerColumnCount.text = currentColumnCount.toString()
-        binding.settingsDrawerColumnCountHolder.setOnClickListener {
-            val items = ArrayList<RadioItem>()
-            for (i in 1..MAX_COLUMN_COUNT) {
-                items.add(
-                    RadioItem(
-                        id = i,
-                        title = resources.getQuantityString(
-                            org.fossify.commons.R.plurals.column_counts, i, i
-                        )
-                    )
-                )
-            }
-
-            RadioGroupDialog(this, items, currentColumnCount) {
-                val newColumnCount = it as Int
-                if (currentColumnCount != newColumnCount) {
-                    config.drawerColumnCount = newColumnCount
-                    setupDrawerColumnCount()
-                }
-            }
-        }
-    }
-
-    private fun setupDrawerSearchBar() {
-        val showSearchBar = config.showSearchBar
-        binding.settingsShowSearchBar.isChecked = showSearchBar
-        binding.settingsDrawerSearchHolder.setOnClickListener {
-            binding.settingsShowSearchBar.toggle()
-            config.showSearchBar = binding.settingsShowSearchBar.isChecked
-            binding.settingsOpenKeyboardOnAppDrawerHolder.beVisibleIf(config.showSearchBar)
-        }
-    }
-
-    private fun setupShowDrawerAppLabels() {
-        binding.settingsShowDrawerAppLabels.isChecked = config.showDrawerAppLabels
-        binding.settingsShowDrawerAppLabelsHolder.setOnClickListener {
-            binding.settingsShowDrawerAppLabels.toggle()
-            config.showDrawerAppLabels = binding.settingsShowDrawerAppLabels.isChecked
-        }
-    }
-
-    private fun setupMultilineDrawerAppLabels() {
-        binding.settingsMultilineDrawerAppLabels.isChecked = config.multilineDrawerAppLabels
-        binding.settingsMultilineDrawerAppLabelsHolder.setOnClickListener {
-            binding.settingsMultilineDrawerAppLabels.toggle()
-            config.multilineDrawerAppLabels = binding.settingsMultilineDrawerAppLabels.isChecked
-        }
-    }
-
-    private fun setupHomeRowCount() {
-        val currentRowCount = config.homeRowCount
-        binding.settingsHomeScreenRowCount.text = currentRowCount.toString()
-        binding.settingsHomeScreenRowCountHolder.setOnClickListener {
-            val items = ArrayList<RadioItem>()
-            for (i in MIN_ROW_COUNT..MAX_ROW_COUNT) {
-                items.add(
-                    RadioItem(
-                        id = i,
-                        title = resources.getQuantityString(
-                            org.fossify.commons.R.plurals.row_counts, i, i
-                        )
-                    )
-                )
-            }
-
-            RadioGroupDialog(this, items, currentRowCount) {
-                val newRowCount = it as Int
-                if (currentRowCount != newRowCount) {
-                    config.homeRowCount = newRowCount
-                    setupHomeRowCount()
-                }
-            }
-        }
-    }
-
-    private fun setupHomeColumnCount() {
-        val currentColumnCount = config.homeColumnCount
-        binding.settingsHomeScreenColumnCount.text = currentColumnCount.toString()
-        binding.settingsHomeScreenColumnCountHolder.setOnClickListener {
-            val items = ArrayList<RadioItem>()
-            for (i in MIN_COLUMN_COUNT..MAX_COLUMN_COUNT) {
-                items.add(
-                    RadioItem(
-                        id = i,
-                        title = resources.getQuantityString(
-                            org.fossify.commons.R.plurals.column_counts, i, i
-                        )
-                    )
-                )
-            }
-
-            RadioGroupDialog(this, items, currentColumnCount) {
-                val newColumnCount = it as Int
-                if (currentColumnCount != newColumnCount) {
-                    config.homeColumnCount = newColumnCount
-                    setupHomeColumnCount()
-                }
-            }
-        }
-    }
-
-    private fun setupShowHomeAppLabels() {
-        binding.settingsShowHomeAppLabels.isChecked = config.showHomeAppLabels
-        binding.settingsShowHomeAppLabelsHolder.setOnClickListener {
-            binding.settingsShowHomeAppLabels.toggle()
-            config.showHomeAppLabels = binding.settingsShowHomeAppLabels.isChecked
-        }
-    }
-
-    private fun setupMultilineHomeAppLabels() {
-        binding.settingsMultilineHomeAppLabels.isChecked = config.multilineHomeAppLabels
-        binding.settingsMultilineHomeAppLabelsHolder.setOnClickListener {
-            binding.settingsMultilineHomeAppLabels.toggle()
-            config.multilineHomeAppLabels = binding.settingsMultilineHomeAppLabels.isChecked
+    private fun setupHomeScreenSettings() {
+        binding.settingsHomeScreenSettingsHolder.setOnClickListener {
+            startActivity(Intent(this, HomeScreenSettingsActivity::class.java))
         }
     }
 
