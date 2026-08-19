@@ -88,6 +88,7 @@ class LaunchersAdapter(
             itemView.apply {
                 binding.launcherLabel.text = launcher.title
                 binding.launcherLabel.setTextColor(textColor)
+                binding.launcherLabel.maxLines = if (activity.config.multilineDrawerAppLabels) 2 else 1
                 binding.launcherLabel.beVisibleIf(activity.config.showDrawerAppLabels)
                 binding.launcherIcon.setPadding(iconPadding, iconPadding, iconPadding, 0)
 

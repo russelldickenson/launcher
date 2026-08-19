@@ -52,9 +52,11 @@ class SettingsActivity : SimpleActivity() {
         setupDrawerColumnCount()
         setupDrawerSearchBar()
         setupShowDrawerAppLabels()
+        setupMultilineDrawerAppLabels()
         setupHomeRowCount()
         setupHomeColumnCount()
         setupShowHomeAppLabels()
+        setupMultilineHomeAppLabels()
         setupLanguage()
         setupManageHiddenIcons()
         updateTextColors(binding.settingsHolder)
@@ -197,6 +199,14 @@ class SettingsActivity : SimpleActivity() {
         }
     }
 
+    private fun setupMultilineDrawerAppLabels() {
+        binding.settingsMultilineDrawerAppLabels.isChecked = config.multilineDrawerAppLabels
+        binding.settingsMultilineDrawerAppLabelsHolder.setOnClickListener {
+            binding.settingsMultilineDrawerAppLabels.toggle()
+            config.multilineDrawerAppLabels = binding.settingsMultilineDrawerAppLabels.isChecked
+        }
+    }
+
     private fun setupHomeRowCount() {
         val currentRowCount = config.homeRowCount
         binding.settingsHomeScreenRowCount.text = currentRowCount.toString()
@@ -254,6 +264,14 @@ class SettingsActivity : SimpleActivity() {
         binding.settingsShowHomeAppLabelsHolder.setOnClickListener {
             binding.settingsShowHomeAppLabels.toggle()
             config.showHomeAppLabels = binding.settingsShowHomeAppLabels.isChecked
+        }
+    }
+
+    private fun setupMultilineHomeAppLabels() {
+        binding.settingsMultilineHomeAppLabels.isChecked = config.multilineHomeAppLabels
+        binding.settingsMultilineHomeAppLabelsHolder.setOnClickListener {
+            binding.settingsMultilineHomeAppLabels.toggle()
+            config.multilineHomeAppLabels = binding.settingsMultilineHomeAppLabels.isChecked
         }
     }
 

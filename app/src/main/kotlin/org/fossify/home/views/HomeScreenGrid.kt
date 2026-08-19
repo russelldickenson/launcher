@@ -1905,7 +1905,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                             textPaintToUse,
                             cellWidth - 2 * labelSideMargin
                         )
-                        .setMaxLines(2)
+                        .setMaxLines(if (context.config.multilineHomeAppLabels) 2 else 1)
                         .setEllipsize(TextUtils.TruncateAt.END)
                         .setAlignment(Layout.Alignment.ALIGN_CENTER)
                         .build()
