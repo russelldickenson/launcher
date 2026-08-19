@@ -57,7 +57,7 @@ import org.fossify.home.R
 import org.fossify.home.activities.MainActivity
 import org.fossify.home.databinding.HomeScreenGridBinding
 import org.fossify.home.extensions.config
-import org.fossify.home.extensions.getDrawableForPackageName
+import org.fossify.home.extensions.getAppIcon
 import org.fossify.home.extensions.homeScreenGridItemsDB
 import org.fossify.home.helpers.ITEM_TYPE_FOLDER
 import org.fossify.home.helpers.ITEM_TYPE_ICON
@@ -239,7 +239,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             gridItems = context.homeScreenGridItemsDB.getAllItems() as ArrayList<HomeScreenGridItem>
             gridItems.toImmutableList().forEach { item ->
                 if (item.type == ITEM_TYPE_ICON) {
-                    item.drawable = context.getDrawableForPackageName(item.packageName)
+                    item.drawable = context.getAppIcon(item.packageName, item.activityName)
                 } else if (item.type == ITEM_TYPE_FOLDER) {
                     item.drawable = item.toFolder().generateDrawable()
                 } else if (item.type == ITEM_TYPE_SHORTCUT) {
@@ -362,7 +362,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                 draggedItem!!.drawable = draggedGridItem.toFolder().generateDrawable()
             } else {
                 draggedItem!!.drawable =
-                    context.getDrawableForPackageName(draggedGridItem.packageName)
+                    context.getAppIcon(draggedGridItem.packageName, draggedGridItem.activityName)
             }
         }
 

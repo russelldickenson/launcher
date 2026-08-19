@@ -53,4 +53,13 @@ class Config(context: Context) : BaseConfig(context) {
     var multilineHomeAppLabels: Boolean
         get() = prefs.getBoolean(MULTILINE_HOME_APP_LABELS, true)
         set(multilineHomeAppLabels) = prefs.edit().putBoolean(MULTILINE_HOME_APP_LABELS, multilineHomeAppLabels).apply()
+
+    // empty string means the device's default icons are used
+    var iconPack: String
+        get() = prefs.getString(ICON_PACK, "") ?: ""
+        set(iconPack) = prefs.edit().putString(ICON_PACK, iconPack).apply()
+
+    var maskUnthemedIcons: Boolean
+        get() = prefs.getBoolean(MASK_UNTHEMED_ICONS, true)
+        set(maskUnthemedIcons) = prefs.edit().putBoolean(MASK_UNTHEMED_ICONS, maskUnthemedIcons).apply()
 }

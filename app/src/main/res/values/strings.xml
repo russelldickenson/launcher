@@ -15,6 +15,9 @@
     <string name="auto_show_keyboard_in_app_drawer">Automatically show keyboard in drawer</string>
     <string name="show_app_labels">Show app labels</string>
     <string name="multiline_app_labels">Multi-line labels</string>
+    <string name="icon_pack">Icon pack</string>
+    <string name="appearance_settings">Appearance</string>
+    <string name="mask_unthemed_icons">Match icon shape for other icons</string>
     <string name="home_screen_settings">Home screen</string>
     <string name="widget_too_big">Widget is too big for current home screen size</string>
     <string name="double_tap_to_lock">Double tap to lock screen</string>

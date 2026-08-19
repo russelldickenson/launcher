@@ -16,6 +16,7 @@ import org.fossify.commons.helpers.isQPlus
 import org.fossify.commons.helpers.isSPlus
 import org.fossify.home.databases.AppsDatabase
 import org.fossify.home.helpers.Config
+import org.fossify.home.helpers.IconPackHelper
 import org.fossify.home.interfaces.AppLaunchersDao
 import org.fossify.home.interfaces.HiddenIconsDao
 import org.fossify.home.interfaces.HomeScreenGridItemsDao
@@ -59,6 +60,27 @@ fun Context.getDrawableForPackageName(packageName: String): Drawable? {
     }
 
     return drawable
+}
+
+fun Context.getAppIcon(packageName: String, activityName: String, systemDrawable: () -> Drawable? = { null }): Drawable? {
+    val iconPack = config.iconPack
+    if (iconPack.isNotEmpty()) {
+        val packIcon = IconPackHelper.getIcon(this, iconPack, packageName, activityName)
+        if (packIcon != null) {
+            return packIcon
+        }
+
+        if (config.maskUnthemedIcons) {
+            val originalIcon = systemDrawable() ?: getDrawableForPackageName(packageName)
+            return if (originalIcon != null) {
+                IconPackHelper.getMaskedIcon(this, iconPack, originalIcon) ?: originalIcon
+            } else {
+                null
+            }
+        }
+    }
+
+    return systemDrawable() ?: getDrawableForPackageName(packageName)
 }
 
 fun Context.getInitialCellSize(

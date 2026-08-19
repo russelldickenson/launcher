@@ -5,6 +5,7 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
+import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.launchMoreAppsFromUsIntent
@@ -13,10 +14,12 @@ import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.helpers.isTiramisuPlus
 import org.fossify.commons.models.FAQItem
+import org.fossify.commons.models.RadioItem
 import org.fossify.home.BuildConfig
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivitySettingsBinding
 import org.fossify.home.extensions.config
+import org.fossify.home.helpers.IconPackHelper
 import org.fossify.home.receivers.LockDeviceAdminReceiver
 import java.util.Locale
 import kotlin.system.exitProcess
@@ -42,10 +45,17 @@ class SettingsActivity : SimpleActivity() {
         setupDoubleTapToLock()
         setupLanguage()
         setupManageHiddenIcons()
+        setupIconPack()
+        setupMaskUnthemedIcons()
         setupDrawerSettings()
         setupHomeScreenSettings()
         updateTextColors(binding.settingsHolder)
-        binding.settingsGeneralSettingsLabel.setTextColor(getProperPrimaryColor())
+        arrayOf(
+            binding.settingsAppearanceSettingsLabel,
+            binding.settingsGeneralSettingsLabel
+        ).forEach {
+            it.setTextColor(getProperPrimaryColor())
+        }
     }
 
     private fun setupOptionsMenu() {
@@ -106,6 +116,50 @@ class SettingsActivity : SimpleActivity() {
                 )
                 startActivity(intent)
             }
+        }
+    }
+
+    private fun setupIconPack() {
+        updateIconPackLabel()
+        binding.settingsIconPackHolder.setOnClickListener {
+            val iconPacks = IconPackHelper.getInstalledIconPacks(this)
+            val items = ArrayList<RadioItem>()
+            items.add(RadioItem(0, getString(org.fossify.commons.R.string.system_default)))
+            iconPacks.forEachIndexed { index, iconPack ->
+                items.add(RadioItem(index + 1, iconPack.name))
+            }
+
+            val selectedIndex = iconPacks.indexOfFirst { it.packageName == config.iconPack }
+            val currentId = if (selectedIndex == -1) 0 else selectedIndex + 1
+
+            RadioGroupDialog(this, items, currentId) {
+                val selectedId = it as Int
+                val newIconPack = if (selectedId == 0) "" else iconPacks[selectedId - 1].packageName
+                if (config.iconPack != newIconPack) {
+                    config.iconPack = newIconPack
+                    IconPackHelper.clearCache()
+                    exitProcess(0)
+                }
+            }
+        }
+    }
+
+    private fun updateIconPackLabel() {
+        val iconPack = config.iconPack
+        binding.settingsIconPack.text = if (iconPack.isEmpty()) {
+            getString(org.fossify.commons.R.string.system_default)
+        } else {
+            IconPackHelper.getInstalledIconPacks(this).firstOrNull { it.packageName == iconPack }?.name
+                ?: getString(org.fossify.commons.R.string.system_default)
+        }
+    }
+
+    private fun setupMaskUnthemedIcons() {
+        binding.settingsMaskUnthemedIcons.isChecked = config.maskUnthemedIcons
+        binding.settingsMaskUnthemedIconsHolder.setOnClickListener {
+            binding.settingsMaskUnthemedIcons.toggle()
+            config.maskUnthemedIcons = binding.settingsMaskUnthemedIcons.isChecked
+            exitProcess(0)
         }
     }
 

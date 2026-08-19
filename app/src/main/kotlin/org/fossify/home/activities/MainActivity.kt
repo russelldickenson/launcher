@@ -68,7 +68,7 @@ import org.fossify.home.databinding.AllAppsFragmentBinding
 import org.fossify.home.databinding.WidgetsFragmentBinding
 import org.fossify.home.dialogs.RenameItemDialog
 import org.fossify.home.extensions.config
-import org.fossify.home.extensions.getDrawableForPackageName
+import org.fossify.home.extensions.getAppIcon
 import org.fossify.home.extensions.getLabel
 import org.fossify.home.extensions.handleGridItemPopupMenu
 import org.fossify.home.extensions.hiddenIconsDB
@@ -1104,8 +1104,7 @@ class MainActivity : SimpleActivity(), FlingListener {
             }
 
             val label = info.loadLabel(packageManager).toString()
-            val drawable = info.loadIcon(packageManager)
-                ?: getDrawableForPackageName(packageName)
+            val drawable = getAppIcon(packageName, activityName) { info.loadIcon(packageManager) }
                 ?: continue
 
             val bitmap = drawable.toBitmap(
