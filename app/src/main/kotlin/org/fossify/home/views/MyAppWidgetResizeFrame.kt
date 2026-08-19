@@ -22,6 +22,7 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
     private var resizeWidgetLinePaint: Paint
     private var resizeWidgetLineDotPaint: Paint
     private var actionDownCoords = PointF()
+    private var actionDownFrameRect = Rect(0, 0, 0, 0)
     private var actionDownMS = 0L
     private var frameRect = Rect(0, 0, 0, 0)    // coords in pixels
     private var cellsRect = Rect(0, 0, 0, 0)    // cell IDs like 0, 1, 2..
@@ -111,6 +112,7 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
             MotionEvent.ACTION_DOWN -> {
                 actionDownCoords.x = event.rawX
                 actionDownCoords.y = event.rawY
+                actionDownFrameRect.set(frameRect)
                 actionDownMS = System.currentTimeMillis()
                 dragDirection = DRAGGING_NONE
                 if (event.x < MAX_TOUCH_LINE_DISTANCE) {
@@ -129,9 +131,10 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
                 val minHeight = minResizeHeightCells * cellHeight
                 when (dragDirection) {
                     DRAGGING_LEFT -> {
-                        val newWidth = frameRect.right - event.rawX.toInt()
+                        val movedLeft = actionDownFrameRect.left + (event.rawX - actionDownCoords.x).toInt()
+                        val newWidth = frameRect.right - movedLeft
                         val wantedLeft = if (newWidth >= minWidth) {
-                            event.rawX.toInt()
+                            movedLeft
                         } else {
                             frameRect.right - minWidth
                         }
@@ -156,9 +159,10 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
                     }
 
                     DRAGGING_TOP -> {
-                        val newHeight = frameRect.bottom - event.rawY.toInt()
+                        val movedTop = actionDownFrameRect.top + (event.rawY - actionDownCoords.y).toInt()
+                        val newHeight = frameRect.bottom - movedTop
                         val wantedTop = if (newHeight >= minHeight) {
-                            event.rawY.toInt()
+                            movedTop
                         } else {
                             frameRect.bottom - minHeight
                         }
@@ -183,9 +187,10 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
                     }
 
                     DRAGGING_RIGHT -> {
-                        val newWidth = event.rawX.toInt() - frameRect.left
+                        val movedRight = actionDownFrameRect.right + (event.rawX - actionDownCoords.x).toInt()
+                        val newWidth = movedRight - frameRect.left
                         val wantedRight = if (newWidth >= minWidth) {
-                            event.rawX.toInt()
+                            movedRight
                         } else {
                             frameRect.left + minWidth
                         }
@@ -210,9 +215,10 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
                     }
 
                     DRAGGING_BOTTOM -> {
-                        val newHeight = event.rawY.toInt() - frameRect.top
+                        val movedBottom = actionDownFrameRect.bottom + (event.rawY - actionDownCoords.y).toInt()
+                        val newHeight = movedBottom - frameRect.top
                         val wantedBottom = if (newHeight >= minHeight) {
-                            event.rawY.toInt()
+                            movedBottom
                         } else {
                             frameRect.top + minHeight
                         }
