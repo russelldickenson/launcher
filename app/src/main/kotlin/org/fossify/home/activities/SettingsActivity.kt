@@ -44,7 +44,6 @@ class SettingsActivity : SimpleActivity() {
         setupTopAppBar(binding.settingsAppbar, NavigationIcon.Arrow)
         refreshMenuItems()
 
-        setupCustomizeColors()
         setupUseEnglish()
         setupDoubleTapToLock()
         setupCloseAppDrawerOnOtherAppOpen()
@@ -62,7 +61,6 @@ class SettingsActivity : SimpleActivity() {
         updateTextColors(binding.settingsHolder)
 
         arrayOf(
-            binding.settingsColorCustomizationSectionLabel,
             binding.settingsGeneralSettingsLabel,
             binding.settingsDrawerSettingsLabel,
             binding.settingsHomeScreenLabel
@@ -86,12 +84,6 @@ class SettingsActivity : SimpleActivity() {
         binding.settingsToolbar.menu.apply {
             findItem(R.id.more_apps_from_us).isVisible =
                 !resources.getBoolean(org.fossify.commons.R.bool.hide_google_relations)
-        }
-    }
-
-    private fun setupCustomizeColors() {
-        binding.settingsColorCustomizationHolder.setOnClickListener {
-            startCustomizationActivity()
         }
     }
 
