@@ -10,6 +10,7 @@
         app:showAsAction="always" />
     <item
         android:id="@+id/more_apps_from_us"
+        android:icon="@drawable/ic_apps_vector"
         android:title="@string/more_fossify_apps"
         app:showAsAction="never" />
 </menu>

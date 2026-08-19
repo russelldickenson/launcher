@@ -2,14 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/widgets"
+        android:icon="@drawable/ic_widgets_vector"
         android:title="@string/widgets" />
     <item
         android:id="@+id/wallpapers"
+        android:icon="@drawable/ic_wallpaper_vector"
         android:title="@string/wallpapers" />
     <item
         android:id="@+id/launcher_settings"
+        android:icon="@drawable/ic_settings_cog_vector"
         android:title="@string/launcher_settings" />
     <item
         android:id="@+id/set_as_default"
+        android:icon="@drawable/ic_set_as_vector"
         android:title="@string/set_as_default" />
 </menu>

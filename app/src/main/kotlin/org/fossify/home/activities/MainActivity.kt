@@ -16,6 +16,7 @@ import android.content.Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
 import android.content.pm.ActivityInfo
 import android.content.pm.LauncherApps
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -39,16 +40,20 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
 import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.forEach
 import androidx.core.view.isVisible
 import androidx.core.view.iterator
 import androidx.viewbinding.ViewBinding
+import com.google.android.material.color.MaterialColors
 import kotlinx.collections.immutable.toImmutableList
 import org.fossify.commons.extensions.appLaunched
 import org.fossify.commons.extensions.beVisible
 import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.getPopupMenuTheme
 import org.fossify.commons.extensions.getProperBackgroundColor
+import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.insetsController
+import org.fossify.commons.extensions.isDynamicTheme
 import org.fossify.commons.extensions.isPackageInstalled
 import org.fossify.commons.extensions.onGlobalLayout
 import org.fossify.commons.extensions.performHapticFeedback
@@ -61,6 +66,7 @@ import org.fossify.commons.helpers.DARK_GREY
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.helpers.isOreoMr1Plus
 import org.fossify.commons.helpers.isQPlus
+import org.fossify.commons.helpers.isSPlus
 import org.fossify.home.BuildConfig
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivityMainBinding
@@ -848,7 +854,20 @@ class MainActivity : SimpleActivity(), FlingListener {
             binding.homeScreenPopupMenuAnchor,
             Gravity.TOP or Gravity.END
         ).apply {
+            if (isQPlus()) {
+                setForceShowIcon(true)
+            }
+
             inflate(R.menu.menu_home_screen)
+            menu.forEach {
+                val default = getProperTextColor()
+                val color = if (isSPlus() && isDynamicTheme()) {
+                    default
+                } else {
+                    MaterialColors.getColor(contextTheme, android.R.attr.actionMenuTextColor, default)
+                }
+                it.iconTintList = ColorStateList.valueOf(color)
+            }
             menu.findItem(R.id.set_as_default).isVisible = !isDefaultLauncher()
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
