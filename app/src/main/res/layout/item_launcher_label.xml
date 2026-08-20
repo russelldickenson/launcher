@@ -16,6 +16,18 @@
         android:layout_height="@dimen/launcher_icon_size"
         android:layout_gravity="center_horizontal|bottom" />
 
+    <ImageView
+        android:id="@+id/launcher_pin_badge"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignBottom="@id/launcher_icon"
+        android:layout_alignEnd="@id/launcher_icon"
+        android:background="@drawable/ic_group_circle_bg"
+        android:contentDescription="@null"
+        android:padding="3dp"
+        android:src="@drawable/ic_pin_filled_vector"
+        android:visibility="gone" />
+
     <org.fossify.commons.views.MyTextView
         android:id="@+id/launcher_label"
         android:layout_width="match_parent"

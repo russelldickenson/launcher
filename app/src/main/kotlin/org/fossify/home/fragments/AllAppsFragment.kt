@@ -123,10 +123,9 @@ class AllAppsFragment(
 
     fun gotLaunchers(appLaunchers: List<AppLauncher>) {
         launchers = appLaunchers.sortedWith(
-            compareBy(
-                { it.title.normalizeString().lowercase() },
-                { it.packageName }
-            )
+            compareByDescending<AppLauncher> { it.pinned }
+                .thenBy { it.title.normalizeString().lowercase() }
+                .thenBy { it.packageName }
         )
 
         setupAdapter(launchers)
@@ -170,6 +169,22 @@ class AllAppsFragment(
             launchers = launchers.toMutableList().apply {
                 removeAt(position)
             }
+
+            submitList(launchers.toMutableList())
+        }
+    }
+
+    fun onIconPinChanged(packageName: String, activityName: String, pinned: Boolean) {
+        val identifier = "$packageName/$activityName"
+        val index = launchers.indexOfFirst { it.getLauncherIdentifier() == identifier }
+        if (index != -1) {
+            launchers = launchers.toMutableList().apply {
+                this[index] = this[index].copy(pinned = pinned)
+            }.sortedWith(
+                compareByDescending<AppLauncher> { it.pinned }
+                    .thenBy { it.title.normalizeString().lowercase() }
+                    .thenBy { it.packageName }
+            )
 
             submitList(launchers.toMutableList())
         }

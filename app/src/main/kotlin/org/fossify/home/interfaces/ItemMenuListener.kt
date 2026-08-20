@@ -5,6 +5,7 @@ import org.fossify.home.models.HomeScreenGridItem
 
 interface ItemMenuListener {
     fun onAnyClick()
+    fun pinToggled(gridItem: HomeScreenGridItem)
     fun hide(gridItem: HomeScreenGridItem)
     fun rename(gridItem: HomeScreenGridItem)
     fun resize(gridItem: HomeScreenGridItem)
@@ -17,6 +18,7 @@ interface ItemMenuListener {
 
 abstract class ItemMenuListenerAdapter : ItemMenuListener {
     override fun onAnyClick() = Unit
+    override fun pinToggled(gridItem: HomeScreenGridItem) = Unit
     override fun hide(gridItem: HomeScreenGridItem) = Unit
     override fun rename(gridItem: HomeScreenGridItem) = Unit
     override fun resize(gridItem: HomeScreenGridItem) = Unit

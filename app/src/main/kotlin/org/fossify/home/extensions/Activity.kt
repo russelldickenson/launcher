@@ -27,12 +27,13 @@ import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.isDynamicTheme
 import org.fossify.commons.extensions.showErrorToast
 import org.fossify.commons.helpers.isQPlus
+import org.fossify.commons.R as CommonsR
 import org.fossify.commons.helpers.isSPlus
 import org.fossify.home.R
-import org.fossify.home.activities.SettingsActivity
 import org.fossify.home.helpers.ITEM_TYPE_FOLDER
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.helpers.ITEM_TYPE_WIDGET
+import org.fossify.home.helpers.IconCache
 import org.fossify.home.helpers.UNINSTALL_APP_REQUEST_CODE
 import org.fossify.home.interfaces.ItemMenuListener
 import org.fossify.home.models.HomeScreenGridItem
@@ -92,6 +93,15 @@ fun Activity.handleGridItemPopupMenu(
         }
 
         inflate(R.menu.menu_app_icon)
+
+        val isPinned = IconCache.launchers.any {
+            it.packageName == gridItem.packageName && it.activityName == gridItem.activityName && it.pinned
+        }
+        menu.findItem(R.id.pin_icon).apply {
+            title = getString(if (isPinned) R.string.unpin_app else R.string.pin_app)
+            setIcon(if (isPinned) CommonsR.drawable.ic_pin_filled_vector else CommonsR.drawable.ic_pin_vector)
+        }
+
         menu.forEach {
             val default = getProperTextColor()
             val color = if (isSPlus() && isDynamicTheme()) {
@@ -103,6 +113,8 @@ fun Activity.handleGridItemPopupMenu(
         }
         menu.findItem(R.id.rename).isVisible =
             (gridItem.type == ITEM_TYPE_ICON || gridItem.type == ITEM_TYPE_FOLDER) && !isOnAllAppsFragment
+        menu.findItem(R.id.pin_icon).isVisible =
+            gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment
         menu.findItem(R.id.hide_icon).isVisible =
             gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment
         menu.findItem(R.id.resize).isVisible = gridItem.type == ITEM_TYPE_WIDGET
@@ -157,6 +169,7 @@ fun Activity.handleGridItemPopupMenu(
         setOnMenuItemClickListener { item ->
             listener.onAnyClick()
             when (item.itemId) {
+                R.id.pin_icon -> listener.pinToggled(gridItem)
                 R.id.hide_icon -> listener.hide(gridItem)
                 R.id.rename -> listener.rename(gridItem)
                 R.id.resize -> listener.resize(gridItem)

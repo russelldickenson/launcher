@@ -6,6 +6,10 @@
             android:icon="@drawable/ic_info_vector"
             android:title="@string/app_info" />
         <item
+            android:id="@+id/pin_icon"
+            android:icon="@drawable/ic_pin_filled_vector"
+            android:title="@string/pin_app" />
+        <item
             android:id="@+id/hide_icon"
             android:icon="@drawable/ic_hide_vector"
             android:title="@string/hide" />

@@ -14,11 +14,12 @@ data class AppLauncher(
     @ColumnInfo(name = "activity_name") var activityName: String,   // some apps create multiple icons, this is needed at clicking them
     @ColumnInfo(name = "order") var order: Int,
     @ColumnInfo(name = "thumbnail_color") var thumbnailColor: Int,
+    @ColumnInfo(name = "pinned", defaultValue = "0") var pinned: Boolean = false,
 
     @Ignore var drawable: Drawable?
 ) : Comparable<AppLauncher> {
 
-    constructor() : this(null, "", "", "", 0, 0, null)
+    constructor() : this(null, "", "", "", 0, 0, false, null)
 
     companion object {
         var sorting = 0

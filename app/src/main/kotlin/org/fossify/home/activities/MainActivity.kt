@@ -898,6 +898,28 @@ class MainActivity : SimpleActivity(), FlingListener {
         showFragment(binding.widgetsFragment)
     }
 
+    private fun togglePinned(item: HomeScreenGridItem) {
+        ensureBackgroundThread {
+            val wasPinned = IconCache.launchers.firstOrNull {
+                it.packageName == item.packageName && it.activityName == item.activityName
+            }?.pinned == true
+            val newPinned = !wasPinned
+
+            launchersDB.updatePinned(item.packageName, newPinned)
+            IconCache.launchers = IconCache.launchers.map {
+                if (it.packageName == item.packageName && it.activityName == item.activityName) {
+                    it.copy(pinned = newPinned)
+                } else {
+                    it
+                }
+            }
+
+            runOnUiThread {
+                binding.allAppsFragment.root.onIconPinChanged(item.packageName, item.activityName, newPinned)
+            }
+        }
+    }
+
     private fun hideIcon(item: HomeScreenGridItem) {
         ensureBackgroundThread {
             val hiddenIcon = HiddenIcon(null, item.packageName, item.activityName, item.title, null)
@@ -957,6 +979,10 @@ class MainActivity : SimpleActivity(), FlingListener {
     val menuListener: ItemMenuListener = object : ItemMenuListener {
         override fun onAnyClick() {
             resetFragmentTouches()
+        }
+
+        override fun pinToggled(gridItem: HomeScreenGridItem) {
+            togglePinned(gridItem)
         }
 
         override fun hide(gridItem: HomeScreenGridItem) {
@@ -1103,6 +1129,8 @@ class MainActivity : SimpleActivity(), FlingListener {
             it.getIconIdentifier()
         }
 
+        val pinnedPackages = launchersDB.getPinnedPackageNames().toSet()
+
         val allApps = ArrayList<AppLauncher>()
         val intent = Intent(Intent.ACTION_MAIN, null)
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
@@ -1140,6 +1168,7 @@ class MainActivity : SimpleActivity(), FlingListener {
                     activityName = activityName,
                     order = 0,
                     thumbnailColor = placeholderColor,
+                    pinned = pinnedPackages.contains(packageName),
                     drawable = bitmap.toDrawable(resources)
                 )
             )

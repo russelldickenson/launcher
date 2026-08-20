@@ -19,4 +19,10 @@ interface AppLaunchersDao {
 
     @Query("DELETE FROM apps WHERE id = :id")
     fun deleteById(id: Long)
+
+    @Query("UPDATE apps SET pinned = :pinned WHERE package_name = :packageName")
+    fun updatePinned(packageName: String, pinned: Boolean)
+
+    @Query("SELECT package_name FROM apps WHERE pinned = 1")
+    fun getPinnedPackageNames(): List<String>
 }

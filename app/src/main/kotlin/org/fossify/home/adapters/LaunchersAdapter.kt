@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -92,6 +93,11 @@ class LaunchersAdapter(
                 binding.launcherLabel.beVisibleIf(activity.config.showDrawerAppLabels)
                 binding.launcherIcon.setPadding(iconPadding, iconPadding, iconPadding, 0)
 
+                binding.launcherPinBadge.beVisibleIf(launcher.pinned)
+                (binding.launcherPinBadge.layoutParams as RelativeLayout.LayoutParams).apply {
+                    marginEnd = iconPadding
+                }
+
                 if (launcher.drawable != null && binding.launcherIcon.tag == true) {
                     binding.launcherIcon.setImageDrawable(launcher.drawable)
                 } else {
@@ -177,6 +183,7 @@ private class AppLauncherDiffCallback : DiffUtil.ItemCallback<AppLauncher>() {
         return oldItem.title == newItem.title &&
                 oldItem.order == newItem.order &&
                 oldItem.thumbnailColor == newItem.thumbnailColor &&
+                oldItem.pinned == newItem.pinned &&
                 oldItem.drawable != null &&
                 newItem.drawable != null
     }

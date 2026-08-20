@@ -5,6 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import org.fossify.home.helpers.Converters
 import org.fossify.home.interfaces.AppLaunchersDao
 import org.fossify.home.interfaces.HiddenIconsDao
@@ -15,7 +17,7 @@ import org.fossify.home.models.HomeScreenGridItem
 
 @Database(
     entities = [AppLauncher::class, HomeScreenGridItem::class, HiddenIcon::class],
-    version = 5
+    version = 6
 )
 @TypeConverters(Converters::class)
 abstract class AppsDatabase : RoomDatabase() {
@@ -29,6 +31,12 @@ abstract class AppsDatabase : RoomDatabase() {
     companion object {
         private var db: AppsDatabase? = null
 
+        private val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE apps ADD COLUMN pinned INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         fun getInstance(context: Context): AppsDatabase {
             if (db == null) {
                 synchronized(AppsDatabase::class) {
@@ -37,7 +45,7 @@ abstract class AppsDatabase : RoomDatabase() {
                             context.applicationContext,
                             AppsDatabase::class.java,
                             "apps.db"
-                        ).build()
+                        ).addMigrations(MIGRATION_5_6).build()
                     }
                 }
             }
