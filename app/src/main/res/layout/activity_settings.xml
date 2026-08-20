@@ -83,6 +83,47 @@
 
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/settings_show_notification_badges_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
+
+                <org.fossify.commons.views.MyMaterialSwitch
+                    android:id="@+id/settings_show_notification_badges"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/show_notification_badges" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_notification_badge_color_holder"
+                style="@style/SettingsHolderTextViewOneLinerStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_notification_badge_color_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/notification_badge_color" />
+
+                <View
+                    android:id="@+id/settings_notification_badge_color"
+                    android:layout_width="@dimen/color_sample_size"
+                    android:layout_height="@dimen/color_sample_size"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/notification_badge_dot" />
+
+            </RelativeLayout>
+
             <include
                 android:id="@+id/settings_appearance_settings_divider"
                 layout="@layout/divider" />

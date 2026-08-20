@@ -28,6 +28,15 @@
         android:src="@drawable/ic_pin_filled_vector"
         android:visibility="gone" />
 
+    <View
+        android:id="@+id/launcher_notification_badge"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_alignTop="@id/launcher_icon"
+        android:layout_alignEnd="@id/launcher_icon"
+        android:background="@drawable/notification_badge_dot"
+        android:visibility="gone" />
+
     <org.fossify.commons.views.MyTextView
         android:id="@+id/launcher_label"
         android:layout_width="match_parent"

@@ -5,10 +5,12 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
+import org.fossify.commons.dialogs.ColorPickerDialog
 import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.launchMoreAppsFromUsIntent
+import org.fossify.commons.extensions.toast
 import org.fossify.commons.extensions.updateTextColors
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
@@ -19,6 +21,8 @@ import org.fossify.home.BuildConfig
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivitySettingsBinding
 import org.fossify.home.extensions.config
+import org.fossify.home.extensions.isNotificationListenerEnabled
+import org.fossify.home.extensions.openNotificationListenerSettings
 import org.fossify.home.helpers.IconPackHelper
 import org.fossify.home.receivers.LockDeviceAdminReceiver
 import java.util.Locale
@@ -47,6 +51,8 @@ class SettingsActivity : SimpleActivity() {
         setupManageHiddenIcons()
         setupIconPack()
         setupMaskUnthemedIcons()
+        setupShowNotificationBadges()
+        setupNotificationBadgeColor()
         setupDrawerSettings()
         setupHomeScreenSettings()
         updateTextColors(binding.settingsHolder)
@@ -161,6 +167,36 @@ class SettingsActivity : SimpleActivity() {
             config.maskUnthemedIcons = binding.settingsMaskUnthemedIcons.isChecked
             exitProcess(0)
         }
+    }
+
+    private fun setupShowNotificationBadges() {
+        binding.settingsShowNotificationBadges.isChecked = config.showNotificationBadges
+        binding.settingsShowNotificationBadgesHolder.setOnClickListener {
+            val newValue = !binding.settingsShowNotificationBadges.isChecked
+            binding.settingsShowNotificationBadges.isChecked = newValue
+            config.showNotificationBadges = newValue
+
+            if (newValue && !isNotificationListenerEnabled()) {
+                toast(R.string.notification_access_required)
+                openNotificationListenerSettings()
+            }
+        }
+    }
+
+    private fun setupNotificationBadgeColor() {
+        updateNotificationBadgeColorSwatch()
+        binding.settingsNotificationBadgeColorHolder.setOnClickListener {
+            ColorPickerDialog(this, config.notificationBadgeColor) { wasPositivePressed, newColor ->
+                if (wasPositivePressed) {
+                    config.notificationBadgeColor = newColor
+                    updateNotificationBadgeColorSwatch()
+                }
+            }
+        }
+    }
+
+    private fun updateNotificationBadgeColorSwatch() {
+        binding.settingsNotificationBadgeColor.background?.mutate()?.setTint(config.notificationBadgeColor)
     }
 
     private fun setupDrawerSettings() {

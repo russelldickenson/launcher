@@ -10,6 +10,7 @@ import android.content.pm.LauncherApps
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Process
+import android.provider.Settings
 import android.util.Size
 import androidx.annotation.RequiresApi
 import org.fossify.commons.helpers.isQPlus
@@ -20,6 +21,7 @@ import org.fossify.home.helpers.IconPackHelper
 import org.fossify.home.interfaces.AppLaunchersDao
 import org.fossify.home.interfaces.HiddenIconsDao
 import org.fossify.home.interfaces.HomeScreenGridItemsDao
+import org.fossify.home.services.NotificationBadgeListenerService
 import kotlin.math.ceil
 import kotlin.math.max
 
@@ -100,6 +102,19 @@ fun Context.getInitialCellSize(
 fun Context.getCellCount(size: Int): Int {
     val tiles = ceil(((size / resources.displayMetrics.density) - 30) / 70.0).toInt()
     return max(tiles, 1)
+}
+
+fun Context.isNotificationListenerEnabled(): Boolean {
+    val componentName = ComponentName(this, NotificationBadgeListenerService::class.java)
+    val enabledListeners = Settings.Secure.getString(contentResolver, "enabled_notification_listeners")
+    return enabledListeners?.contains(componentName.flattenToString()) == true
+}
+
+fun Context.openNotificationListenerSettings() {
+    try {
+        startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+    } catch (ignored: Exception) {
+    }
 }
 
 fun Context.isDefaultLauncher(): Boolean {

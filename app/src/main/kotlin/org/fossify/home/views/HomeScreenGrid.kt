@@ -63,6 +63,7 @@ import org.fossify.home.helpers.ITEM_TYPE_FOLDER
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.helpers.ITEM_TYPE_SHORTCUT
 import org.fossify.home.helpers.ITEM_TYPE_WIDGET
+import org.fossify.home.helpers.NotificationCache
 import org.fossify.home.helpers.WIDGET_HOST_ID
 import org.fossify.home.models.HomeScreenGridItem
 import kotlin.math.abs
@@ -106,6 +107,8 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     private var currentPageIndicatorPaint: Paint
     private var folderBackgroundPaint: Paint
     private var folderIconBackgroundPaint: Paint
+    private var notificationBadgePaint: Paint
+    private var notificationBadgeStrokePaint: Paint
     private var draggedItem: HomeScreenGridItem? = null
     private var resizedWidget: HomeScreenGridItem? = null
     private var isFirstDraw = true
@@ -190,6 +193,16 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
 
         folderIconBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = context.getProperBackgroundColor().adjustAlpha(0.9f)
+            style = Paint.Style.FILL
+        }
+
+        notificationBadgePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = context.config.notificationBadgeColor
+            style = Paint.Style.FILL
+        }
+
+        notificationBadgeStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
             style = Paint.Style.FILL
         }
 
@@ -1208,7 +1221,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         return cells.entries.firstOrNull { (_, cell) -> center.x == cell.centerX() && center.y == cell.centerY() }?.key
     }
 
-    private fun redrawGrid() {
+    fun redrawGrid() {
         post {
             setWillNotDraw(false)
             invalidate()
@@ -1917,7 +1930,25 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             }
 
             drawable?.draw(this)
+
+            if (item.type == ITEM_TYPE_ICON &&
+                context.config.showNotificationBadges &&
+                NotificationCache.packagesWithNotifications.contains(item.packageName) &&
+                drawable != null
+            ) {
+                val bounds = drawable.bounds
+                val radius = iconSize * NOTIFICATION_BADGE_RADIUS_FACTOR
+                val cx = bounds.right - radius
+                val cy = bounds.bottom - radius
+                drawCircle(cx, cy, radius * NOTIFICATION_BADGE_STROKE_FACTOR, notificationBadgeStrokePaint)
+                drawCircle(cx, cy, radius, notificationBadgePaint)
+            }
         }
+    }
+
+    fun updateNotificationBadgeColor() {
+        notificationBadgePaint.color = context.config.notificationBadgeColor
+        redrawGrid()
     }
 
     private fun Rect.withOffset(offsetX: Int, offsetY: Int, block: Rect.() -> Unit) {
@@ -2175,6 +2206,8 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         private const val FOLDER_OPEN_HOLD_THRESHOLD = 500L
         private const val FOLDER_CLOSE_HOLD_THRESHOLD = 300L
         private const val FOLDER_ANIMATION_DURATION = 200L
+        private const val NOTIFICATION_BADGE_RADIUS_FACTOR = 0.16f
+        private const val NOTIFICATION_BADGE_STROKE_FACTOR = 1.3f
     }
 }
 

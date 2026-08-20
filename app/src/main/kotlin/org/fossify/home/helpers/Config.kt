@@ -1,6 +1,7 @@
 package org.fossify.home.helpers
 
 import android.content.Context
+import android.graphics.Color
 import org.fossify.commons.helpers.BaseConfig
 import org.fossify.home.R
 
@@ -62,4 +63,12 @@ class Config(context: Context) : BaseConfig(context) {
     var maskUnthemedIcons: Boolean
         get() = prefs.getBoolean(MASK_UNTHEMED_ICONS, true)
         set(maskUnthemedIcons) = prefs.edit().putBoolean(MASK_UNTHEMED_ICONS, maskUnthemedIcons).apply()
+
+    var showNotificationBadges: Boolean
+        get() = prefs.getBoolean(SHOW_NOTIFICATION_BADGES, true)
+        set(showNotificationBadges) = prefs.edit().putBoolean(SHOW_NOTIFICATION_BADGES, showNotificationBadges).apply()
+
+    var notificationBadgeColor: Int
+        get() = prefs.getInt(NOTIFICATION_BADGE_COLOR, Color.RED)
+        set(notificationBadgeColor) = prefs.edit().putInt(NOTIFICATION_BADGE_COLOR, notificationBadgeColor).apply()
 }

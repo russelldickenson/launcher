@@ -133,6 +133,11 @@ class AllAppsFragment(
 
     private fun getAdapter() = binding.allAppsGrid.adapter as? LaunchersAdapter
 
+    @SuppressLint("NotifyDataSetChanged")
+    fun refreshNotificationBadges() {
+        getAdapter()?.notifyDataSetChanged()
+    }
+
     private fun setupAdapter(launchers: List<AppLauncher>) {
         activity?.runOnUiThread {
             val layoutManager = binding.allAppsGrid.layoutManager as MyGridLayoutManager

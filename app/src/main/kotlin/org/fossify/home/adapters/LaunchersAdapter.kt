@@ -24,6 +24,7 @@ import org.fossify.home.activities.SimpleActivity
 import org.fossify.home.databinding.ItemLauncherLabelBinding
 import org.fossify.home.extensions.animateScale
 import org.fossify.home.extensions.config
+import org.fossify.home.helpers.NotificationCache
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.models.AppLauncher
 
@@ -95,6 +96,14 @@ class LaunchersAdapter(
 
                 binding.launcherPinBadge.beVisibleIf(launcher.pinned)
                 (binding.launcherPinBadge.layoutParams as RelativeLayout.LayoutParams).apply {
+                    marginEnd = iconPadding
+                }
+
+                val hasNotification = activity.config.showNotificationBadges &&
+                        NotificationCache.packagesWithNotifications.contains(launcher.packageName)
+                binding.launcherNotificationBadge.beVisibleIf(hasNotification)
+                binding.launcherNotificationBadge.background?.mutate()?.setTint(activity.config.notificationBadgeColor)
+                (binding.launcherNotificationBadge.layoutParams as RelativeLayout.LayoutParams).apply {
                     marginEnd = iconPadding
                 }
 

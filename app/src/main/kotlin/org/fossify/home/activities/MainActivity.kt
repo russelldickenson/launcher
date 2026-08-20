@@ -92,6 +92,7 @@ import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.helpers.ITEM_TYPE_SHORTCUT
 import org.fossify.home.helpers.ITEM_TYPE_WIDGET
 import org.fossify.home.helpers.IconCache
+import org.fossify.home.helpers.NotificationCache
 import org.fossify.home.helpers.REQUEST_ALLOW_BINDING_WIDGET
 import org.fossify.home.helpers.REQUEST_CONFIGURE_WIDGET
 import org.fossify.home.helpers.REQUEST_CREATE_SHORTCUT
@@ -299,7 +300,15 @@ class MainActivity : SimpleActivity(), FlingListener {
             newColumnCount = config.homeColumnCount
         )
         binding.homeScreenGrid.root.updateColors()
+        binding.homeScreenGrid.root.updateNotificationBadgeColor()
         binding.allAppsFragment.root.onResume()
+
+        NotificationCache.onChanged = {
+            runOnUiThread {
+                binding.homeScreenGrid.root.redrawGrid()
+                binding.allAppsFragment.root.refreshNotificationBadges()
+            }
+        }
     }
 
     override fun onStop() {
@@ -323,6 +332,7 @@ class MainActivity : SimpleActivity(), FlingListener {
     override fun onPause() {
         super.onPause()
         wasJustPaused = true
+        NotificationCache.onChanged = null
     }
 
     override fun onBackPressedCompat(): Boolean {

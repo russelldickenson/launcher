@@ -19,6 +19,8 @@ const val MULTILINE_DRAWER_APP_LABELS = "multiline_drawer_app_labels"
 const val MULTILINE_HOME_APP_LABELS = "multiline_home_app_labels"
 const val ICON_PACK = "icon_pack"
 const val MASK_UNTHEMED_ICONS = "mask_unthemed_icons"
+const val SHOW_NOTIFICATION_BADGES = "show_notification_badges"
+const val NOTIFICATION_BADGE_COLOR = "notification_badge_color"
 
 // default home screen grid size
 const val ROW_COUNT = 6

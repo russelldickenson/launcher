@@ -20,6 +20,9 @@
     <string name="icon_pack">Icon pack</string>
     <string name="appearance_settings">Appearance</string>
     <string name="mask_unthemed_icons">Match icon shape for other icons</string>
+    <string name="show_notification_badges">Show notification badges</string>
+    <string name="notification_badge_color">Badge color</string>
+    <string name="notification_access_required">Notification access is required to show badges</string>
     <string name="home_screen_settings">Home screen</string>
     <string name="widget_too_big">Widget is too big for current home screen size</string>
     <string name="double_tap_to_lock">Double tap to lock screen</string>
