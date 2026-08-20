@@ -7,8 +7,10 @@ import android.content.Intent
 import android.os.Bundle
 import org.fossify.commons.dialogs.ColorPickerDialog
 import org.fossify.commons.dialogs.RadioGroupDialog
+import org.fossify.commons.extensions.applyColorFilter
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperPrimaryColor
+import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.launchMoreAppsFromUsIntent
 import org.fossify.commons.extensions.toast
 import org.fossify.commons.extensions.updateTextColors
@@ -200,12 +202,14 @@ class SettingsActivity : SimpleActivity() {
     }
 
     private fun setupDrawerSettings() {
+        binding.settingsDrawerSettingsChevron.applyColorFilter(getProperTextColor())
         binding.settingsDrawerSettingsHolder.setOnClickListener {
             startActivity(Intent(this, DrawerSettingsActivity::class.java))
         }
     }
 
     private fun setupHomeScreenSettings() {
+        binding.settingsHomeScreenSettingsChevron.applyColorFilter(getProperTextColor())
         binding.settingsHomeScreenSettingsHolder.setOnClickListener {
             startActivity(Intent(this, HomeScreenSettingsActivity::class.java))
         }

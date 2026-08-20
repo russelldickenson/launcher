@@ -2,6 +2,12 @@
 
     <style name="AppTheme" parent="AppTheme.Base" />
 
+    <style name="SettingsSectionLabelStyle" parent="@style/MaterialSectionLabelStyle">
+        <item name="android:layout_marginStart">@dimen/settings_label_start_margin</item>
+        <item name="android:textSize">@dimen/big_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="LauncherTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowShowWallpaper">true</item>

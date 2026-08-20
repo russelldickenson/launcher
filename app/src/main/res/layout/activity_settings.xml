@@ -124,6 +124,22 @@
 
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/settings_manage_hidden_icons_holder"
+                style="@style/SettingsHolderTextViewOneLinerStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_manage_hidden_icons"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/manage_hidden_icons" />
+
+            </RelativeLayout>
+
             <include
                 android:id="@+id/settings_appearance_settings_divider"
                 layout="@layout/divider" />
@@ -176,22 +192,6 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/settings_manage_hidden_icons_holder"
-                style="@style/SettingsHolderTextViewOneLinerStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
-
-                <org.fossify.commons.views.MyTextView
-                    android:id="@+id/settings_manage_hidden_icons"
-                    style="@style/SettingsTextLabelStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/manage_hidden_icons" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
                 android:id="@+id/settings_drawer_settings_holder"
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
@@ -204,6 +204,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/app_drawer_settings" />
+
+                <ImageView
+                    android:id="@+id/settings_drawer_settings_chevron"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_chevron_right_vector" />
 
             </RelativeLayout>
 
@@ -220,6 +229,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/home_screen_settings" />
+
+                <ImageView
+                    android:id="@+id/settings_home_screen_settings_chevron"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_chevron_right_vector" />
 
             </RelativeLayout>
 
