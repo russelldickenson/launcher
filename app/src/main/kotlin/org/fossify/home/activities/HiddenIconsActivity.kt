@@ -13,6 +13,7 @@ import org.fossify.commons.views.MyGridLayoutManager
 import org.fossify.home.adapters.HiddenIconsAdapter
 import org.fossify.home.databinding.ActivityHiddenIconsBinding
 import org.fossify.home.extensions.config
+import org.fossify.home.extensions.darkenTextForLightMode
 import org.fossify.home.extensions.getAppIcon
 import org.fossify.home.extensions.getDrawableForPackageName
 import org.fossify.home.extensions.hiddenIconsDB
@@ -36,6 +37,7 @@ class HiddenIconsActivity : SimpleActivity(), RefreshRecyclerViewListener {
     override fun onResume() {
         super.onResume()
         setupTopAppBar(binding.manageHiddenIconsAppbar, NavigationIcon.Arrow)
+        darkenTextForLightMode(binding.manageHiddenIconsWrapper)
     }
 
     private fun updateIcons() {

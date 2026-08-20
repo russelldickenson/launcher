@@ -18,6 +18,7 @@ import org.fossify.home.activities.MainActivity
 import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.databinding.AllAppsFragmentBinding
 import org.fossify.home.extensions.config
+import org.fossify.home.extensions.getThemeAwareTextColor
 import org.fossify.home.extensions.launchApp
 import org.fossify.home.extensions.setupDrawerBackground
 import org.fossify.home.helpers.ITEM_TYPE_ICON
@@ -211,7 +212,7 @@ class AllAppsFragment(
         })
 
         setupDrawerBackground()
-        getAdapter()?.updateTextColor(context.getProperTextColor())
+        getAdapter()?.updateTextColor(context.getThemeAwareTextColor(context.getProperTextColor()))
 
         binding.searchBar.beVisibleIf(context.config.showSearchBar)
         binding.searchBar.requireToolbar().beGone()

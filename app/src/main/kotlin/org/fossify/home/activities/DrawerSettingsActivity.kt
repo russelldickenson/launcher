@@ -9,6 +9,7 @@ import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.models.RadioItem
 import org.fossify.home.databinding.ActivityDrawerSettingsBinding
 import org.fossify.home.extensions.config
+import org.fossify.home.extensions.darkenTextForLightMode
 import org.fossify.home.helpers.MAX_COLUMN_COUNT
 
 class DrawerSettingsActivity : SimpleActivity() {
@@ -34,6 +35,7 @@ class DrawerSettingsActivity : SimpleActivity() {
         setupShowDrawerAppLabels()
         setupMultilineDrawerAppLabels()
         updateTextColors(binding.drawerSettingsHolder)
+        darkenTextForLightMode(binding.drawerSettingsHolder)
     }
 
     private fun setupDrawerColumnCount() {

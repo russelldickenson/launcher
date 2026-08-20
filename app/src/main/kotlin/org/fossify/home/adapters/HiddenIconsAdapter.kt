@@ -16,6 +16,7 @@ import org.fossify.commons.interfaces.RefreshRecyclerViewListener
 import org.fossify.commons.views.MyRecyclerView
 import org.fossify.home.R
 import org.fossify.home.databinding.ItemHiddenIconBinding
+import org.fossify.home.extensions.getThemeAwareTextColor
 import org.fossify.home.extensions.hiddenIconsDB
 import org.fossify.home.models.HiddenIcon
 
@@ -106,7 +107,7 @@ class HiddenIconsAdapter(
         ItemHiddenIconBinding.bind(view).apply {
             hiddenIconHolder.isSelected = selectedKeys.contains(icon.hashCode())
             hiddenIconLabel.text = icon.title
-            hiddenIconLabel.setTextColor(textColor)
+            hiddenIconLabel.setTextColor(activity.getThemeAwareTextColor(textColor))
             hiddenIcon.setPadding(iconPadding, iconPadding, iconPadding, 0)
 
             val factory = DrawableCrossFadeFactory.Builder(150).setCrossFadeEnabled(true).build()

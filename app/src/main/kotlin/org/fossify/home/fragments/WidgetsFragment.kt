@@ -23,6 +23,7 @@ import org.fossify.home.adapters.WidgetsAdapter
 import org.fossify.home.databinding.WidgetsFragmentBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getInitialCellSize
+import org.fossify.home.extensions.getThemeAwareTextColor
 import org.fossify.home.extensions.setupDrawerBackground
 import org.fossify.home.helpers.ITEM_TYPE_SHORTCUT
 import org.fossify.home.helpers.ITEM_TYPE_WIDGET
@@ -255,7 +256,7 @@ class WidgetsFragment(context: Context, attributeSet: AttributeSet) :
         }
 
         binding.widgetsFastscroller.updateColors(context.getProperPrimaryColor())
-        (binding.widgetsList.adapter as? WidgetsAdapter)?.updateTextColor(context.getProperTextColor())
+        (binding.widgetsList.adapter as? WidgetsAdapter)?.updateTextColor(context.getThemeAwareTextColor(context.getProperTextColor()))
         setupDrawerBackground()
 
         binding.searchBar.requireToolbar().beGone()

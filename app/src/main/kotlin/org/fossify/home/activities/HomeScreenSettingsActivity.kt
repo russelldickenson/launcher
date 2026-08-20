@@ -8,6 +8,7 @@ import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.models.RadioItem
 import org.fossify.home.databinding.ActivityHomeScreenSettingsBinding
 import org.fossify.home.extensions.config
+import org.fossify.home.extensions.darkenTextForLightMode
 import org.fossify.home.helpers.MAX_COLUMN_COUNT
 import org.fossify.home.helpers.MAX_ROW_COUNT
 import org.fossify.home.helpers.MIN_COLUMN_COUNT
@@ -34,6 +35,7 @@ class HomeScreenSettingsActivity : SimpleActivity() {
         setupShowHomeAppLabels()
         setupMultilineHomeAppLabels()
         updateTextColors(binding.homeScreenSettingsHolder)
+        darkenTextForLightMode(binding.homeScreenSettingsHolder)
     }
 
     private fun setupHomeRowCount() {

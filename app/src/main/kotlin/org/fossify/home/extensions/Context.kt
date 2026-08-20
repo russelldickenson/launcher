@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.LauncherApps
+import android.content.res.Configuration
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Process
@@ -115,6 +117,16 @@ fun Context.openNotificationListenerSettings() {
         startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
     } catch (ignored: Exception) {
     }
+}
+
+fun Context.isSystemInLightMode(): Boolean {
+    val nightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+    return nightMode == Configuration.UI_MODE_NIGHT_NO
+}
+
+// darkens text to ~90% black when the system is in light mode, leaving dark mode untouched
+fun Context.getThemeAwareTextColor(originalColor: Int): Int {
+    return if (isSystemInLightMode()) Color.argb(230, 0, 0, 0) else originalColor
 }
 
 fun Context.isDefaultLauncher(): Boolean {

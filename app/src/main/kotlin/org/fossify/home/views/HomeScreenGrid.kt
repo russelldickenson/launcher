@@ -58,6 +58,7 @@ import org.fossify.home.activities.MainActivity
 import org.fossify.home.databinding.HomeScreenGridBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppIcon
+import org.fossify.home.extensions.getThemeAwareTextColor
 import org.fossify.home.extensions.homeScreenGridItemsDB
 import org.fossify.home.helpers.ITEM_TYPE_FOLDER
 import org.fossify.home.helpers.ITEM_TYPE_ICON
@@ -160,14 +161,14 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         }
 
         contrastTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = context.getProperTextColor()
+            color = context.getThemeAwareTextColor(context.getProperTextColor())
             textSize = context.resources.getDimension(org.fossify.commons.R.dimen.smaller_text_size)
             setShadowLayer(2f, 0f, 0f, context.getProperTextColor().getContrastColor())
             typeface = customTypeface
         }
 
         folderTitleTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = context.getProperTextColor()
+            color = context.getThemeAwareTextColor(context.getProperTextColor())
             textSize = context.resources.getDimension(org.fossify.commons.R.dimen.medium_text_size)
             typeface = customTypeface
         }
@@ -292,8 +293,8 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     }
 
     fun updateColors() {
-        folderTitleTextPaint.color = context.getProperTextColor()
-        contrastTextPaint.color = context.getProperTextColor()
+        folderTitleTextPaint.color = context.getThemeAwareTextColor(context.getProperTextColor())
+        contrastTextPaint.color = context.getThemeAwareTextColor(context.getProperTextColor())
         contrastTextPaint.setShadowLayer(
             2f, 0f, 0f, context.getProperTextColor().getContrastColor()
         )

@@ -16,6 +16,8 @@ import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.Menu
 import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
@@ -37,6 +39,28 @@ import org.fossify.home.helpers.IconCache
 import org.fossify.home.helpers.UNINSTALL_APP_REQUEST_CODE
 import org.fossify.home.interfaces.ItemMenuListener
 import org.fossify.home.models.HomeScreenGridItem
+
+// darkens all text under `root` when the system is in light mode, without touching text sizes
+fun Activity.darkenTextForLightMode(root: View) {
+    if (!isSystemInLightMode()) {
+        return
+    }
+
+    val darkTextColor = getThemeAwareTextColor(Color.BLACK)
+    fun darkenRecursively(view: View) {
+        if (view is TextView) {
+            view.setTextColor(darkTextColor)
+        }
+
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                darkenRecursively(view.getChildAt(i))
+            }
+        }
+    }
+
+    darkenRecursively(root)
+}
 
 fun Activity.launchApp(packageName: String, activityName: String) {
     try {

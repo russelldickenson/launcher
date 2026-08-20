@@ -23,6 +23,7 @@ import org.fossify.home.BuildConfig
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivitySettingsBinding
 import org.fossify.home.extensions.config
+import org.fossify.home.extensions.darkenTextForLightMode
 import org.fossify.home.extensions.isNotificationListenerEnabled
 import org.fossify.home.extensions.openNotificationListenerSettings
 import org.fossify.home.helpers.IconPackHelper
@@ -64,6 +65,7 @@ class SettingsActivity : SimpleActivity() {
         ).forEach {
             it.setTextColor(getProperPrimaryColor())
         }
+        darkenTextForLightMode(binding.settingsHolder)
     }
 
     private fun setupOptionsMenu() {

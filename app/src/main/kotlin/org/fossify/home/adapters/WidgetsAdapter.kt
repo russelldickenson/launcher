@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.home.R
 import org.fossify.home.activities.SimpleActivity
+import org.fossify.home.extensions.getThemeAwareTextColor
 import org.fossify.home.databinding.ItemWidgetListItemsHolderBinding
 import org.fossify.home.databinding.ItemWidgetListSectionBinding
 import org.fossify.home.databinding.ItemWidgetPreviewBinding
@@ -26,7 +27,7 @@ class WidgetsAdapter(
     val itemClick: () -> Unit
 ) : RecyclerView.Adapter<WidgetsAdapter.ViewHolder>() {
 
-    private var textColor = activity.getProperTextColor()
+    private var textColor = activity.getThemeAwareTextColor(activity.getProperTextColor())
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)

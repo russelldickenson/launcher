@@ -24,6 +24,7 @@ import org.fossify.home.activities.SimpleActivity
 import org.fossify.home.databinding.ItemLauncherLabelBinding
 import org.fossify.home.extensions.animateScale
 import org.fossify.home.extensions.config
+import org.fossify.home.extensions.getThemeAwareTextColor
 import org.fossify.home.helpers.NotificationCache
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.models.AppLauncher
@@ -35,7 +36,7 @@ class LaunchersAdapter(
 ) : ListAdapter<AppLauncher, LaunchersAdapter.ViewHolder>(AppLauncherDiffCallback()),
     RecyclerViewFastScroller.OnPopupTextUpdate {
 
-    private var textColor = activity.getProperTextColor()
+    private var textColor = activity.getThemeAwareTextColor(activity.getProperTextColor())
     private var iconPadding = 0
 
     init {
