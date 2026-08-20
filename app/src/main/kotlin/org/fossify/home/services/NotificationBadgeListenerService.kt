@@ -1,5 +1,6 @@
 package org.fossify.home.services
 
+import android.app.Notification
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import org.fossify.home.helpers.NotificationCache
@@ -28,13 +29,16 @@ class NotificationBadgeListenerService : NotificationListenerService() {
     }
 
     private fun updateCache() {
-        val packages = try {
-            activeNotifications.map { it.packageName }.toSet()
+        val counts = try {
+            activeNotifications
+                .filter { it.notification.flags and Notification.FLAG_GROUP_SUMMARY == 0 }
+                .groupingBy { it.packageName }
+                .eachCount()
         } catch (e: Exception) {
-            emptySet()
+            emptyMap()
         }
 
-        NotificationCache.packagesWithNotifications = packages
+        NotificationCache.notificationCounts = counts
         NotificationCache.onChanged?.invoke()
     }
 }

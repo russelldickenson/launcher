@@ -17,6 +17,7 @@ import com.bumptech.glide.request.transition.Transition
 import com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getColoredDrawableWithColor
+import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.realScreenSize
 import org.fossify.home.R
@@ -25,6 +26,8 @@ import org.fossify.home.databinding.ItemLauncherLabelBinding
 import org.fossify.home.extensions.animateScale
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getThemeAwareTextColor
+import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
+import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
 import org.fossify.home.helpers.NotificationCache
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.models.AppLauncher
@@ -100,10 +103,25 @@ class LaunchersAdapter(
                     marginEnd = iconPadding
                 }
 
-                val hasNotification = activity.config.showNotificationBadges &&
-                        NotificationCache.packagesWithNotifications.contains(launcher.packageName)
+                val notificationCount = NotificationCache.notificationCounts[launcher.packageName] ?: 0
+                val hasNotification = activity.config.showNotificationBadges && notificationCount > 0
                 binding.launcherNotificationBadge.beVisibleIf(hasNotification)
-                binding.launcherNotificationBadge.background?.mutate()?.setTint(activity.config.notificationBadgeColor)
+                if (hasNotification) {
+                    binding.launcherNotificationBadge.text = if (activity.config.showNotificationCount) {
+                        if (notificationCount > 9) "9+" else notificationCount.toString()
+                    } else {
+                        ""
+                    }
+
+                    val badgeDrawableRes = when (activity.config.notificationBadgeShape) {
+                        NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE -> R.drawable.notification_badge_rounded_square
+                        NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE -> R.drawable.notification_badge_sharp_square
+                        else -> R.drawable.notification_badge_dot
+                    }
+                    binding.launcherNotificationBadge.setBackgroundResource(badgeDrawableRes)
+                    binding.launcherNotificationBadge.background?.mutate()?.setTint(activity.config.notificationBadgeColor)
+                    binding.launcherNotificationBadge.setTextColor(activity.config.notificationBadgeColor.getContrastColor())
+                }
                 (binding.launcherNotificationBadge.layoutParams as RelativeLayout.LayoutParams).apply {
                     marginEnd = iconPadding
                 }

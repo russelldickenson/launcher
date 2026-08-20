@@ -21,6 +21,12 @@ const val ICON_PACK = "icon_pack"
 const val MASK_UNTHEMED_ICONS = "mask_unthemed_icons"
 const val SHOW_NOTIFICATION_BADGES = "show_notification_badges"
 const val NOTIFICATION_BADGE_COLOR = "notification_badge_color"
+const val NOTIFICATION_BADGE_SHAPE = "notification_badge_shape"
+const val SHOW_NOTIFICATION_COUNT = "show_notification_count"
+
+const val NOTIFICATION_BADGE_SHAPE_CIRCLE = 0
+const val NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE = 1
+const val NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE = 2
 
 // default home screen grid size
 const val ROW_COUNT = 6

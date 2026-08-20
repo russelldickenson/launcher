@@ -71,4 +71,12 @@ class Config(context: Context) : BaseConfig(context) {
     var notificationBadgeColor: Int
         get() = prefs.getInt(NOTIFICATION_BADGE_COLOR, Color.RED)
         set(notificationBadgeColor) = prefs.edit().putInt(NOTIFICATION_BADGE_COLOR, notificationBadgeColor).apply()
+
+    var notificationBadgeShape: Int
+        get() = prefs.getInt(NOTIFICATION_BADGE_SHAPE, NOTIFICATION_BADGE_SHAPE_CIRCLE)
+        set(notificationBadgeShape) = prefs.edit().putInt(NOTIFICATION_BADGE_SHAPE, notificationBadgeShape).apply()
+
+    var showNotificationCount: Boolean
+        get() = prefs.getBoolean(SHOW_NOTIFICATION_COUNT, false)
+        set(showNotificationCount) = prefs.edit().putBoolean(SHOW_NOTIFICATION_COUNT, showNotificationCount).apply()
 }

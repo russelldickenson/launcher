@@ -64,6 +64,8 @@ import org.fossify.home.helpers.ITEM_TYPE_FOLDER
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.helpers.ITEM_TYPE_SHORTCUT
 import org.fossify.home.helpers.ITEM_TYPE_WIDGET
+import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
+import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
 import org.fossify.home.helpers.NotificationCache
 import org.fossify.home.helpers.WIDGET_HOST_ID
 import org.fossify.home.models.HomeScreenGridItem
@@ -110,6 +112,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     private var folderIconBackgroundPaint: Paint
     private var notificationBadgePaint: Paint
     private var notificationBadgeStrokePaint: Paint
+    private var notificationCountTextPaint: TextPaint
     private var draggedItem: HomeScreenGridItem? = null
     private var resizedWidget: HomeScreenGridItem? = null
     private var isFirstDraw = true
@@ -205,6 +208,12 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         notificationBadgeStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.WHITE
             style = Paint.Style.FILL
+        }
+
+        notificationCountTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = context.config.notificationBadgeColor.getContrastColor()
+            textAlign = Paint.Align.CENTER
+            typeface = customTypeface
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(this) { _, insets ->
@@ -1932,23 +1941,66 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
 
             drawable?.draw(this)
 
+            val notificationCount = NotificationCache.notificationCounts[item.packageName] ?: 0
             if (item.type == ITEM_TYPE_ICON &&
                 context.config.showNotificationBadges &&
-                NotificationCache.packagesWithNotifications.contains(item.packageName) &&
+                notificationCount > 0 &&
                 drawable != null
             ) {
-                val bounds = drawable.bounds
-                val radius = iconSize * NOTIFICATION_BADGE_RADIUS_FACTOR
-                val cx = bounds.right - radius
-                val cy = bounds.bottom - radius
-                drawCircle(cx, cy, radius * NOTIFICATION_BADGE_STROKE_FACTOR, notificationBadgeStrokePaint)
-                drawCircle(cx, cy, radius, notificationBadgePaint)
+                drawNotificationBadge(drawable.bounds, notificationCount)
+            }
+        }
+    }
+
+    private fun Canvas.drawNotificationBadge(bounds: Rect, count: Int) {
+        if (context.config.showNotificationCount) {
+            val countText = if (count > 9) "9+" else count.toString()
+            val textSize = iconSize * NOTIFICATION_COUNT_TEXT_SIZE_FACTOR
+            notificationCountTextPaint.textSize = textSize
+            val textWidth = notificationCountTextPaint.measureText(countText)
+            val badgeHeight = iconSize * NOTIFICATION_BADGE_COUNT_SIZE_FACTOR
+            val badgeWidth = max(badgeHeight, textWidth + badgeHeight * 0.7f)
+            val cx = bounds.right - badgeWidth / 2f
+            val cy = bounds.bottom - badgeHeight / 2f
+            val strokeExtra = badgeHeight * (NOTIFICATION_BADGE_STROKE_FACTOR - 1f)
+            drawBadgeShape(cx, cy, badgeWidth + strokeExtra, badgeHeight + strokeExtra, notificationBadgeStrokePaint)
+            drawBadgeShape(cx, cy, badgeWidth, badgeHeight, notificationBadgePaint)
+            val textY = cy - (notificationCountTextPaint.descent() + notificationCountTextPaint.ascent()) / 2
+            drawText(countText, cx, textY, notificationCountTextPaint)
+        } else {
+            val size = iconSize * NOTIFICATION_BADGE_RADIUS_FACTOR * 2
+            val cx = bounds.right - size / 2f
+            val cy = bounds.bottom - size / 2f
+            val strokeSize = size * NOTIFICATION_BADGE_STROKE_FACTOR
+            drawBadgeShape(cx, cy, strokeSize, strokeSize, notificationBadgeStrokePaint)
+            drawBadgeShape(cx, cy, size, size, notificationBadgePaint)
+        }
+    }
+
+    private fun Canvas.drawBadgeShape(cx: Float, cy: Float, width: Float, height: Float, paint: Paint) {
+        val left = cx - width / 2f
+        val top = cy - height / 2f
+        val right = cx + width / 2f
+        val bottom = cy + height / 2f
+        when (context.config.notificationBadgeShape) {
+            NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE -> {
+                val cornerRadius = min(width, height) * 0.3f
+                drawRoundRect(left, top, right, bottom, cornerRadius, cornerRadius, paint)
+            }
+
+            NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE -> {
+                drawRect(left, top, right, bottom, paint)
+            }
+
+            else -> {
+                drawOval(left, top, right, bottom, paint)
             }
         }
     }
 
     fun updateNotificationBadgeColor() {
         notificationBadgePaint.color = context.config.notificationBadgeColor
+        notificationCountTextPaint.color = context.config.notificationBadgeColor.getContrastColor()
         redrawGrid()
     }
 
@@ -2209,6 +2261,8 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         private const val FOLDER_ANIMATION_DURATION = 200L
         private const val NOTIFICATION_BADGE_RADIUS_FACTOR = 0.16f
         private const val NOTIFICATION_BADGE_STROKE_FACTOR = 1.3f
+        private const val NOTIFICATION_BADGE_COUNT_SIZE_FACTOR = 0.34f
+        private const val NOTIFICATION_COUNT_TEXT_SIZE_FACTOR = 0.22f
     }
 }
 

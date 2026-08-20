@@ -302,6 +302,7 @@ class MainActivity : SimpleActivity(), FlingListener {
         binding.homeScreenGrid.root.updateColors()
         binding.homeScreenGrid.root.updateNotificationBadgeColor()
         binding.allAppsFragment.root.onResume()
+        binding.allAppsFragment.root.refreshNotificationBadges()
 
         NotificationCache.onChanged = {
             runOnUiThread {

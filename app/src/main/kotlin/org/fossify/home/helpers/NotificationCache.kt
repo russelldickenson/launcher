@@ -2,13 +2,14 @@ package org.fossify.home.helpers
 
 object NotificationCache {
     @Volatile
-    private var cachedPackagesWithNotifications = emptySet<String>()
+    private var cachedNotificationCounts = emptyMap<String, Int>()
 
-    var packagesWithNotifications: Set<String>
-        get() = cachedPackagesWithNotifications
+    // packageName -> number of active notifications for that package
+    var notificationCounts: Map<String, Int>
+        get() = cachedNotificationCounts
         set(value) {
             synchronized(this) {
-                cachedPackagesWithNotifications = value
+                cachedNotificationCounts = value
             }
         }
 
@@ -16,6 +17,6 @@ object NotificationCache {
     var onChanged: (() -> Unit)? = null
 
     fun clear() {
-        packagesWithNotifications = emptySet()
+        notificationCounts = emptyMap()
     }
 }
