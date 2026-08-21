@@ -26,8 +26,7 @@ fun View.animateScale(
         scaleY = from
     }
 
-fun View.setupDrawerBackground() {
-    val backgroundColor = context.getProperBackgroundColor()
+fun View.setupDrawerBackground(backgroundColor: Int = context.getProperBackgroundColor()) {
     background = backgroundColor.toDrawable()
 
     val insets = rootWindowInsets

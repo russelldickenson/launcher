@@ -15,6 +15,8 @@ import android.os.Process
 import android.provider.Settings
 import android.util.Size
 import androidx.annotation.RequiresApi
+import org.fossify.commons.extensions.getProperBackgroundColor
+import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.helpers.isQPlus
 import org.fossify.commons.helpers.isSPlus
 import org.fossify.home.databases.AppsDatabase
@@ -123,6 +125,17 @@ fun Context.isSystemInLightMode(): Boolean {
 // darkens text to ~90% black when the system is in light mode, leaving dark mode untouched
 fun Context.getThemeAwareTextColor(originalColor: Int): Int {
     return if (isSystemInLightMode()) Color.argb(230, 0, 0, 0) else originalColor
+}
+
+// in system light mode the app drawer keeps a dark background with white labels instead of the
+// normal light theme background, since a light drawer plus darkened text is harder to read than
+// a plain dark/light contrast
+fun Context.getAppDrawerBackgroundColor(): Int {
+    return if (isSystemInLightMode()) getColor(org.fossify.home.R.color.app_drawer_light_mode_background) else getProperBackgroundColor()
+}
+
+fun Context.getAppDrawerTextColor(): Int {
+    return if (isSystemInLightMode()) Color.WHITE else getThemeAwareTextColor(getProperTextColor())
 }
 
 fun Context.isDefaultLauncher(): Boolean {

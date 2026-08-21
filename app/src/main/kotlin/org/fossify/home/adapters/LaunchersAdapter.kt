@@ -18,14 +18,13 @@ import com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getColoredDrawableWithColor
 import org.fossify.commons.extensions.getContrastColor
-import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.realScreenSize
 import org.fossify.home.R
 import org.fossify.home.activities.SimpleActivity
 import org.fossify.home.databinding.ItemLauncherLabelBinding
 import org.fossify.home.extensions.animateScale
 import org.fossify.home.extensions.config
-import org.fossify.home.extensions.getThemeAwareTextColor
+import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
 import org.fossify.home.helpers.NotificationCache
@@ -39,7 +38,7 @@ class LaunchersAdapter(
 ) : ListAdapter<AppLauncher, LaunchersAdapter.ViewHolder>(AppLauncherDiffCallback()),
     RecyclerViewFastScroller.OnPopupTextUpdate {
 
-    private var textColor = activity.getThemeAwareTextColor(activity.getProperTextColor())
+    private var textColor = activity.getAppDrawerTextColor()
     private var iconPadding = 0
     private var iconScaleFactor = 1f
 

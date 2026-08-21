@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import org.fossify.commons.extensions.beGone
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperPrimaryColor
-import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.hideKeyboard
 import org.fossify.commons.extensions.normalizeString
 import org.fossify.commons.views.MyGridLayoutManager
@@ -18,7 +17,8 @@ import org.fossify.home.activities.MainActivity
 import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.databinding.AllAppsFragmentBinding
 import org.fossify.home.extensions.config
-import org.fossify.home.extensions.getThemeAwareTextColor
+import org.fossify.home.extensions.getAppDrawerBackgroundColor
+import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.launchApp
 import org.fossify.home.extensions.setupDrawerBackground
 import org.fossify.home.helpers.ITEM_TYPE_ICON
@@ -56,7 +56,7 @@ class AllAppsFragment(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        setupDrawerBackground()
+        setupDrawerBackground(context.getAppDrawerBackgroundColor())
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -222,8 +222,8 @@ class AllAppsFragment(
             }
         })
 
-        setupDrawerBackground()
-        getAdapter()?.updateTextColor(context.getThemeAwareTextColor(context.getProperTextColor()))
+        setupDrawerBackground(context.getAppDrawerBackgroundColor())
+        getAdapter()?.updateTextColor(context.getAppDrawerTextColor())
 
         binding.searchBar.beVisibleIf(context.config.showSearchBar)
         binding.searchBar.requireToolbar().beGone()
