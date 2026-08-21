@@ -98,11 +98,12 @@ object IconPackHelper {
         return drawable
     }
 
-    // gives an app's real (stock) icon a shape/backdrop consistent with the chosen icon theme,
-    // for apps the icon pack doesn't explicitly provide an icon for. Icon packs' own iconback/
-    // iconmask/iconupon assets are designed to backdrop a transparent adaptive-icon foreground,
-    // not a fully opaque stock icon, so reusing them here produces overlapping/blank results -
-    // a plain, user-chosen shape behind the stock icon is what actually looks consistent.
+    // gives any icon - whether it's the app's real stock icon or one supplied by an icon pack -
+    // a shape/backdrop consistent with the chosen icon theme, since icon packs don't always shape
+    // every icon consistently themselves. Icon packs' own iconback/iconmask/iconupon assets are
+    // designed to backdrop a transparent adaptive-icon foreground, not a fully opaque stock icon,
+    // so reusing them here produces overlapping/blank results - a plain, user-chosen shape behind
+    // the icon is what actually looks consistent.
     //
     // the pixel-level analysis this does is too expensive to redo on every app-list refresh, so
     // results are cached by component + shape; pass a stable packageName/activityName as

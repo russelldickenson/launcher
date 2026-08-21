@@ -72,19 +72,17 @@ fun Context.getDrawableForPackageName(packageName: String): Drawable? {
 
 fun Context.getAppIcon(packageName: String, activityName: String, systemDrawable: () -> Drawable? = { null }): Drawable? {
     val iconPack = config.iconPack
-    if (iconPack.isNotEmpty()) {
-        val packIcon = IconPackHelper.getIcon(this, iconPack, packageName, activityName)
-        if (packIcon != null) {
-            return packIcon
-        }
-    }
+    val icon = if (iconPack.isNotEmpty()) {
+        IconPackHelper.getIcon(this, iconPack, packageName, activityName)
+    } else {
+        null
+    } ?: systemDrawable() ?: getDrawableForPackageName(packageName)
 
-    if (config.maskUnthemedIcons) {
-        val originalIcon = systemDrawable() ?: getDrawableForPackageName(packageName)
-        return originalIcon?.let { IconPackHelper.getShapedIcon(this, "$packageName/$activityName", it, config.iconShape) }
+    return if (config.maskUnthemedIcons && icon != null) {
+        IconPackHelper.getShapedIcon(this, "$packageName/$activityName", icon, config.iconShape)
+    } else {
+        icon
     }
-
-    return systemDrawable() ?: getDrawableForPackageName(packageName)
 }
 
 fun Context.getInitialCellSize(

@@ -23,7 +23,7 @@
     <string name="appearance_settings">Appearance</string>
     <string name="icons_subsection">Icons</string>
     <string name="icon_preview_label">Launcher</string>
-    <string name="mask_unthemed_icons">Match icon shape for other icons</string>
+    <string name="mask_unthemed_icons">Match icon shape for all icons</string>
     <string name="icon_shape">Icon shape</string>
     <string name="icon_shape_circle">Circle</string>
     <string name="icon_shape_squircle">Squircle</string>
