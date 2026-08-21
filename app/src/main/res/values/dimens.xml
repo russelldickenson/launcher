@@ -12,5 +12,7 @@
     <dimen name="min_folder_view_height">200dp</dimen>
     <dimen name="max_folder_view_height">500dp</dimen>
     <dimen name="menu_icon_size">24dp</dimen>
-    <dimen name="icon_preview_size">64dp</dimen>
+    <!-- matches launcher_icon_size so the Appearance > Icons preview shows the icon at the same
+         size the app drawer will actually render it at (before the user's own scale setting) -->
+    <dimen name="icon_preview_size">@dimen/launcher_icon_size</dimen>
 </resources>
