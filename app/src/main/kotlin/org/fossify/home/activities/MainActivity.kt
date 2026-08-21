@@ -74,6 +74,7 @@ import org.fossify.home.databinding.AllAppsFragmentBinding
 import org.fossify.home.databinding.WidgetsFragmentBinding
 import org.fossify.home.dialogs.RenameItemDialog
 import org.fossify.home.extensions.config
+import org.fossify.home.extensions.getAppDrawerBackgroundColor
 import org.fossify.home.extensions.getAppIcon
 import org.fossify.home.extensions.getLabel
 import org.fossify.home.extensions.handleGridItemPopupMenu
@@ -260,7 +261,7 @@ class MainActivity : SimpleActivity(), FlingListener {
         refreshWallpaperSupportsDarkText()
         Handler(Looper.getMainLooper()).postDelayed({
             if (isAllAppsFragmentExpanded() || isWidgetsFragmentExpanded()) {
-                updateStatusBarIcons(getProperBackgroundColor())
+                updateStatusBarIcons(getExpandedFragmentBackgroundColor())
             } else {
                 updateStatusBarIcons()
             }
@@ -676,7 +677,7 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
 
         Handler(Looper.getMainLooper()).postDelayed({
-            updateStatusBarIcons(getProperBackgroundColor())
+            updateStatusBarIcons(getExpandedFragmentBackgroundColor())
         }, animationDuration)
     }
 
@@ -1388,6 +1389,13 @@ class MainActivity : SimpleActivity(), FlingListener {
             component = componentName
             startActivityForResult(this, REQUEST_CREATE_SHORTCUT)
         }
+    }
+
+    // the app drawer's background is forced dark in system light mode (getAppDrawerBackgroundColor()),
+    // independent of the theme's own getProperBackgroundColor() - status bar icon color needs to
+    // follow whichever background is actually showing, or icons can end up invisible against it
+    private fun getExpandedFragmentBackgroundColor(): Int {
+        return if (isAllAppsFragmentExpanded()) getAppDrawerBackgroundColor() else getProperBackgroundColor()
     }
 
     private fun updateStatusBarIcons(backgroundColor: Int? = null) {
