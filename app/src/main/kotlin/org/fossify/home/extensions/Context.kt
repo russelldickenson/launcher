@@ -17,8 +17,10 @@ import android.util.Size
 import androidx.annotation.RequiresApi
 import org.fossify.commons.extensions.getProperBackgroundColor
 import org.fossify.commons.extensions.getProperTextColor
+import org.fossify.commons.extensions.realScreenSize
 import org.fossify.commons.helpers.isQPlus
 import org.fossify.commons.helpers.isSPlus
+import org.fossify.home.R
 import org.fossify.home.databases.AppsDatabase
 import org.fossify.home.helpers.Config
 import org.fossify.home.helpers.IconPackHelper
@@ -136,6 +138,17 @@ fun Context.getAppDrawerBackgroundColor(): Int {
 
 fun Context.getAppDrawerTextColor(): Int {
     return if (isSystemInLightMode()) Color.WHITE else getThemeAwareTextColor(getProperTextColor())
+}
+
+// what an unscaled (100%) app drawer icon should measure, in px: the same size an icon would
+// naturally get at the default column count, using the same side margin the home screen uses for
+// its own icons - shared by LaunchersAdapter (the real drawer icons) and IconSettingsActivity
+// (the preview), so the two can't drift out of sync with each other again
+fun Context.getReferenceDrawerIconWidth(): Float {
+    val referenceColumnCount = resources.getInteger(R.integer.portrait_column_count)
+    val referenceCellWidth = realScreenSize.x / referenceColumnCount
+    val referenceMargin = resources.getDimension(R.dimen.icon_side_margin)
+    return referenceCellWidth - 2 * referenceMargin
 }
 
 fun Context.isDefaultLauncher(): Boolean {

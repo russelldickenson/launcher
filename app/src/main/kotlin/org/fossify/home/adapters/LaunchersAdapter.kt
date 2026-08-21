@@ -25,6 +25,7 @@ import org.fossify.home.databinding.ItemLauncherLabelBinding
 import org.fossify.home.extensions.animateScale
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppDrawerTextColor
+import org.fossify.home.extensions.getReferenceDrawerIconWidth
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
 import org.fossify.home.helpers.NotificationCache
@@ -81,8 +82,7 @@ class LaunchersAdapter(
         // the grid cell (and thus the icon, which is forced square to match its width) grows or
         // shrinks with the column count, so counteract that to keep the icon at its intended,
         // column-count-independent size, then apply the user's own scale on top of it
-        val targetIconWidth = activity.resources.getDimension(R.dimen.launcher_icon_size) *
-            (activity.config.drawerIconScalePercent / 100f)
+        val targetIconWidth = activity.getReferenceDrawerIconWidth() * (activity.config.drawerIconScalePercent / 100f)
         iconScaleFactor = targetIconWidth / iconWidth
     }
 
