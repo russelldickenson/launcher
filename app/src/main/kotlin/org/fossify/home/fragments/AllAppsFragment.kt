@@ -40,6 +40,7 @@ class AllAppsFragment(
 
     private var lastIconScalePercent = -1
     private var lastLabelFontSize = -1
+    private var lastLabelMaxLines = -1
 
     private var launchers = emptyList<AppLauncher>()
 
@@ -75,13 +76,15 @@ class AllAppsFragment(
             (binding.allAppsGrid.adapter as LaunchersAdapter).notifyDataSetChanged()
         } else if (
             lastIconScalePercent != context.config.drawerIconScalePercent ||
-            lastLabelFontSize != context.config.drawerLabelFontSize
+            lastLabelFontSize != context.config.drawerLabelFontSize ||
+            lastLabelMaxLines != context.config.drawerLabelMaxLines
         ) {
             getAdapter()?.refreshIconAndLabelSettings()
         }
 
         lastIconScalePercent = context.config.drawerIconScalePercent
         lastLabelFontSize = context.config.drawerLabelFontSize
+        lastLabelMaxLines = context.config.drawerLabelMaxLines
     }
 
     fun onConfigurationChanged() {

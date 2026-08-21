@@ -2,13 +2,18 @@ package org.fossify.home.activities
 
 import android.content.Intent
 import android.os.Bundle
+import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.updateTextColors
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
+import org.fossify.commons.models.RadioItem
 import org.fossify.home.databinding.ActivityDrawerSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.darkenTextForLightMode
+import org.fossify.home.helpers.DRAWER_LABEL_MAX_LINES_STEP
+import org.fossify.home.helpers.MAX_DRAWER_LABEL_MAX_LINES
+import org.fossify.home.helpers.MIN_DRAWER_LABEL_MAX_LINES
 
 class DrawerSettingsActivity : SimpleActivity() {
 
@@ -30,7 +35,7 @@ class DrawerSettingsActivity : SimpleActivity() {
         setupOpenKeyboardOnAppDrawer()
         setupCloseAppDrawerOnOtherAppOpen()
         setupShowDrawerAppLabels()
-        setupMultilineDrawerAppLabels()
+        setupDrawerLabelMaxLines()
         setupManageHiddenIcons()
         updateTextColors(binding.drawerSettingsHolder)
         darkenTextForLightMode(binding.drawerSettingsHolder)
@@ -71,11 +76,24 @@ class DrawerSettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupMultilineDrawerAppLabels() {
-        binding.settingsMultilineDrawerAppLabels.isChecked = config.multilineDrawerAppLabels
-        binding.settingsMultilineDrawerAppLabelsHolder.setOnClickListener {
-            binding.settingsMultilineDrawerAppLabels.toggle()
-            config.multilineDrawerAppLabels = binding.settingsMultilineDrawerAppLabels.isChecked
+    private fun setupDrawerLabelMaxLines() {
+        val currentMaxLines = config.drawerLabelMaxLines
+        binding.settingsDrawerLabelMaxLines.text = currentMaxLines.toString()
+        binding.settingsDrawerLabelMaxLinesHolder.setOnClickListener {
+            val items = ArrayList<RadioItem>()
+            var lines = MIN_DRAWER_LABEL_MAX_LINES
+            while (lines <= MAX_DRAWER_LABEL_MAX_LINES) {
+                items.add(RadioItem(id = lines, title = lines.toString()))
+                lines += DRAWER_LABEL_MAX_LINES_STEP
+            }
+
+            RadioGroupDialog(this, items, currentMaxLines) {
+                val newMaxLines = it as Int
+                if (currentMaxLines != newMaxLines) {
+                    config.drawerLabelMaxLines = newMaxLines
+                    setupDrawerLabelMaxLines()
+                }
+            }
         }
     }
 

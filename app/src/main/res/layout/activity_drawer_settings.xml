@@ -100,18 +100,26 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/settings_multiline_drawer_app_labels_holder"
-                style="@style/SettingsHolderSwitchStyle"
+                android:id="@+id/settings_drawer_label_max_lines_holder"
+                style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyMaterialSwitch
-                    android:id="@+id/settings_multiline_drawer_app_labels"
-                    style="@style/SettingsSwitchStyle"
-                    android:layout_width="match_parent"
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_drawer_label_max_lines_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/multiline_app_labels" />
+                    android:text="@string/drawer_label_max_lines" />
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_drawer_label_max_lines"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_drawer_label_max_lines_label"
+                    tools:text="2" />
 
             </RelativeLayout>
 

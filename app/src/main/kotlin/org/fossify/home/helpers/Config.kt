@@ -45,9 +45,10 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getBoolean(SHOW_HOME_APP_LABELS, true)
         set(showHomeAppLabels) = prefs.edit().putBoolean(SHOW_HOME_APP_LABELS, showHomeAppLabels).apply()
 
-    var multilineDrawerAppLabels: Boolean
-        get() = prefs.getBoolean(MULTILINE_DRAWER_APP_LABELS, true)
-        set(multilineDrawerAppLabels) = prefs.edit().putBoolean(MULTILINE_DRAWER_APP_LABELS, multilineDrawerAppLabels).apply()
+    var drawerLabelMaxLines: Int
+        get() = prefs.getInt(DRAWER_LABEL_MAX_LINES, DEFAULT_DRAWER_LABEL_MAX_LINES)
+            .coerceIn(MIN_DRAWER_LABEL_MAX_LINES, MAX_DRAWER_LABEL_MAX_LINES)
+        set(drawerLabelMaxLines) = prefs.edit().putInt(DRAWER_LABEL_MAX_LINES, drawerLabelMaxLines).apply()
 
     var drawerIconScalePercent: Int
         get() = prefs.getInt(DRAWER_ICON_SCALE_PERCENT, DEFAULT_DRAWER_ICON_SCALE_PERCENT)
