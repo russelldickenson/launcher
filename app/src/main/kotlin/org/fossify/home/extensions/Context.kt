@@ -15,6 +15,7 @@ import android.os.Process
 import android.provider.Settings
 import android.util.Size
 import androidx.annotation.RequiresApi
+import androidx.core.graphics.ColorUtils
 import org.fossify.commons.extensions.getProperBackgroundColor
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.realScreenSize
@@ -136,6 +137,12 @@ fun Context.getAppDrawerBackgroundColor(): Int {
 
 fun Context.getAppDrawerTextColor(): Int {
     return if (isSystemInLightMode()) Color.WHITE else getThemeAwareTextColor(getProperTextColor())
+}
+
+// a border color for the app drawer's search field, slightly lighter than the drawer's own
+// background so the field still reads as a distinct control against it
+fun Context.getAppDrawerSearchBorderColor(): Int {
+    return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), Color.WHITE, 0.25f)
 }
 
 // what an unscaled (100%) app drawer icon should measure, in px: the same size an icon would

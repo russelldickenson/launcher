@@ -2,9 +2,11 @@ package org.fossify.home.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
+import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import org.fossify.commons.extensions.beGone
@@ -18,6 +20,7 @@ import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.databinding.AllAppsFragmentBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppDrawerBackgroundColor
+import org.fossify.home.extensions.getAppDrawerSearchBorderColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.launchApp
 import org.fossify.home.extensions.setupDrawerBackground
@@ -229,6 +232,7 @@ class AllAppsFragment(
         binding.searchBar.requireToolbar().beGone()
         binding.searchBar.updateColors()
         binding.searchBar.setupMenu()
+        setupSearchBarColors()
 
         binding.searchBar.onSearchTextChangedListener = {
             submitList(launchers)
@@ -243,6 +247,35 @@ class AllAppsFragment(
                 else -> false
             }
         }
+    }
+
+    // MySearchMenu's own updateColors() fills the search field from the theme's primary color,
+    // which stays light in system light mode even though the drawer around it is forced dark -
+    // restyle it to match the drawer instead: dark fill, a lighter border so it still reads as a
+    // distinct control, and the same text color used for app labels
+    private fun setupSearchBarColors() {
+        val backgroundColor = context.getAppDrawerBackgroundColor()
+        val borderColor = context.getAppDrawerSearchBorderColor()
+        val textColor = context.getAppDrawerTextColor()
+
+        // MySearchMenu itself (an AppBarLayout) carries its own default surface-color background
+        // behind the search field's padding, independent of toolbarContainer's - match it to the
+        // drawer too so no light strip shows around the field
+        binding.searchBar.setBackgroundColor(backgroundColor)
+
+        val searchBinding = binding.searchBar.binding
+        val cornerRadius = resources.getDimension(org.fossify.commons.R.dimen.material_dialog_corner_radius)
+        val borderWidth = resources.getDimensionPixelSize(org.fossify.commons.R.dimen.one_dp)
+        searchBinding.toolbarContainer.background = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            this.cornerRadius = cornerRadius
+            setColor(backgroundColor)
+            setStroke(borderWidth, borderColor)
+        }
+
+        searchBinding.topToolbarSearch.setTextColor(textColor)
+        searchBinding.topToolbarSearch.setHintTextColor(ColorUtils.setAlphaComponent(textColor, 150))
+        searchBinding.topToolbarSearchIcon.setColorFilter(textColor)
     }
 
     private fun showNoResultsPlaceholderIfNeeded() {
