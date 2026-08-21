@@ -9,9 +9,7 @@ import org.fossify.commons.models.RadioItem
 import org.fossify.home.databinding.ActivityHomeScreenSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.darkenTextForLightMode
-import org.fossify.home.helpers.MAX_COLUMN_COUNT
 import org.fossify.home.helpers.MAX_ROW_COUNT
-import org.fossify.home.helpers.MIN_COLUMN_COUNT
 import org.fossify.home.helpers.MIN_ROW_COUNT
 
 class HomeScreenSettingsActivity : SimpleActivity() {
@@ -31,7 +29,6 @@ class HomeScreenSettingsActivity : SimpleActivity() {
         setupTopAppBar(binding.homeScreenSettingsAppbar, NavigationIcon.Arrow)
 
         setupHomeRowCount()
-        setupHomeColumnCount()
         setupShowHomeAppLabels()
         setupMultilineHomeAppLabels()
         updateTextColors(binding.homeScreenSettingsHolder)
@@ -59,32 +56,6 @@ class HomeScreenSettingsActivity : SimpleActivity() {
                 if (currentRowCount != newRowCount) {
                     config.homeRowCount = newRowCount
                     setupHomeRowCount()
-                }
-            }
-        }
-    }
-
-    private fun setupHomeColumnCount() {
-        val currentColumnCount = config.homeColumnCount
-        binding.settingsHomeScreenColumnCount.text = currentColumnCount.toString()
-        binding.settingsHomeScreenColumnCountHolder.setOnClickListener {
-            val items = ArrayList<RadioItem>()
-            for (i in MIN_COLUMN_COUNT..MAX_COLUMN_COUNT) {
-                items.add(
-                    RadioItem(
-                        id = i,
-                        title = resources.getQuantityString(
-                            org.fossify.commons.R.plurals.column_counts, i, i
-                        )
-                    )
-                )
-            }
-
-            RadioGroupDialog(this, items, currentColumnCount) {
-                val newColumnCount = it as Int
-                if (currentColumnCount != newColumnCount) {
-                    config.homeColumnCount = newColumnCount
-                    setupHomeColumnCount()
                 }
             }
         }

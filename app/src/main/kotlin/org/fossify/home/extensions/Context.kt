@@ -73,15 +73,11 @@ fun Context.getAppIcon(packageName: String, activityName: String, systemDrawable
         if (packIcon != null) {
             return packIcon
         }
+    }
 
-        if (config.maskUnthemedIcons) {
-            val originalIcon = systemDrawable() ?: getDrawableForPackageName(packageName)
-            return if (originalIcon != null) {
-                IconPackHelper.getMaskedIcon(this, iconPack, originalIcon) ?: originalIcon
-            } else {
-                null
-            }
-        }
+    if (config.maskUnthemedIcons) {
+        val originalIcon = systemDrawable() ?: getDrawableForPackageName(packageName)
+        return originalIcon?.let { IconPackHelper.getShapedIcon(this, "$packageName/$activityName", it, config.iconShape) }
     }
 
     return systemDrawable() ?: getDrawableForPackageName(packageName)

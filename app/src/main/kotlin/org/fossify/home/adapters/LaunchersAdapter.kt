@@ -41,6 +41,7 @@ class LaunchersAdapter(
 
     private var textColor = activity.getThemeAwareTextColor(activity.getProperTextColor())
     private var iconPadding = 0
+    private var iconScaleFactor = 1f
 
     init {
         setHasStableIds(true)
@@ -77,6 +78,13 @@ class LaunchersAdapter(
         val currentColumnCount = activity.config.drawerColumnCount
         val iconWidth = activity.realScreenSize.x / currentColumnCount
         iconPadding = (iconWidth * 0.1f).toInt()
+
+        // the grid cell (and thus the icon, which is forced square to match its width) grows or
+        // shrinks with the column count, so counteract that to keep the icon at its intended,
+        // column-count-independent size, then apply the user's own scale on top of it
+        val targetIconWidth = activity.resources.getDimension(R.dimen.launcher_icon_size) *
+            (activity.config.drawerIconScalePercent / 100f)
+        iconScaleFactor = targetIconWidth / iconWidth
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -85,6 +93,12 @@ class LaunchersAdapter(
             textColor = newTextColor
             notifyDataSetChanged()
         }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun refreshIconAndLabelSettings() {
+        calculateIconWidth()
+        notifyDataSetChanged()
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -96,7 +110,10 @@ class LaunchersAdapter(
                 binding.launcherLabel.setTextColor(textColor)
                 binding.launcherLabel.maxLines = if (activity.config.multilineDrawerAppLabels) 2 else 1
                 binding.launcherLabel.beVisibleIf(activity.config.showDrawerAppLabels)
+                binding.launcherLabel.textSize = activity.config.drawerLabelFontSize.toFloat()
                 binding.launcherIcon.setPadding(iconPadding, iconPadding, iconPadding, 0)
+                binding.launcherIcon.scaleX = iconScaleFactor
+                binding.launcherIcon.scaleY = iconScaleFactor
 
                 binding.launcherPinBadge.beVisibleIf(launcher.pinned)
                 (binding.launcherPinBadge.layoutParams as RelativeLayout.LayoutParams).apply {

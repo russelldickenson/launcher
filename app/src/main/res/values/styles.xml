@@ -8,6 +8,16 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- commons' SettingsTextLabelStyle/SettingsSwitchStyle default to normal_text_size (14sp),
+         which reads too small for this app's settings rows - bump both by 2sp -->
+    <style name="SettingsTextLabelStyle" parent="@style/SettingsTextLabelStyle">
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="SettingsSwitchStyle" parent="@style/SettingsSwitchStyle">
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <style name="LauncherTheme" parent="Theme.Material3.Dark.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowShowWallpaper">true</item>

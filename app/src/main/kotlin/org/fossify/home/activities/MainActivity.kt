@@ -297,7 +297,7 @@ class MainActivity : SimpleActivity(), FlingListener {
 
         binding.homeScreenGrid.root.resizeGrid(
             newRowCount = config.homeRowCount,
-            newColumnCount = config.homeColumnCount
+            newColumnCount = config.drawerColumnCount
         )
         binding.homeScreenGrid.root.updateColors()
         binding.homeScreenGrid.root.updateNotificationBadgeColor()
@@ -583,7 +583,7 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
 
         for (page in 0 until maxPage) {
-            for (checkedYCell in 0 until config.homeColumnCount) {
+            for (checkedYCell in 0 until config.drawerColumnCount) {
                 for (checkedXCell in 0 until config.homeRowCount - 1) {
                     val wantedCell = Triple(page, checkedXCell, checkedYCell)
                     if (!occupiedCells.contains(wantedCell)) {

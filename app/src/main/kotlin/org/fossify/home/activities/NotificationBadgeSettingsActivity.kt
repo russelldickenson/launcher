@@ -3,6 +3,7 @@ package org.fossify.home.activities
 import android.os.Bundle
 import org.fossify.commons.dialogs.ColorPickerDialog
 import org.fossify.commons.dialogs.RadioGroupDialog
+import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.toast
 import org.fossify.commons.extensions.updateTextColors
 import org.fossify.commons.extensions.viewBinding
@@ -38,6 +39,7 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
         setupNotificationBadgeColor()
         setupNotificationBadgeShape()
         setupShowNotificationCount()
+        updateNotificationBadgePreview()
         updateTextColors(binding.notificationBadgeSettingsHolder)
         darkenTextForLightMode(binding.notificationBadgeSettingsHolder)
     }
@@ -63,6 +65,7 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
                 if (wasPositivePressed) {
                     config.notificationBadgeColor = newColor
                     updateNotificationBadgeColorSwatch()
+                    updateNotificationBadgePreview()
                 }
             }
         }
@@ -86,6 +89,7 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
                 if (config.notificationBadgeShape != newShape) {
                     config.notificationBadgeShape = newShape
                     updateNotificationBadgeShapeLabel()
+                    updateNotificationBadgePreview()
                 }
             }
         }
@@ -104,6 +108,23 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
         binding.settingsShowNotificationCountHolder.setOnClickListener {
             binding.settingsShowNotificationCount.toggle()
             config.showNotificationCount = binding.settingsShowNotificationCount.isChecked
+            updateNotificationBadgePreview()
+        }
+    }
+
+    private fun updateNotificationBadgePreview() {
+        val badgeDrawableRes = when (config.notificationBadgeShape) {
+            NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE -> R.drawable.notification_badge_rounded_square
+            NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE -> R.drawable.notification_badge_sharp_square
+            else -> R.drawable.notification_badge_dot
+        }
+
+        binding.settingsNotificationBadgePreview.apply {
+            setBackgroundResource(badgeDrawableRes)
+            background?.mutate()?.setTint(config.notificationBadgeColor)
+            setTextColor(config.notificationBadgeColor.getContrastColor())
+            // a representative sample count, just to preview how digits look on the badge
+            text = if (config.showNotificationCount) "3" else ""
         }
     }
 }

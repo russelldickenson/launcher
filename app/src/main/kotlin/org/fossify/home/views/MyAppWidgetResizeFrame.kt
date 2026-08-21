@@ -77,7 +77,7 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
             it.provider.className == gridItem.className
         } ?: return
 
-        minResizeWidthCells = Math.min(context.config.homeColumnCount, context.getCellCount(providerInfo.minResizeWidth))
+        minResizeWidthCells = Math.min(context.config.drawerColumnCount, context.getCellCount(providerInfo.minResizeWidth))
         minResizeHeightCells = Math.min(context.config.homeRowCount, context.getCellCount(providerInfo.minResizeHeight))
         redrawFrame()
 
@@ -168,7 +168,7 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
                         }
 
                         val wantedTopCellY = roundToClosestMultiplyOfNumber(wantedTop - sideMargins.top, cellHeight) / cellHeight
-                        var areAllCellsFree = true
+                        var areAllCellsFree = wantedTopCellY >= 0
                         for (xCell in cellsRect.left..cellsRect.right) {
                             for (yCell in wantedTopCellY..cellsRect.bottom) {
                                 if (occupiedCells.contains(Pair(xCell, yCell))) {
@@ -284,7 +284,7 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
                         DRAGGING_TOP -> {
                             val wantedTop = roundToClosestMultiplyOfNumber(frameRect.top - sideMargins.top, cellHeight)
                             val wantedTopCellY = wantedTop / cellHeight
-                            var areAllCellsFree = true
+                            var areAllCellsFree = wantedTopCellY >= 0
                             for (xCell in cellsRect.left..cellsRect.right) {
                                 for (yCell in wantedTopCellY..cellsRect.bottom) {
                                     if (occupiedCells.contains(Pair(xCell, yCell))) {
@@ -357,7 +357,7 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
     }
 
     private fun roundToClosestMultiplyOfNumber(value: Int, number: Int): Int {
-        return number * (Math.round(Math.abs(value / number.toDouble()))).toInt()
+        return number * Math.round(value / number.toDouble()).toInt()
     }
 
     override fun onDraw(canvas: Canvas) {

@@ -36,6 +36,30 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/settings_notification_badge_preview_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="24dp"
+                android:paddingBottom="24dp">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_notification_badge_preview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/notification_badge_dot"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
+                    android:minWidth="24dp"
+                    android:minHeight="24dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textSize="16sp"
+                    tools:text="9+" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/settings_show_notification_badges_holder"
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"

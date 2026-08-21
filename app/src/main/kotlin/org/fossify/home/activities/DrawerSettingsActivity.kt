@@ -1,16 +1,14 @@
 package org.fossify.home.activities
 
+import android.content.Intent
 import android.os.Bundle
-import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.updateTextColors
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
-import org.fossify.commons.models.RadioItem
 import org.fossify.home.databinding.ActivityDrawerSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.darkenTextForLightMode
-import org.fossify.home.helpers.MAX_COLUMN_COUNT
 
 class DrawerSettingsActivity : SimpleActivity() {
 
@@ -28,40 +26,14 @@ class DrawerSettingsActivity : SimpleActivity() {
         super.onResume()
         setupTopAppBar(binding.drawerSettingsAppbar, NavigationIcon.Arrow)
 
-        setupDrawerColumnCount()
         setupDrawerSearchBar()
         setupOpenKeyboardOnAppDrawer()
         setupCloseAppDrawerOnOtherAppOpen()
         setupShowDrawerAppLabels()
         setupMultilineDrawerAppLabels()
+        setupManageHiddenIcons()
         updateTextColors(binding.drawerSettingsHolder)
         darkenTextForLightMode(binding.drawerSettingsHolder)
-    }
-
-    private fun setupDrawerColumnCount() {
-        val currentColumnCount = config.drawerColumnCount
-        binding.settingsDrawerColumnCount.text = currentColumnCount.toString()
-        binding.settingsDrawerColumnCountHolder.setOnClickListener {
-            val items = ArrayList<RadioItem>()
-            for (i in 1..MAX_COLUMN_COUNT) {
-                items.add(
-                    RadioItem(
-                        id = i,
-                        title = resources.getQuantityString(
-                            org.fossify.commons.R.plurals.column_counts, i, i
-                        )
-                    )
-                )
-            }
-
-            RadioGroupDialog(this, items, currentColumnCount) {
-                val newColumnCount = it as Int
-                if (currentColumnCount != newColumnCount) {
-                    config.drawerColumnCount = newColumnCount
-                    setupDrawerColumnCount()
-                }
-            }
-        }
     }
 
     private fun setupDrawerSearchBar() {
@@ -104,6 +76,12 @@ class DrawerSettingsActivity : SimpleActivity() {
         binding.settingsMultilineDrawerAppLabelsHolder.setOnClickListener {
             binding.settingsMultilineDrawerAppLabels.toggle()
             config.multilineDrawerAppLabels = binding.settingsMultilineDrawerAppLabels.isChecked
+        }
+    }
+
+    private fun setupManageHiddenIcons() {
+        binding.settingsManageHiddenIconsHolder.setOnClickListener {
+            startActivity(Intent(this, HiddenIconsActivity::class.java))
         }
     }
 }

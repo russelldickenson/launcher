@@ -84,6 +84,12 @@
             android:parentActivityName=".activities.SettingsActivity" />
 
         <activity
+            android:name=".activities.IconSettingsActivity"
+            android:exported="false"
+            android:label="@string/icons_subsection"
+            android:parentActivityName=".activities.SettingsActivity" />
+
+        <activity
             android:name=".activities.DrawerSettingsActivity"
             android:exported="false"
             android:label="@string/app_drawer_settings"

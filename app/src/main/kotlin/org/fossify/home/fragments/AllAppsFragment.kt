@@ -35,6 +35,9 @@ class AllAppsFragment(
     var touchDownY = -1
     var ignoreTouches = false
 
+    private var lastIconScalePercent = -1
+    private var lastLabelFontSize = -1
+
     private var launchers = emptyList<AppLauncher>()
 
     @SuppressLint("ClickableViewAccessibility")
@@ -67,7 +70,15 @@ class AllAppsFragment(
             onConfigurationChanged()
             // Force redraw due to changed item size
             (binding.allAppsGrid.adapter as LaunchersAdapter).notifyDataSetChanged()
+        } else if (
+            lastIconScalePercent != context.config.drawerIconScalePercent ||
+            lastLabelFontSize != context.config.drawerLabelFontSize
+        ) {
+            getAdapter()?.refreshIconAndLabelSettings()
         }
+
+        lastIconScalePercent = context.config.drawerIconScalePercent
+        lastLabelFontSize = context.config.drawerLabelFontSize
     }
 
     fun onConfigurationChanged() {

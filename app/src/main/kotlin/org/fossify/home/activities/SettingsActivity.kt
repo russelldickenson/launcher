@@ -22,7 +22,8 @@ import org.fossify.home.R
 import org.fossify.home.databinding.ActivitySettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.darkenTextForLightMode
-import org.fossify.home.helpers.IconPackHelper
+import org.fossify.home.helpers.MAX_DRAWER_COLUMN_COUNT
+import org.fossify.home.helpers.MIN_DRAWER_COLUMN_COUNT
 import org.fossify.home.receivers.LockDeviceAdminReceiver
 import java.util.Locale
 import kotlin.system.exitProcess
@@ -30,6 +31,7 @@ import kotlin.system.exitProcess
 class SettingsActivity : SimpleActivity() {
 
     private val binding by viewBinding(ActivitySettingsBinding::inflate)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -47,9 +49,8 @@ class SettingsActivity : SimpleActivity() {
         setupUseEnglish()
         setupDoubleTapToLock()
         setupLanguage()
-        setupManageHiddenIcons()
-        setupIconPack()
-        setupMaskUnthemedIcons()
+        setupIconSettings()
+        setupColumnCount()
         setupNotificationBadgeSettings()
         setupDrawerSettings()
         setupHomeScreenSettings()
@@ -124,47 +125,36 @@ class SettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupIconPack() {
-        updateIconPackLabel()
-        binding.settingsIconPackHolder.setOnClickListener {
-            val iconPacks = IconPackHelper.getInstalledIconPacks(this)
+    private fun setupIconSettings() {
+        binding.settingsIconSettingsChevron.applyColorFilter(getProperTextColor())
+        binding.settingsIconSettingsHolder.setOnClickListener {
+            startActivity(Intent(this, IconSettingsActivity::class.java))
+        }
+    }
+
+    private fun setupColumnCount() {
+        val currentColumnCount = config.drawerColumnCount
+        binding.settingsColumnCount.text = currentColumnCount.toString()
+        binding.settingsColumnCountHolder.setOnClickListener {
             val items = ArrayList<RadioItem>()
-            items.add(RadioItem(0, getString(org.fossify.commons.R.string.system_default)))
-            iconPacks.forEachIndexed { index, iconPack ->
-                items.add(RadioItem(index + 1, iconPack.name))
+            for (i in MIN_DRAWER_COLUMN_COUNT..MAX_DRAWER_COLUMN_COUNT) {
+                items.add(
+                    RadioItem(
+                        id = i,
+                        title = resources.getQuantityString(
+                            org.fossify.commons.R.plurals.column_counts, i, i
+                        )
+                    )
+                )
             }
 
-            val selectedIndex = iconPacks.indexOfFirst { it.packageName == config.iconPack }
-            val currentId = if (selectedIndex == -1) 0 else selectedIndex + 1
-
-            RadioGroupDialog(this, items, currentId) {
-                val selectedId = it as Int
-                val newIconPack = if (selectedId == 0) "" else iconPacks[selectedId - 1].packageName
-                if (config.iconPack != newIconPack) {
-                    config.iconPack = newIconPack
-                    IconPackHelper.clearCache()
-                    exitProcess(0)
+            RadioGroupDialog(this, items, currentColumnCount) {
+                val newColumnCount = it as Int
+                if (currentColumnCount != newColumnCount) {
+                    config.drawerColumnCount = newColumnCount
+                    setupColumnCount()
                 }
             }
-        }
-    }
-
-    private fun updateIconPackLabel() {
-        val iconPack = config.iconPack
-        binding.settingsIconPack.text = if (iconPack.isEmpty()) {
-            getString(org.fossify.commons.R.string.system_default)
-        } else {
-            IconPackHelper.getInstalledIconPacks(this).firstOrNull { it.packageName == iconPack }?.name
-                ?: getString(org.fossify.commons.R.string.system_default)
-        }
-    }
-
-    private fun setupMaskUnthemedIcons() {
-        binding.settingsMaskUnthemedIcons.isChecked = config.maskUnthemedIcons
-        binding.settingsMaskUnthemedIconsHolder.setOnClickListener {
-            binding.settingsMaskUnthemedIcons.toggle()
-            config.maskUnthemedIcons = binding.settingsMaskUnthemedIcons.isChecked
-            exitProcess(0)
         }
     }
 
@@ -195,12 +185,6 @@ class SettingsActivity : SimpleActivity() {
         binding.settingsLanguageHolder.beVisibleIf(isTiramisuPlus())
         binding.settingsLanguageHolder.setOnClickListener {
             launchChangeAppLanguageIntent()
-        }
-    }
-
-    private fun setupManageHiddenIcons() {
-        binding.settingsManageHiddenIconsHolder.setOnClickListener {
-            startActivity(Intent(this, HiddenIconsActivity::class.java))
         }
     }
 

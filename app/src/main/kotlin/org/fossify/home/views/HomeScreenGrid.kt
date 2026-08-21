@@ -83,7 +83,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 
     private lateinit var binding: HomeScreenGridBinding
-    private var columnCount = context.config.homeColumnCount
+    private var columnCount = context.config.drawerColumnCount
     private var rowCount = context.config.homeRowCount
     private var pageIndicatorsYPos = 0
     private val cells = mutableMapOf<Point, Rect>()
@@ -1699,6 +1699,10 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                 || right >= columnCount
                 || (!docked && (top >= rowCount - 1 || bottom >= rowCount - 1))
                 || (type == ITEM_TYPE_WIDGET && (bottom - top > rowCount - 1 || right - left > columnCount - 1))
+                // a resize can leave a widget with an inverted or negative range (e.g. dragging
+                // its top edge above row 0), which collapses its rendered size to zero/negative
+                // instead of actually going out of bounds
+                || (type == ITEM_TYPE_WIDGET && (top > bottom || left > right || top < 0 || left < 0))
                 )
     }
 

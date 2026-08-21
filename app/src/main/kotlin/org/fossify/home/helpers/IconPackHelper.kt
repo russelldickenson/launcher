@@ -1,20 +1,30 @@
 package org.fossify.home.helpers
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
+import android.graphics.Path
+import android.graphics.RectF
+import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
+import org.fossify.commons.extensions.getProperBackgroundColor
+import org.fossify.commons.extensions.getProperPrimaryColor
 import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserFactory
 
 object IconPackHelper {
+    private const val TAG = "IconPackHelper"
+
     private val THEME_INTENT_ACTIONS = arrayOf(
         "com.novalauncher.THEME",
         "com.anddoes.launcher.THEME",
@@ -22,22 +32,22 @@ object IconPackHelper {
         "org.adw.launcher.THEMES"
     )
 
-    private const val DEFAULT_MASKED_ICON_SIZE = 108
+    private const val SHAPED_ICON_SIZE = 108
 
-    data class MaskInfo(
-        val backNames: List<String>,
-        val maskName: String?,
-        val uponName: String?,
-        val scale: Float
-    )
+    // how much of the badge an icon whose own silhouette already matches the chosen shape
+    // should fill - just enough inset that it doesn't touch the very edge
+    private const val SHAPE_MATCH_FILL_FRACTION = 0.94f
 
     private data class ParsedAppFilter(
-        val componentMap: Map<String, String>,
-        val maskInfo: MaskInfo?
+        val componentMap: Map<ComponentName, String>
     )
 
     // packageName -> parsed appfilter.xml contents
     private val appFilterCache = HashMap<String, ParsedAppFilter>()
+
+    // "packageName/activityName:shape" -> the shaped icon built for it, so the pixel-level
+    // normalization/edge-color analysis in getShapedIcon() isn't redone on every app-list refresh
+    private val shapedIconCache = HashMap<String, Drawable>()
 
     fun getInstalledIconPacks(context: Context): List<IconPack> {
         val packageManager = context.packageManager
@@ -64,6 +74,7 @@ object IconPackHelper {
             }
         }
 
+        Log.d(TAG, "getInstalledIconPacks: found ${packages.size} pack(s): ${packages.keys}")
         return packages.values.sortedBy { it.name.lowercase() }
     }
 
@@ -73,33 +84,145 @@ object IconPackHelper {
         }
 
         val appFilter = getParsedAppFilter(context, iconPackPackageName)
-        val componentKey = "ComponentInfo{$packageName/$activityName}"
-        val drawableName = appFilter.componentMap[componentKey] ?: return null
-        return loadDrawable(context, iconPackPackageName, drawableName)
-    }
-
-    // composites an app's real icon onto the icon pack's themed back/mask/upon shapes,
-    // for apps the icon pack doesn't explicitly map
-    fun getMaskedIcon(context: Context, iconPackPackageName: String, originalIcon: Drawable): Drawable? {
-        if (iconPackPackageName.isEmpty()) {
+        val componentKey = ComponentName(packageName, activityName)
+        val drawableName = appFilter.componentMap[componentKey]
+        if (drawableName == null) {
+            Log.d(TAG, "getIcon: no appfilter entry for $componentKey in $iconPackPackageName (${appFilter.componentMap.size} entries parsed)")
             return null
         }
 
-        val maskInfo = getParsedAppFilter(context, iconPackPackageName).maskInfo ?: return null
-        val backName = maskInfo.backNames.firstOrNull() ?: return null
-        val backDrawable = loadDrawable(context, iconPackPackageName, backName) ?: return null
-        val maskDrawable = maskInfo.maskName?.let { loadDrawable(context, iconPackPackageName, it) }
-        val uponDrawable = maskInfo.uponName?.let { loadDrawable(context, iconPackPackageName, it) }
-
-        return try {
-            compositeIcon(context, originalIcon, backDrawable, maskDrawable, uponDrawable, maskInfo.scale)
-        } catch (e: Exception) {
-            null
+        val drawable = loadDrawable(context, iconPackPackageName, drawableName)
+        if (drawable == null) {
+            Log.d(TAG, "getIcon: appfilter mapped $componentKey -> drawable '$drawableName', but it could not be loaded from $iconPackPackageName")
         }
+        return drawable
+    }
+
+    // gives an app's real (stock) icon a shape/backdrop consistent with the chosen icon theme,
+    // for apps the icon pack doesn't explicitly provide an icon for. Icon packs' own iconback/
+    // iconmask/iconupon assets are designed to backdrop a transparent adaptive-icon foreground,
+    // not a fully opaque stock icon, so reusing them here produces overlapping/blank results -
+    // a plain, user-chosen shape behind the stock icon is what actually looks consistent.
+    //
+    // the pixel-level analysis this does is too expensive to redo on every app-list refresh, so
+    // results are cached by component + shape; pass a stable packageName/activityName as
+    // componentKey so repeated calls for the same app can hit the cache
+    fun getShapedIcon(context: Context, componentKey: String, originalIcon: Drawable, shape: Int): Drawable {
+        val cacheKey = "$componentKey:$shape"
+        shapedIconCache[cacheKey]?.let { return it }
+
+        val shapedIcon = buildShapedIcon(context, originalIcon, shape)
+        shapedIconCache[cacheKey] = shapedIcon
+        return shapedIcon
+    }
+
+    private fun buildShapedIcon(context: Context, originalIcon: Drawable, shape: Int): Drawable {
+        val size = SHAPED_ICON_SIZE
+        val result = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(result)
+        val path = getShapePath(shape, size.toFloat())
+
+        val iconSize = if (originalIcon is AdaptiveIconDrawable) {
+            // already designed to fill its own bounds and be clipped externally, no normalization needed
+            size
+        } else {
+            // legacy icons vary wildly in how much of their canvas is actual "ink" (a small round
+            // logo vs. a full-bleed square icon), so a flat scale either over- or under-fills the
+            // badge depending on the icon - normalize based on the icon's own visible silhouette instead
+            val normalized = IconNormalizer.analyze(
+                drawable = originalIcon,
+                analysisSize = size * 2,
+                normalizedShapePath = getShapePath(shape, 1f)
+            )
+            if (normalized.matchesShape) {
+                // the icon's own silhouette already closely matches the chosen shape - a small
+                // inset is enough, no need to shrink it further onto a visible colored backdrop
+                (size * SHAPE_MATCH_FILL_FRACTION).toInt()
+            } else {
+                (size * normalized.scale).toInt()
+            }.coerceAtLeast(1)
+        }
+
+        val offset = (size - iconSize) / 2
+        val iconBitmap = originalIcon.toBitmap(width = iconSize, height = iconSize, config = Bitmap.Config.ARGB_8888)
+
+        // fill the gap between the icon and the shape with a color sampled from the icon's own
+        // edge pixels, so it reads as a natural bleed instead of an unrelated colored halo
+        val themedFallback = ColorUtils.blendARGB(context.getProperBackgroundColor(), context.getProperPrimaryColor(), 0.18f)
+        val backgroundColor = getEdgeColor(iconBitmap) ?: themedFallback
+        canvas.drawPath(path, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = backgroundColor })
+
+        canvas.save()
+        canvas.clipPath(path)
+        canvas.drawBitmap(iconBitmap, offset.toFloat(), offset.toFloat(), null)
+        canvas.restore()
+
+        return BitmapDrawable(context.resources, result)
+    }
+
+    // averages the color of the icon's own outer border pixels (alpha-weighted, so mostly-
+    // transparent edge pixels barely count), to use as the backdrop color behind it. Returns
+    // null if the border is fully transparent (e.g. a small centered glyph), so the caller can
+    // fall back to a themed color instead
+    private fun getEdgeColor(bitmap: Bitmap): Int? {
+        val width = bitmap.width
+        val height = bitmap.height
+        if (width == 0 || height == 0) {
+            return null
+        }
+
+        var totalR = 0L
+        var totalG = 0L
+        var totalB = 0L
+        var totalWeight = 0L
+
+        fun accumulate(x: Int, y: Int) {
+            val pixel = bitmap.getPixel(x, y)
+            val alpha = Color.alpha(pixel)
+            if (alpha <= 0) {
+                return
+            }
+            totalR += Color.red(pixel) * alpha
+            totalG += Color.green(pixel) * alpha
+            totalB += Color.blue(pixel) * alpha
+            totalWeight += alpha
+        }
+
+        for (x in 0 until width) {
+            accumulate(x, 0)
+            accumulate(x, height - 1)
+        }
+        for (y in 0 until height) {
+            accumulate(0, y)
+            accumulate(width - 1, y)
+        }
+
+        if (totalWeight == 0L) {
+            return null
+        }
+
+        return Color.rgb(
+            (totalR / totalWeight).toInt(),
+            (totalG / totalWeight).toInt(),
+            (totalB / totalWeight).toInt()
+        )
+    }
+
+    private fun getShapePath(shape: Int, size: Float): Path {
+        val path = Path()
+        when (shape) {
+            ICON_SHAPE_SQUARE -> path.addRect(0f, 0f, size, size, Path.Direction.CW)
+            ICON_SHAPE_ROUNDED_SQUARE -> path.addRoundRect(RectF(0f, 0f, size, size), size * 0.22f, size * 0.22f, Path.Direction.CW)
+            // approximated with an extra-rounded rect - a true superellipse isn't worth the complexity here
+            ICON_SHAPE_SQUIRCLE -> path.addRoundRect(RectF(0f, 0f, size, size), size * 0.4f, size * 0.4f, Path.Direction.CW)
+            else -> path.addCircle(size / 2f, size / 2f, size / 2f, Path.Direction.CW)
+        }
+        return path
     }
 
     fun clearCache() {
         appFilterCache.clear()
+        shapedIconCache.clear()
     }
 
     private fun getParsedAppFilter(context: Context, iconPackPackageName: String): ParsedAppFilter {
@@ -122,84 +245,19 @@ object IconPackHelper {
         }
     }
 
-    private fun compositeIcon(
-        context: Context,
-        original: Drawable,
-        back: Drawable,
-        mask: Drawable?,
-        upon: Drawable?,
-        scale: Float
-    ): Drawable {
-        val size = maxOf(back.intrinsicWidth, back.intrinsicHeight, 1).let {
-            if (it <= 1) DEFAULT_MASKED_ICON_SIZE else it
-        }
-
-        val result = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(result)
-
-        back.setBounds(0, 0, size, size)
-        back.draw(canvas)
-
-        val iconSize = (size * scale).toInt().coerceAtLeast(1)
-        val offset = (size - iconSize) / 2
-        val iconBitmap = original.toBitmap(width = iconSize, height = iconSize, config = Bitmap.Config.ARGB_8888)
-
-        if (mask != null) {
-            val maskedIcon = Bitmap.createBitmap(iconSize, iconSize, Bitmap.Config.ARGB_8888)
-            val maskCanvas = Canvas(maskedIcon)
-            maskCanvas.drawBitmap(iconBitmap, 0f, 0f, null)
-
-            val maskBitmap = mask.toBitmap(width = iconSize, height = iconSize, config = Bitmap.Config.ARGB_8888)
-            val maskPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
-            }
-            maskCanvas.drawBitmap(maskBitmap, 0f, 0f, maskPaint)
-            canvas.drawBitmap(maskedIcon, offset.toFloat(), offset.toFloat(), null)
-        } else {
-            canvas.drawBitmap(iconBitmap, offset.toFloat(), offset.toFloat(), null)
-        }
-
-        if (upon != null) {
-            upon.setBounds(0, 0, size, size)
-            upon.draw(canvas)
-        }
-
-        return BitmapDrawable(context.resources, result)
-    }
-
     private fun parseAppFilter(context: Context, iconPackPackageName: String): ParsedAppFilter {
-        val componentMap = HashMap<String, String>()
-        var backNames: List<String> = emptyList()
-        var maskName: String? = null
-        var uponName: String? = null
-        var scale = 1f
+        val componentMap = HashMap<ComponentName, String>()
 
         try {
-            val resources = context.packageManager.getResourcesForApplication(iconPackPackageName)
-            val xmlResId = resources.getIdentifier("appfilter", "xml", iconPackPackageName)
-            if (xmlResId == 0) {
-                return ParsedAppFilter(componentMap, null)
-            }
-
-            val parser = resources.getXml(xmlResId)
+            val parser = getAppFilterParser(context, iconPackPackageName) ?: return ParsedAppFilter(componentMap)
             var eventType = parser.eventType
             while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    when (parser.name) {
-                        "item" -> {
-                            val component = parser.getAttributeValue(null, "component")
-                            val drawable = parser.getAttributeValue(null, "drawable")
-                            if (component != null && drawable != null) {
-                                componentMap[component] = drawable
-                            }
-                        }
-
-                        "iconback" -> backNames = getIndexedAttributeValues(parser, "img")
-                        "iconmask" -> maskName = parser.getAttributeValue(null, "img1")
-                        "iconupon" -> uponName = parser.getAttributeValue(null, "img1")
-                        "scale" -> {
-                            parser.getAttributeValue(null, "factor")?.toFloatOrNull()?.let { scale = it }
-                        }
+                if (eventType == XmlPullParser.START_TAG && parser.name == "item") {
+                    val component = parser.getAttributeValue(null, "component")
+                    val drawable = parser.getAttributeValue(null, "drawable")
+                    val parsedComponent = component?.let { parseComponent(it) }
+                    if (parsedComponent != null && drawable != null) {
+                        componentMap[parsedComponent] = drawable
                     }
                 }
                 eventType = parser.next()
@@ -207,23 +265,51 @@ object IconPackHelper {
         } catch (e: Exception) {
         }
 
-        val maskInfo = if (backNames.isNotEmpty()) {
-            MaskInfo(backNames = backNames, maskName = maskName, uponName = uponName, scale = scale)
-        } else {
-            null
-        }
+        Log.d(TAG, "parseAppFilter: $iconPackPackageName -> ${componentMap.size} component(s)")
 
-        return ParsedAppFilter(componentMap, maskInfo)
+        return ParsedAppFilter(componentMap)
     }
 
-    private fun getIndexedAttributeValues(parser: XmlPullParser, attributePrefix: String): List<String> {
-        val values = ArrayList<String>()
-        var index = 1
-        while (true) {
-            val value = parser.getAttributeValue(null, "$attributePrefix$index") ?: break
-            values.add(value)
-            index++
+    // most icon packs ship appfilter.xml as a compiled res/xml resource, but some only
+    // include it as a raw asset file
+    private fun getAppFilterParser(context: Context, iconPackPackageName: String): XmlPullParser? {
+        try {
+            val resources = context.packageManager.getResourcesForApplication(iconPackPackageName)
+            val xmlResId = resources.getIdentifier("appfilter", "xml", iconPackPackageName)
+            if (xmlResId != 0) {
+                Log.d(TAG, "getAppFilterParser: $iconPackPackageName -> using compiled res/xml/appfilter.xml")
+                return resources.getXml(xmlResId)
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "getAppFilterParser: failed reading compiled resources for $iconPackPackageName", e)
         }
-        return values
+
+        return try {
+            val packageContext = context.createPackageContext(iconPackPackageName, 0)
+            val inputStream = packageContext.assets.open("appfilter.xml")
+            val parser = XmlPullParserFactory.newInstance().newPullParser()
+            parser.setInput(inputStream, null)
+            Log.d(TAG, "getAppFilterParser: $iconPackPackageName -> using assets/appfilter.xml")
+            parser
+        } catch (e: Exception) {
+            Log.w(TAG, "getAppFilterParser: no appfilter.xml found for $iconPackPackageName (neither compiled resource nor asset)", e)
+            null
+        }
+    }
+
+    // parses a component attribute value into a ComponentName, stripping the optional
+    // "ComponentInfo{...}" wrapper some icon packs include. ComponentName.unflattenFromString
+    // already handles the ".ClassName" shorthand for activities in the app's own package.
+    private fun parseComponent(raw: String): ComponentName? {
+        var value = raw.trim()
+        if (value.startsWith("ComponentInfo{") && value.endsWith("}")) {
+            value = value.substring("ComponentInfo{".length, value.length - 1).trim()
+        }
+
+        return try {
+            ComponentName.unflattenFromString(value)
+        } catch (e: Exception) {
+            null
+        }
     }
 }
