@@ -145,15 +145,16 @@ fun Context.getAppDrawerSearchBorderColor(): Int {
     return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), Color.WHITE, 0.25f)
 }
 
-// what an unscaled (100%) app drawer icon should measure, in px: the same size an icon would
-// naturally get at the default column count, using the same side margin the home screen uses for
-// its own icons - shared by LaunchersAdapter (the real drawer icons) and IconSettingsActivity
-// (the preview), so the two can't drift out of sync with each other again
-fun Context.getReferenceDrawerIconWidth(): Float {
+// what an unscaled (100%) icon should measure, in px, shared by the app drawer and the home
+// screen so both render icons at the same physical size at 100% - based on the screen width at
+// the default column count, independent of whatever column/row count is actually in use, so icon
+// scaling never drifts with grid density. The x1.2 accounts for a deliberate rescale: what used
+// to be labelled "120%" is now the "100%" baseline, per user request
+fun Context.getReferenceIconWidth(): Float {
     val referenceColumnCount = resources.getInteger(R.integer.portrait_column_count)
     val referenceCellWidth = realScreenSize.x / referenceColumnCount
     val referenceMargin = resources.getDimension(R.dimen.icon_side_margin)
-    return referenceCellWidth - 2 * referenceMargin
+    return (referenceCellWidth - 2 * referenceMargin) * 1.2f
 }
 
 fun Context.isDefaultLauncher(): Boolean {

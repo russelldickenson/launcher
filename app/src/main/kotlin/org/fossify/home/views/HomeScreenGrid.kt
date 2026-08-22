@@ -58,6 +58,7 @@ import org.fossify.home.activities.MainActivity
 import org.fossify.home.databinding.HomeScreenGridBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppIcon
+import org.fossify.home.extensions.getReferenceIconWidth
 import org.fossify.home.extensions.getThemeAwareTextColor
 import org.fossify.home.extensions.homeScreenGridItemsDB
 import org.fossify.home.helpers.ITEM_TYPE_FOLDER
@@ -1552,7 +1553,9 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         } else {
             0
         }
-        iconSize = ((min(cellWidth, cellHeight) - 2 * iconMargin) * (context.config.homeIconScalePercent / 100f)).toInt()
+        // icon size comes from the shared, column/row-count-independent reference width, not from
+        // the actual current cell size, so it never drifts with the grid's row/column count
+        iconSize = (context.getReferenceIconWidth() * (context.config.homeIconScalePercent / 100f)).toInt()
         pageIndicatorsYPos = (rowCount - 1) * cellHeight + extraYMargin
         for (i in 0 until columnCount) {
             for (j in 0 until rowCount) {

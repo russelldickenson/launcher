@@ -13,7 +13,7 @@ import org.fossify.home.extensions.config
 import org.fossify.home.extensions.darkenTextForLightMode
 import org.fossify.home.extensions.getAppIcon
 import org.fossify.home.extensions.getDrawableForPackageName
-import org.fossify.home.extensions.getReferenceDrawerIconWidth
+import org.fossify.home.extensions.getReferenceIconWidth
 import org.fossify.home.helpers.DRAWER_ICON_SCALE_PERCENT_STEP
 import org.fossify.home.helpers.DRAWER_LABEL_FONT_SIZE_STEP
 import org.fossify.home.helpers.ICON_SHAPE_CIRCLE
@@ -212,7 +212,7 @@ class IconSettingsActivity : SimpleActivity() {
     // to know a larger icon needs more room, and the icon ends up clipped by whatever space
     // happens to be there
     private fun updateIconPreviewScale() {
-        val scaledSize = (getReferenceDrawerIconWidth() * (config.drawerIconScalePercent / 100f)).toInt()
+        val scaledSize = (getReferenceIconWidth() * (config.drawerIconScalePercent / 100f)).toInt()
         val params = binding.settingsIconPreview.layoutParams
         params.width = scaledSize
         params.height = scaledSize

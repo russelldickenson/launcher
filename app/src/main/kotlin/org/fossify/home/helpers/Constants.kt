@@ -46,14 +46,14 @@ const val MAX_ROW_COUNT = 15
 const val MIN_DRAWER_COLUMN_COUNT = 3
 const val MAX_DRAWER_COLUMN_COUNT = 6
 
-// drawer icon scale, in percent
-const val MIN_DRAWER_ICON_SCALE_PERCENT = 80
+// drawer icon scale, in percent - "100%" is what used to be labelled "120%" before the rescale
+const val MIN_DRAWER_ICON_SCALE_PERCENT = 90
 const val MAX_DRAWER_ICON_SCALE_PERCENT = 120
 const val DRAWER_ICON_SCALE_PERCENT_STEP = 10
 const val DEFAULT_DRAWER_ICON_SCALE_PERCENT = 100
 
-// home screen icon scale, in percent
-const val MIN_HOME_ICON_SCALE_PERCENT = 80
+// home screen icon scale, in percent - "100%" is what used to be labelled "120%" before the rescale
+const val MIN_HOME_ICON_SCALE_PERCENT = 90
 const val MAX_HOME_ICON_SCALE_PERCENT = 120
 const val HOME_ICON_SCALE_PERCENT_STEP = 10
 const val DEFAULT_HOME_ICON_SCALE_PERCENT = 100

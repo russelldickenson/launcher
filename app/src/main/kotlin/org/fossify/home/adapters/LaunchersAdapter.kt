@@ -25,7 +25,7 @@ import org.fossify.home.databinding.ItemLauncherLabelBinding
 import org.fossify.home.extensions.animateScale
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppDrawerTextColor
-import org.fossify.home.extensions.getReferenceDrawerIconWidth
+import org.fossify.home.extensions.getReferenceIconWidth
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
 import org.fossify.home.helpers.NotificationCache
@@ -41,7 +41,7 @@ class LaunchersAdapter(
 
     private var textColor = activity.getAppDrawerTextColor()
     private var iconPadding = 0
-    private var iconScaleFactor = 1f
+    private var targetIconWidth = 0
 
     init {
         setHasStableIds(true)
@@ -74,16 +74,12 @@ class LaunchersAdapter(
         super.submitList(list)
     }
 
+    // icon size is set directly on the icon's own layoutParams (not a scaleX/scaleY transform),
+    // so it never depends on the grid cell's size - and thus never depends on column count -
+    // regardless of any imprecision in estimating the cell's actual on-screen size
     private fun calculateIconWidth() {
-        val currentColumnCount = activity.config.drawerColumnCount
-        val iconWidth = activity.realScreenSize.x / currentColumnCount
-        iconPadding = (iconWidth * 0.1f).toInt()
-
-        // the grid cell (and thus the icon, which is forced square to match its width) grows or
-        // shrinks with the column count, so counteract that to keep the icon at its intended,
-        // column-count-independent size, then apply the user's own scale on top of it
-        val targetIconWidth = activity.getReferenceDrawerIconWidth() * (activity.config.drawerIconScalePercent / 100f)
-        iconScaleFactor = targetIconWidth / iconWidth
+        targetIconWidth = (activity.getReferenceIconWidth() * (activity.config.drawerIconScalePercent / 100f)).toInt()
+        iconPadding = (targetIconWidth * 0.1f).toInt()
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -111,8 +107,10 @@ class LaunchersAdapter(
                 binding.launcherLabel.beVisibleIf(activity.config.showDrawerAppLabels)
                 binding.launcherLabel.textSize = activity.config.drawerLabelFontSize.toFloat()
                 binding.launcherIcon.setPadding(iconPadding, iconPadding, iconPadding, 0)
-                binding.launcherIcon.scaleX = iconScaleFactor
-                binding.launcherIcon.scaleY = iconScaleFactor
+                binding.launcherIcon.layoutParams = binding.launcherIcon.layoutParams.apply {
+                    width = targetIconWidth
+                    height = targetIconWidth
+                }
 
                 binding.launcherPinBadge.beVisibleIf(launcher.pinned)
                 (binding.launcherPinBadge.layoutParams as RelativeLayout.LayoutParams).apply {
