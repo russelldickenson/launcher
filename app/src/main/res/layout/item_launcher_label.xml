@@ -14,7 +14,7 @@
         android:id="@+id/launcher_icon"
         android:layout_width="match_parent"
         android:layout_height="@dimen/launcher_icon_size"
-        android:layout_gravity="center_horizontal|bottom" />
+        android:layout_centerHorizontal="true" />
 
     <ImageView
         android:id="@+id/launcher_pin_badge"
