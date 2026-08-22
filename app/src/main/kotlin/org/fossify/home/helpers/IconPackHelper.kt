@@ -38,6 +38,10 @@ object IconPackHelper {
     // should fill - just enough inset that it doesn't touch the very edge
     private const val SHAPE_MATCH_FILL_FRACTION = 0.94f
 
+    // alpha at which a pixel counts as part of the icon rather than its transparent margin -
+    // above zero so a faint antialiasing fringe isn't mistaken for the icon's real edge
+    private const val MIN_EDGE_ALPHA = 32
+
     private data class ParsedAppFilter(
         val componentMap: Map<ComponentName, String>
     )
@@ -161,10 +165,13 @@ object IconPackHelper {
         return BitmapDrawable(context.resources, result)
     }
 
-    // averages the color of the icon's own outer border pixels (alpha-weighted, so mostly-
-    // transparent edge pixels barely count), to use as the backdrop color behind it. Returns
-    // null if the border is fully transparent (e.g. a small centered glyph), so the caller can
-    // fall back to a themed color instead
+    // averages the color of the icon's own silhouette edge (alpha-weighted), to use as the
+    // backdrop color filling the gap between the icon and the chosen shape. Walks inward along
+    // every row and column and takes the first pixel that is actually part of the icon, rather
+    // than reading the canvas' outer border - most icons sit on a transparent margin, and the
+    // ones normalization shrinks the most (so the ones with the largest gap to fill) have the
+    // widest margin of all, whose border pixels carry no color at all. Returns null only if the
+    // icon is entirely transparent, so the caller can fall back to a themed color instead
     private fun getEdgeColor(bitmap: Bitmap): Int? {
         val width = bitmap.width
         val height = bitmap.height
@@ -172,30 +179,42 @@ object IconPackHelper {
             return null
         }
 
+        val pixels = IntArray(width * height)
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+
         var totalR = 0L
         var totalG = 0L
         var totalB = 0L
         var totalWeight = 0L
 
-        fun accumulate(x: Int, y: Int) {
-            val pixel = bitmap.getPixel(x, y)
+        fun accumulate(index: Int) {
+            val pixel = pixels[index]
             val alpha = Color.alpha(pixel)
-            if (alpha <= 0) {
-                return
-            }
             totalR += Color.red(pixel) * alpha
             totalG += Color.green(pixel) * alpha
             totalB += Color.blue(pixel) * alpha
             totalWeight += alpha
         }
 
-        for (x in 0 until width) {
-            accumulate(x, 0)
-            accumulate(x, height - 1)
-        }
+        fun isInk(index: Int) = Color.alpha(pixels[index]) >= MIN_EDGE_ALPHA
+
         for (y in 0 until height) {
-            accumulate(0, y)
-            accumulate(width - 1, y)
+            val rowStart = y * width
+            val left = (0 until width).firstOrNull { isInk(rowStart + it) } ?: continue
+            val right = (width - 1 downTo 0).first { isInk(rowStart + it) }
+            accumulate(rowStart + left)
+            if (right != left) {
+                accumulate(rowStart + right)
+            }
+        }
+
+        for (x in 0 until width) {
+            val top = (0 until height).firstOrNull { isInk(it * width + x) } ?: continue
+            val bottom = (height - 1 downTo 0).first { isInk(it * width + x) }
+            accumulate(top * width + x)
+            if (bottom != top) {
+                accumulate(bottom * width + x)
+            }
         }
 
         if (totalWeight == 0L) {
