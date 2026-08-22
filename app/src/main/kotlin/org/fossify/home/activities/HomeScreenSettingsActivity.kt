@@ -10,9 +10,12 @@ import org.fossify.home.databinding.ActivityHomeScreenSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.darkenTextForLightMode
 import org.fossify.home.helpers.HOME_ICON_SCALE_PERCENT_STEP
+import org.fossify.home.helpers.HOME_LABEL_MAX_LINES_STEP
 import org.fossify.home.helpers.MAX_HOME_ICON_SCALE_PERCENT
+import org.fossify.home.helpers.MAX_HOME_LABEL_MAX_LINES
 import org.fossify.home.helpers.MAX_ROW_COUNT
 import org.fossify.home.helpers.MIN_HOME_ICON_SCALE_PERCENT
+import org.fossify.home.helpers.MIN_HOME_LABEL_MAX_LINES
 import org.fossify.home.helpers.MIN_ROW_COUNT
 
 class HomeScreenSettingsActivity : SimpleActivity() {
@@ -33,8 +36,7 @@ class HomeScreenSettingsActivity : SimpleActivity() {
 
         setupHomeRowCount()
         setupHomeIconScale()
-        setupShowHomeAppLabels()
-        setupMultilineHomeAppLabels()
+        setupHomeLabelMaxLines()
         updateTextColors(binding.homeScreenSettingsHolder)
         darkenTextForLightMode(binding.homeScreenSettingsHolder)
     }
@@ -86,19 +88,24 @@ class HomeScreenSettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupShowHomeAppLabels() {
-        binding.settingsShowHomeAppLabels.isChecked = config.showHomeAppLabels
-        binding.settingsShowHomeAppLabelsHolder.setOnClickListener {
-            binding.settingsShowHomeAppLabels.toggle()
-            config.showHomeAppLabels = binding.settingsShowHomeAppLabels.isChecked
-        }
-    }
+    private fun setupHomeLabelMaxLines() {
+        val currentMaxLines = config.homeLabelMaxLines
+        binding.settingsHomeLabelMaxLines.text = currentMaxLines.toString()
+        binding.settingsHomeLabelMaxLinesHolder.setOnClickListener {
+            val items = ArrayList<RadioItem>()
+            var lines = MIN_HOME_LABEL_MAX_LINES
+            while (lines <= MAX_HOME_LABEL_MAX_LINES) {
+                items.add(RadioItem(id = lines, title = lines.toString()))
+                lines += HOME_LABEL_MAX_LINES_STEP
+            }
 
-    private fun setupMultilineHomeAppLabels() {
-        binding.settingsMultilineHomeAppLabels.isChecked = config.multilineHomeAppLabels
-        binding.settingsMultilineHomeAppLabelsHolder.setOnClickListener {
-            binding.settingsMultilineHomeAppLabels.toggle()
-            config.multilineHomeAppLabels = binding.settingsMultilineHomeAppLabels.isChecked
+            RadioGroupDialog(this, items, currentMaxLines) {
+                val newMaxLines = it as Int
+                if (currentMaxLines != newMaxLines) {
+                    config.homeLabelMaxLines = newMaxLines
+                    setupHomeLabelMaxLines()
+                }
+            }
         }
     }
 }

@@ -80,6 +80,10 @@ class LaunchersAdapter(
     private fun calculateIconWidth() {
         targetIconWidth = (activity.getReferenceIconWidth() * (activity.config.drawerIconScalePercent / 100f)).toInt()
         iconPadding = (targetIconWidth * 0.1f).toInt()
+        android.util.Log.e(
+            "IconSizeDebug",
+            "DRAWER targetIconWidth=$targetIconWidth scale=${activity.config.drawerIconScalePercent}"
+        )
     }
 
     @SuppressLint("NotifyDataSetChanged")

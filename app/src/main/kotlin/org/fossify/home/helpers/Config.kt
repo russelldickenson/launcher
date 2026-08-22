@@ -37,18 +37,20 @@ class Config(context: Context) : BaseConfig(context) {
         set(autoShowKeyboardInAppDrawer) = prefs.edit()
             .putBoolean(AUTO_SHOW_KEYBOARD_IN_APP_DRAWER, autoShowKeyboardInAppDrawer).apply()
 
+    // despite the name, this now drives whether labels show on both the app drawer and the home screen
     var showDrawerAppLabels: Boolean
         get() = prefs.getBoolean(SHOW_DRAWER_APP_LABELS, true)
         set(showDrawerAppLabels) = prefs.edit().putBoolean(SHOW_DRAWER_APP_LABELS, showDrawerAppLabels).apply()
-
-    var showHomeAppLabels: Boolean
-        get() = prefs.getBoolean(SHOW_HOME_APP_LABELS, true)
-        set(showHomeAppLabels) = prefs.edit().putBoolean(SHOW_HOME_APP_LABELS, showHomeAppLabels).apply()
 
     var drawerLabelMaxLines: Int
         get() = prefs.getInt(DRAWER_LABEL_MAX_LINES, DEFAULT_DRAWER_LABEL_MAX_LINES)
             .coerceIn(MIN_DRAWER_LABEL_MAX_LINES, MAX_DRAWER_LABEL_MAX_LINES)
         set(drawerLabelMaxLines) = prefs.edit().putInt(DRAWER_LABEL_MAX_LINES, drawerLabelMaxLines).apply()
+
+    var homeLabelMaxLines: Int
+        get() = prefs.getInt(HOME_LABEL_MAX_LINES, DEFAULT_HOME_LABEL_MAX_LINES)
+            .coerceIn(MIN_HOME_LABEL_MAX_LINES, MAX_HOME_LABEL_MAX_LINES)
+        set(homeLabelMaxLines) = prefs.edit().putInt(HOME_LABEL_MAX_LINES, homeLabelMaxLines).apply()
 
     var drawerIconScalePercent: Int
         get() = prefs.getInt(DRAWER_ICON_SCALE_PERCENT, DEFAULT_DRAWER_ICON_SCALE_PERCENT)
@@ -64,10 +66,6 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getInt(DRAWER_LABEL_FONT_SIZE, DEFAULT_DRAWER_LABEL_FONT_SIZE)
             .coerceIn(MIN_DRAWER_LABEL_FONT_SIZE, MAX_DRAWER_LABEL_FONT_SIZE)
         set(drawerLabelFontSize) = prefs.edit().putInt(DRAWER_LABEL_FONT_SIZE, drawerLabelFontSize).apply()
-
-    var multilineHomeAppLabels: Boolean
-        get() = prefs.getBoolean(MULTILINE_HOME_APP_LABELS, true)
-        set(multilineHomeAppLabels) = prefs.edit().putBoolean(MULTILINE_HOME_APP_LABELS, multilineHomeAppLabels).apply()
 
     // empty string means the device's default icons are used
     var iconPack: String
