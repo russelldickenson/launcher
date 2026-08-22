@@ -17,6 +17,7 @@ const val SHOW_HOME_APP_LABELS = "show_home_app_labels"
 const val DRAWER_LABEL_MAX_LINES = "drawer_label_max_lines"
 const val MULTILINE_HOME_APP_LABELS = "multiline_home_app_labels"
 const val DRAWER_ICON_SCALE_PERCENT = "drawer_icon_scale_percent"
+const val HOME_ICON_SCALE_PERCENT = "home_icon_scale_percent"
 const val DRAWER_LABEL_FONT_SIZE = "drawer_label_font_size"
 const val ICON_PACK = "icon_pack"
 const val MASK_UNTHEMED_ICONS = "mask_unthemed_icons"
@@ -50,6 +51,12 @@ const val MIN_DRAWER_ICON_SCALE_PERCENT = 80
 const val MAX_DRAWER_ICON_SCALE_PERCENT = 120
 const val DRAWER_ICON_SCALE_PERCENT_STEP = 10
 const val DEFAULT_DRAWER_ICON_SCALE_PERCENT = 100
+
+// home screen icon scale, in percent
+const val MIN_HOME_ICON_SCALE_PERCENT = 80
+const val MAX_HOME_ICON_SCALE_PERCENT = 120
+const val HOME_ICON_SCALE_PERCENT_STEP = 10
+const val DEFAULT_HOME_ICON_SCALE_PERCENT = 100
 
 // drawer label font size, in sp
 const val MIN_DRAWER_LABEL_FONT_SIZE = 12

@@ -301,6 +301,15 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         }
     }
 
+    // icon scale alone doesn't change the row/column count resizeGrid() checks, so it needs its
+    // own lightweight way to force fillCellSizes() to recompute iconSize - unlike resizeGrid(),
+    // this must not touch widgets, since a scale-only change isn't a real grid dimension change
+    fun refreshIconScale() {
+        cells.clear()
+        gridCenters.clear()
+        redrawGrid()
+    }
+
     fun updateColors() {
         folderTitleTextPaint.color = context.getThemeAwareTextColor(context.getProperTextColor())
         contrastTextPaint.color = context.getThemeAwareTextColor(context.getProperTextColor())
@@ -1543,7 +1552,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         } else {
             0
         }
-        iconSize = min(cellWidth, cellHeight) - 2 * iconMargin
+        iconSize = ((min(cellWidth, cellHeight) - 2 * iconMargin) * (context.config.homeIconScalePercent / 100f)).toInt()
         pageIndicatorsYPos = (rowCount - 1) * cellHeight + extraYMargin
         for (i in 0 until columnCount) {
             for (j in 0 until rowCount) {

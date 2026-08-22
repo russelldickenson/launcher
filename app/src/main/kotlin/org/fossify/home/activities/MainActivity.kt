@@ -128,6 +128,7 @@ class MainActivity : SimpleActivity(), FlingListener {
     private var mActionOnAddShortcut:
             ((shortcutId: String, label: String, icon: Drawable) -> Unit)? = null
     private var wasJustPaused: Boolean = false
+    private var lastHomeIconScalePercent = -1
 
     private var wallpaperColorChangeListener: OnColorsChangedListener? = null
     private var wallpaperSupportsDarkText: Boolean? = null
@@ -300,6 +301,10 @@ class MainActivity : SimpleActivity(), FlingListener {
             newRowCount = config.homeRowCount,
             newColumnCount = config.drawerColumnCount
         )
+        if (lastHomeIconScalePercent != config.homeIconScalePercent) {
+            binding.homeScreenGrid.root.refreshIconScale()
+        }
+        lastHomeIconScalePercent = config.homeIconScalePercent
         binding.homeScreenGrid.root.updateColors()
         binding.homeScreenGrid.root.updateNotificationBadgeColor()
         binding.allAppsFragment.root.onResume()

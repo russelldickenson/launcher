@@ -9,7 +9,10 @@ import org.fossify.commons.models.RadioItem
 import org.fossify.home.databinding.ActivityHomeScreenSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.darkenTextForLightMode
+import org.fossify.home.helpers.HOME_ICON_SCALE_PERCENT_STEP
+import org.fossify.home.helpers.MAX_HOME_ICON_SCALE_PERCENT
 import org.fossify.home.helpers.MAX_ROW_COUNT
+import org.fossify.home.helpers.MIN_HOME_ICON_SCALE_PERCENT
 import org.fossify.home.helpers.MIN_ROW_COUNT
 
 class HomeScreenSettingsActivity : SimpleActivity() {
@@ -29,6 +32,7 @@ class HomeScreenSettingsActivity : SimpleActivity() {
         setupTopAppBar(binding.homeScreenSettingsAppbar, NavigationIcon.Arrow)
 
         setupHomeRowCount()
+        setupHomeIconScale()
         setupShowHomeAppLabels()
         setupMultilineHomeAppLabels()
         updateTextColors(binding.homeScreenSettingsHolder)
@@ -56,6 +60,27 @@ class HomeScreenSettingsActivity : SimpleActivity() {
                 if (currentRowCount != newRowCount) {
                     config.homeRowCount = newRowCount
                     setupHomeRowCount()
+                }
+            }
+        }
+    }
+
+    private fun setupHomeIconScale() {
+        val currentScale = config.homeIconScalePercent
+        binding.settingsHomeIconScale.text = "$currentScale%"
+        binding.settingsHomeIconScaleHolder.setOnClickListener {
+            val items = ArrayList<RadioItem>()
+            var scale = MIN_HOME_ICON_SCALE_PERCENT
+            while (scale <= MAX_HOME_ICON_SCALE_PERCENT) {
+                items.add(RadioItem(id = scale, title = "$scale%"))
+                scale += HOME_ICON_SCALE_PERCENT_STEP
+            }
+
+            RadioGroupDialog(this, items, currentScale) {
+                val newScale = it as Int
+                if (currentScale != newScale) {
+                    config.homeIconScalePercent = newScale
+                    setupHomeIconScale()
                 }
             }
         }
