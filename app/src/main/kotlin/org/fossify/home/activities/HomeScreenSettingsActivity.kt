@@ -9,14 +9,14 @@ import org.fossify.commons.models.RadioItem
 import org.fossify.home.databinding.ActivityHomeScreenSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.darkenTextForLightMode
-import org.fossify.home.helpers.HOME_ICON_SCALE_PERCENT_STEP
-import org.fossify.home.helpers.HOME_LABEL_MAX_LINES_STEP
-import org.fossify.home.helpers.MAX_HOME_ICON_SCALE_PERCENT
-import org.fossify.home.helpers.MAX_HOME_LABEL_MAX_LINES
-import org.fossify.home.helpers.MAX_ROW_COUNT
-import org.fossify.home.helpers.MIN_HOME_ICON_SCALE_PERCENT
-import org.fossify.home.helpers.MIN_HOME_LABEL_MAX_LINES
-import org.fossify.home.helpers.MIN_ROW_COUNT
+import org.fossify.home.helpers.DRAWER_ICON_SCALE_PERCENT_STEP
+import org.fossify.home.helpers.DRAWER_LABEL_MAX_LINES_STEP
+import org.fossify.home.helpers.MAX_DRAWER_COLUMN_COUNT
+import org.fossify.home.helpers.MAX_DRAWER_ICON_SCALE_PERCENT
+import org.fossify.home.helpers.MAX_DRAWER_LABEL_MAX_LINES
+import org.fossify.home.helpers.MIN_DRAWER_COLUMN_COUNT
+import org.fossify.home.helpers.MIN_DRAWER_ICON_SCALE_PERCENT
+import org.fossify.home.helpers.MIN_DRAWER_LABEL_MAX_LINES
 
 class HomeScreenSettingsActivity : SimpleActivity() {
 
@@ -34,48 +34,52 @@ class HomeScreenSettingsActivity : SimpleActivity() {
         super.onResume()
         setupTopAppBar(binding.homeScreenSettingsAppbar, NavigationIcon.Arrow)
 
-        setupHomeRowCount()
+        setupHomeColumnCount()
         setupHomeIconScale()
+        setupShowHomeAppLabels()
         setupHomeLabelMaxLines()
         updateTextColors(binding.homeScreenSettingsHolder)
         darkenTextForLightMode(binding.homeScreenSettingsHolder)
     }
 
-    private fun setupHomeRowCount() {
-        val currentRowCount = config.homeRowCount
-        binding.settingsHomeScreenRowCount.text = currentRowCount.toString()
-        binding.settingsHomeScreenRowCountHolder.setOnClickListener {
+    private fun setupHomeColumnCount() {
+        val currentColumnCount = config.homeColumnCount
+        binding.settingsHomeScreenColumnCount.text = currentColumnCount.toString()
+        binding.settingsHomeScreenColumnCountHolder.setOnClickListener {
             val items = ArrayList<RadioItem>()
-            for (i in MIN_ROW_COUNT..MAX_ROW_COUNT) {
+            for (i in MIN_DRAWER_COLUMN_COUNT..MAX_DRAWER_COLUMN_COUNT) {
                 items.add(
                     RadioItem(
                         id = i,
                         title = resources.getQuantityString(
-                            org.fossify.commons.R.plurals.row_counts, i, i
+                            org.fossify.commons.R.plurals.column_counts, i, i
                         )
                     )
                 )
             }
 
-            RadioGroupDialog(this, items, currentRowCount) {
-                val newRowCount = it as Int
-                if (currentRowCount != newRowCount) {
-                    config.homeRowCount = newRowCount
-                    setupHomeRowCount()
+            RadioGroupDialog(this, items, currentColumnCount) {
+                val newColumnCount = it as Int
+                if (currentColumnCount != newColumnCount) {
+                    config.homeColumnCount = newColumnCount
+                    setupHomeColumnCount()
                 }
             }
         }
     }
 
+    // this and the two settings below it (show/max-lines) edit the same underlying setting as
+    // their app drawer counterparts - config.homeIconScalePercent etc. are aliases, not separate
+    // stored values, so a change here shows up on the App drawer settings page too
     private fun setupHomeIconScale() {
         val currentScale = config.homeIconScalePercent
         binding.settingsHomeIconScale.text = "$currentScale%"
         binding.settingsHomeIconScaleHolder.setOnClickListener {
             val items = ArrayList<RadioItem>()
-            var scale = MIN_HOME_ICON_SCALE_PERCENT
-            while (scale <= MAX_HOME_ICON_SCALE_PERCENT) {
+            var scale = MIN_DRAWER_ICON_SCALE_PERCENT
+            while (scale <= MAX_DRAWER_ICON_SCALE_PERCENT) {
                 items.add(RadioItem(id = scale, title = "$scale%"))
-                scale += HOME_ICON_SCALE_PERCENT_STEP
+                scale += DRAWER_ICON_SCALE_PERCENT_STEP
             }
 
             RadioGroupDialog(this, items, currentScale) {
@@ -88,15 +92,32 @@ class HomeScreenSettingsActivity : SimpleActivity() {
         }
     }
 
+    private fun setupShowHomeAppLabels() {
+        binding.settingsShowHomeAppLabels.isChecked = config.showHomeAppLabels
+        binding.settingsShowHomeAppLabelsHolder.setOnClickListener {
+            binding.settingsShowHomeAppLabels.toggle()
+            config.showHomeAppLabels = binding.settingsShowHomeAppLabels.isChecked
+            updateHomeLabelSettingsEnabled()
+        }
+        updateHomeLabelSettingsEnabled()
+    }
+
+    private fun updateHomeLabelSettingsEnabled() {
+        binding.settingsHomeLabelMaxLinesHolder.apply {
+            isEnabled = config.showHomeAppLabels
+            alpha = if (config.showHomeAppLabels) 1f else 0.5f
+        }
+    }
+
     private fun setupHomeLabelMaxLines() {
         val currentMaxLines = config.homeLabelMaxLines
         binding.settingsHomeLabelMaxLines.text = currentMaxLines.toString()
         binding.settingsHomeLabelMaxLinesHolder.setOnClickListener {
             val items = ArrayList<RadioItem>()
-            var lines = MIN_HOME_LABEL_MAX_LINES
-            while (lines <= MAX_HOME_LABEL_MAX_LINES) {
+            var lines = MIN_DRAWER_LABEL_MAX_LINES
+            while (lines <= MAX_DRAWER_LABEL_MAX_LINES) {
                 items.add(RadioItem(id = lines, title = lines.toString()))
-                lines += HOME_LABEL_MAX_LINES_STEP
+                lines += DRAWER_LABEL_MAX_LINES_STEP
             }
 
             RadioGroupDialog(this, items, currentMaxLines) {

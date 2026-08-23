@@ -8,15 +8,14 @@ const val REPOSITORY_NAME = "Launcher"
 // shared prefs
 const val WAS_HOME_SCREEN_INIT = "was_home_screen_init"
 const val HOME_ROW_COUNT = "home_row_count"
+const val HOME_COLUMN_COUNT = "home_column_count"
 const val DRAWER_COLUMN_COUNT = "drawer_column_count"
 const val SHOW_SEARCH_BAR = "show_search_bar"
 const val CLOSE_APP_DRAWER = "close_app_drawer"
 const val AUTO_SHOW_KEYBOARD_IN_APP_DRAWER = "auto_show_keyboard_in_app_drawer"
 const val SHOW_DRAWER_APP_LABELS = "show_drawer_app_labels"
 const val DRAWER_LABEL_MAX_LINES = "drawer_label_max_lines"
-const val HOME_LABEL_MAX_LINES = "home_label_max_lines"
 const val DRAWER_ICON_SCALE_PERCENT = "drawer_icon_scale_percent"
-const val HOME_ICON_SCALE_PERCENT = "home_icon_scale_percent"
 const val DRAWER_LABEL_FONT_SIZE = "drawer_label_font_size"
 const val ICON_PACK = "icon_pack"
 const val MASK_UNTHEMED_ICONS = "mask_unthemed_icons"
@@ -41,21 +40,16 @@ const val ROW_COUNT = 6
 const val MIN_ROW_COUNT = 2
 const val MAX_ROW_COUNT = 15
 
-// icon grid column count, shared by the home screen and the app drawer
+// icon grid column count
 const val MIN_DRAWER_COLUMN_COUNT = 3
 const val MAX_DRAWER_COLUMN_COUNT = 6
 
-// app drawer icon scale, in percent - "100%" is what used to be labelled "120%" before the rescale
-const val MIN_DRAWER_ICON_SCALE_PERCENT = 90
+// icon scale, in percent, shared by the app drawer and the home screen - "100%" is what used to
+// be labelled "120%" before the rescale
+const val MIN_DRAWER_ICON_SCALE_PERCENT = 80
 const val MAX_DRAWER_ICON_SCALE_PERCENT = 120
 const val DRAWER_ICON_SCALE_PERCENT_STEP = 10
 const val DEFAULT_DRAWER_ICON_SCALE_PERCENT = 100
-
-// home screen icon scale, in percent - same range/step as the app drawer's, kept as its own setting
-const val MIN_HOME_ICON_SCALE_PERCENT = 90
-const val MAX_HOME_ICON_SCALE_PERCENT = 120
-const val HOME_ICON_SCALE_PERCENT_STEP = 10
-const val DEFAULT_HOME_ICON_SCALE_PERCENT = 100
 
 // drawer label font size, in sp
 const val MIN_DRAWER_LABEL_FONT_SIZE = 12
@@ -63,17 +57,11 @@ const val MAX_DRAWER_LABEL_FONT_SIZE = 20
 const val DRAWER_LABEL_FONT_SIZE_STEP = 2
 const val DEFAULT_DRAWER_LABEL_FONT_SIZE = 12
 
-// app drawer label max lines
+// label max lines, shared by the app drawer and the home screen
 const val MIN_DRAWER_LABEL_MAX_LINES = 1
 const val MAX_DRAWER_LABEL_MAX_LINES = 3
 const val DRAWER_LABEL_MAX_LINES_STEP = 1
 const val DEFAULT_DRAWER_LABEL_MAX_LINES = 2
-
-// home screen label max lines - same range/step as the app drawer's, kept as its own setting
-const val MIN_HOME_LABEL_MAX_LINES = 1
-const val MAX_HOME_LABEL_MAX_LINES = 3
-const val HOME_LABEL_MAX_LINES_STEP = 1
-const val DEFAULT_HOME_LABEL_MAX_LINES = 2
 
 const val UNINSTALL_APP_REQUEST_CODE = 50
 const val REQUEST_CONFIGURE_WIDGET = 51

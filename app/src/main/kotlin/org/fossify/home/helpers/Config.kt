@@ -18,7 +18,11 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getInt(HOME_ROW_COUNT, ROW_COUNT)
         set(homeRowCount) = prefs.edit().putInt(HOME_ROW_COUNT, homeRowCount).apply()
 
-    // despite the name, this now drives the column count of both the app drawer and the home screen grid
+    var homeColumnCount: Int
+        get() = prefs.getInt(HOME_COLUMN_COUNT, context.resources.getInteger(R.integer.portrait_column_count))
+            .coerceIn(MIN_DRAWER_COLUMN_COUNT, MAX_DRAWER_COLUMN_COUNT)
+        set(homeColumnCount) = prefs.edit().putInt(HOME_COLUMN_COUNT, homeColumnCount).apply()
+
     var drawerColumnCount: Int
         get() = prefs.getInt(DRAWER_COLUMN_COUNT, context.resources.getInteger(R.integer.portrait_column_count))
             .coerceIn(MIN_DRAWER_COLUMN_COUNT, MAX_DRAWER_COLUMN_COUNT)
@@ -37,30 +41,41 @@ class Config(context: Context) : BaseConfig(context) {
         set(autoShowKeyboardInAppDrawer) = prefs.edit()
             .putBoolean(AUTO_SHOW_KEYBOARD_IN_APP_DRAWER, autoShowKeyboardInAppDrawer).apply()
 
-    // despite the name, this now drives whether labels show on both the app drawer and the home screen
     var showDrawerAppLabels: Boolean
         get() = prefs.getBoolean(SHOW_DRAWER_APP_LABELS, true)
         set(showDrawerAppLabels) = prefs.edit().putBoolean(SHOW_DRAWER_APP_LABELS, showDrawerAppLabels).apply()
+
+    // home screen labels share the app drawer's own show/hide setting - both surfaces read and
+    // write showDrawerAppLabels directly, so there's exactly one stored value, not two kept in sync
+    var showHomeAppLabels: Boolean
+        get() = showDrawerAppLabels
+        set(value) {
+            showDrawerAppLabels = value
+        }
 
     var drawerLabelMaxLines: Int
         get() = prefs.getInt(DRAWER_LABEL_MAX_LINES, DEFAULT_DRAWER_LABEL_MAX_LINES)
             .coerceIn(MIN_DRAWER_LABEL_MAX_LINES, MAX_DRAWER_LABEL_MAX_LINES)
         set(drawerLabelMaxLines) = prefs.edit().putInt(DRAWER_LABEL_MAX_LINES, drawerLabelMaxLines).apply()
 
+    // home screen shares the app drawer's own label max-lines setting - see showHomeAppLabels
     var homeLabelMaxLines: Int
-        get() = prefs.getInt(HOME_LABEL_MAX_LINES, DEFAULT_HOME_LABEL_MAX_LINES)
-            .coerceIn(MIN_HOME_LABEL_MAX_LINES, MAX_HOME_LABEL_MAX_LINES)
-        set(homeLabelMaxLines) = prefs.edit().putInt(HOME_LABEL_MAX_LINES, homeLabelMaxLines).apply()
+        get() = drawerLabelMaxLines
+        set(value) {
+            drawerLabelMaxLines = value
+        }
 
     var drawerIconScalePercent: Int
         get() = prefs.getInt(DRAWER_ICON_SCALE_PERCENT, DEFAULT_DRAWER_ICON_SCALE_PERCENT)
             .coerceIn(MIN_DRAWER_ICON_SCALE_PERCENT, MAX_DRAWER_ICON_SCALE_PERCENT)
         set(drawerIconScalePercent) = prefs.edit().putInt(DRAWER_ICON_SCALE_PERCENT, drawerIconScalePercent).apply()
 
+    // home screen shares the app drawer's own icon scale setting - see showHomeAppLabels
     var homeIconScalePercent: Int
-        get() = prefs.getInt(HOME_ICON_SCALE_PERCENT, DEFAULT_HOME_ICON_SCALE_PERCENT)
-            .coerceIn(MIN_HOME_ICON_SCALE_PERCENT, MAX_HOME_ICON_SCALE_PERCENT)
-        set(homeIconScalePercent) = prefs.edit().putInt(HOME_ICON_SCALE_PERCENT, homeIconScalePercent).apply()
+        get() = drawerIconScalePercent
+        set(value) {
+            drawerIconScalePercent = value
+        }
 
     var drawerLabelFontSize: Int
         get() = prefs.getInt(DRAWER_LABEL_FONT_SIZE, DEFAULT_DRAWER_LABEL_FONT_SIZE)
