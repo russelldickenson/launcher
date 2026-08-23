@@ -25,7 +25,7 @@
         android:background="@drawable/ic_group_circle_bg"
         android:contentDescription="@null"
         android:padding="3dp"
-        android:src="@drawable/ic_pin_filled_vector"
+        android:src="@drawable/ic_heart_filled_vector"
         android:visibility="gone" />
 
     <org.fossify.commons.views.MyTextView
