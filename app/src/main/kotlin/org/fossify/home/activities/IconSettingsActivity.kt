@@ -14,17 +14,11 @@ import org.fossify.home.extensions.darkenTextForLightMode
 import org.fossify.home.extensions.getAppIcon
 import org.fossify.home.extensions.getDrawableForPackageName
 import org.fossify.home.extensions.getReferenceIconWidth
-import org.fossify.home.helpers.DRAWER_ICON_SCALE_PERCENT_STEP
-import org.fossify.home.helpers.DRAWER_LABEL_FONT_SIZE_STEP
 import org.fossify.home.helpers.ICON_SHAPE_CIRCLE
 import org.fossify.home.helpers.ICON_SHAPE_ROUNDED_SQUARE
 import org.fossify.home.helpers.ICON_SHAPE_SQUARE
 import org.fossify.home.helpers.ICON_SHAPE_SQUIRCLE
 import org.fossify.home.helpers.IconPackHelper
-import org.fossify.home.helpers.MAX_DRAWER_ICON_SCALE_PERCENT
-import org.fossify.home.helpers.MAX_DRAWER_LABEL_FONT_SIZE
-import org.fossify.home.helpers.MIN_DRAWER_ICON_SCALE_PERCENT
-import org.fossify.home.helpers.MIN_DRAWER_LABEL_FONT_SIZE
 import kotlin.system.exitProcess
 
 class IconSettingsActivity : SimpleActivity() {
@@ -61,8 +55,6 @@ class IconSettingsActivity : SimpleActivity() {
         setupIconPack()
         setupIconShape()
         setupMaskUnthemedIcons()
-        setupIconScale()
-        setupLabelFontSize()
         updateIconPreview()
         updateIconPreviewLabel()
         updateTextColors(binding.iconSettingsHolder)
@@ -146,50 +138,6 @@ class IconSettingsActivity : SimpleActivity() {
             binding.settingsIconShapeHolder.beVisibleIf(config.maskUnthemedIcons)
             updateIconPreview()
             iconSettingsChanged = true
-        }
-    }
-
-    private fun setupIconScale() {
-        val currentScale = config.drawerIconScalePercent
-        binding.settingsIconScale.text = "$currentScale%"
-        binding.settingsIconScaleHolder.setOnClickListener {
-            val items = ArrayList<RadioItem>()
-            var scale = MIN_DRAWER_ICON_SCALE_PERCENT
-            while (scale <= MAX_DRAWER_ICON_SCALE_PERCENT) {
-                items.add(RadioItem(id = scale, title = "$scale%"))
-                scale += DRAWER_ICON_SCALE_PERCENT_STEP
-            }
-
-            RadioGroupDialog(this, items, currentScale) {
-                val newScale = it as Int
-                if (currentScale != newScale) {
-                    config.drawerIconScalePercent = newScale
-                    setupIconScale()
-                    updateIconPreviewScale()
-                }
-            }
-        }
-    }
-
-    private fun setupLabelFontSize() {
-        val currentFontSize = config.drawerLabelFontSize
-        binding.settingsLabelFontSize.text = "${currentFontSize}sp"
-        binding.settingsLabelFontSizeHolder.setOnClickListener {
-            val items = ArrayList<RadioItem>()
-            var size = MIN_DRAWER_LABEL_FONT_SIZE
-            while (size <= MAX_DRAWER_LABEL_FONT_SIZE) {
-                items.add(RadioItem(id = size, title = "${size}sp"))
-                size += DRAWER_LABEL_FONT_SIZE_STEP
-            }
-
-            RadioGroupDialog(this, items, currentFontSize) {
-                val newFontSize = it as Int
-                if (currentFontSize != newFontSize) {
-                    config.drawerLabelFontSize = newFontSize
-                    setupLabelFontSize()
-                    updateIconPreviewLabel()
-                }
-            }
         }
     }
 

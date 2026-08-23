@@ -29,7 +29,6 @@ import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.isDynamicTheme
 import org.fossify.commons.extensions.showErrorToast
 import org.fossify.commons.helpers.isQPlus
-import org.fossify.commons.R as CommonsR
 import org.fossify.commons.helpers.isSPlus
 import org.fossify.home.R
 import org.fossify.home.helpers.ITEM_TYPE_FOLDER
@@ -123,7 +122,7 @@ fun Activity.handleGridItemPopupMenu(
         }
         menu.findItem(R.id.pin_icon).apply {
             title = getString(if (isPinned) R.string.unpin_app else R.string.pin_app)
-            setIcon(if (isPinned) CommonsR.drawable.ic_pin_filled_vector else CommonsR.drawable.ic_pin_vector)
+            setIcon(if (isPinned) R.drawable.ic_heart_filled_vector else R.drawable.ic_heart_vector)
         }
 
         menu.forEach {

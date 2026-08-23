@@ -291,7 +291,7 @@ class WidgetsFragment(context: Context, attributeSet: AttributeSet) :
     }
 
     override fun onWidgetLongPressed(appWidget: AppWidget) {
-        if (appWidget.heightCells > context.config.homeRowCount - 1 || appWidget.widthCells > context.config.drawerColumnCount) {
+        if (appWidget.heightCells > context.config.homeRowCount - 1 || appWidget.widthCells > context.config.homeColumnCount) {
             context.showErrorToast(context.getString(R.string.widget_too_big))
             return
         }

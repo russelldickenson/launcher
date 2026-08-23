@@ -22,6 +22,7 @@ import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
 class NotificationBadgeSettingsActivity : SimpleActivity() {
 
     private val binding by viewBinding(ActivityNotificationBadgeSettingsBinding::inflate)
+    private var hasPromptedForNotificationAccess = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +41,7 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
         setupNotificationBadgeShape()
         setupShowNotificationCount()
         updateNotificationBadgePreview()
+        promptForNotificationAccessIfNeeded()
         updateTextColors(binding.notificationBadgeSettingsHolder)
         darkenTextForLightMode(binding.notificationBadgeSettingsHolder)
     }
@@ -52,10 +54,25 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
             config.showNotificationBadges = newValue
 
             if (newValue && !isNotificationListenerEnabled()) {
-                toast(R.string.notification_access_required)
-                openNotificationListenerSettings()
+                promptForNotificationAccess()
             }
         }
+    }
+
+    private fun promptForNotificationAccessIfNeeded() {
+        if (
+            config.showNotificationBadges &&
+            !isNotificationListenerEnabled() &&
+            !hasPromptedForNotificationAccess
+        ) {
+            hasPromptedForNotificationAccess = true
+            promptForNotificationAccess()
+        }
+    }
+
+    private fun promptForNotificationAccess() {
+        toast(R.string.notification_access_required)
+        openNotificationListenerSettings()
     }
 
     private fun setupNotificationBadgeColor() {

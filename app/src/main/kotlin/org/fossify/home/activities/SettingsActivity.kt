@@ -5,7 +5,6 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
-import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.applyColorFilter
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperPrimaryColor
@@ -16,14 +15,11 @@ import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.helpers.isTiramisuPlus
 import org.fossify.commons.models.FAQItem
-import org.fossify.commons.models.RadioItem
 import org.fossify.home.BuildConfig
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivitySettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.darkenTextForLightMode
-import org.fossify.home.helpers.MAX_DRAWER_COLUMN_COUNT
-import org.fossify.home.helpers.MIN_DRAWER_COLUMN_COUNT
 import org.fossify.home.receivers.LockDeviceAdminReceiver
 import java.util.Locale
 import kotlin.system.exitProcess
@@ -50,7 +46,6 @@ class SettingsActivity : SimpleActivity() {
         setupDoubleTapToLock()
         setupLanguage()
         setupIconSettings()
-        setupColumnCount()
         setupNotificationBadgeSettings()
         setupDrawerSettings()
         setupHomeScreenSettings()
@@ -129,32 +124,6 @@ class SettingsActivity : SimpleActivity() {
         binding.settingsIconSettingsChevron.applyColorFilter(getProperTextColor())
         binding.settingsIconSettingsHolder.setOnClickListener {
             startActivity(Intent(this, IconSettingsActivity::class.java))
-        }
-    }
-
-    private fun setupColumnCount() {
-        val currentColumnCount = config.drawerColumnCount
-        binding.settingsColumnCount.text = currentColumnCount.toString()
-        binding.settingsColumnCountHolder.setOnClickListener {
-            val items = ArrayList<RadioItem>()
-            for (i in MIN_DRAWER_COLUMN_COUNT..MAX_DRAWER_COLUMN_COUNT) {
-                items.add(
-                    RadioItem(
-                        id = i,
-                        title = resources.getQuantityString(
-                            org.fossify.commons.R.plurals.column_counts, i, i
-                        )
-                    )
-                )
-            }
-
-            RadioGroupDialog(this, items, currentColumnCount) {
-                val newColumnCount = it as Int
-                if (currentColumnCount != newColumnCount) {
-                    config.drawerColumnCount = newColumnCount
-                    setupColumnCount()
-                }
-            }
         }
     }
 

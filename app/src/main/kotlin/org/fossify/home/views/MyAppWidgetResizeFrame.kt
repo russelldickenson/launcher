@@ -77,7 +77,7 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
             it.provider.className == gridItem.className
         } ?: return
 
-        minResizeWidthCells = Math.min(context.config.drawerColumnCount, context.getCellCount(providerInfo.minResizeWidth))
+        minResizeWidthCells = Math.min(context.config.homeColumnCount, context.getCellCount(providerInfo.minResizeWidth))
         minResizeHeightCells = Math.min(context.config.homeRowCount, context.getCellCount(providerInfo.minResizeHeight))
         redrawFrame()
 

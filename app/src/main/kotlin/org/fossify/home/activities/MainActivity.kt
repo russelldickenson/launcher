@@ -129,6 +129,7 @@ class MainActivity : SimpleActivity(), FlingListener {
             ((shortcutId: String, label: String, icon: Drawable) -> Unit)? = null
     private var wasJustPaused: Boolean = false
     private var lastHomeIconScalePercent = -1
+    private var lastShowHomeAppLabels: Boolean? = null
 
     private var wallpaperColorChangeListener: OnColorsChangedListener? = null
     private var wallpaperSupportsDarkText: Boolean? = null
@@ -299,12 +300,16 @@ class MainActivity : SimpleActivity(), FlingListener {
 
         binding.homeScreenGrid.root.resizeGrid(
             newRowCount = config.homeRowCount,
-            newColumnCount = config.drawerColumnCount
+            newColumnCount = config.homeColumnCount
         )
         if (lastHomeIconScalePercent != config.homeIconScalePercent) {
             binding.homeScreenGrid.root.refreshIconScale()
         }
         lastHomeIconScalePercent = config.homeIconScalePercent
+        if (lastShowHomeAppLabels != config.showHomeAppLabels) {
+            binding.homeScreenGrid.root.redrawGrid()
+        }
+        lastShowHomeAppLabels = config.showHomeAppLabels
         binding.homeScreenGrid.root.updateColors()
         binding.homeScreenGrid.root.updateNotificationBadgeColor()
         binding.allAppsFragment.root.onResume()
@@ -589,8 +594,8 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
 
         for (page in 0 until maxPage) {
-            for (checkedYCell in 0 until config.drawerColumnCount) {
-                for (checkedXCell in 0 until config.homeRowCount - 1) {
+            for (checkedYCell in 0 until config.homeRowCount - 1) {
+                for (checkedXCell in 0 until config.homeColumnCount) {
                     val wantedCell = Triple(page, checkedXCell, checkedYCell)
                     if (!occupiedCells.contains(wantedCell)) {
                         return Pair(

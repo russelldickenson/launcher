@@ -36,26 +36,26 @@
             android:orientation="vertical">
 
             <RelativeLayout
-                android:id="@+id/settings_home_screen_row_count_holder"
+                android:id="@+id/settings_home_screen_column_count_holder"
                 style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
                 <org.fossify.commons.views.MyTextView
-                    android:id="@+id/settings_home_screen_row_count_label"
+                    android:id="@+id/settings_home_screen_column_count_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/row_count" />
+                    android:text="@string/columns" />
 
                 <org.fossify.commons.views.MyTextView
-                    android:id="@+id/settings_home_screen_row_count"
+                    android:id="@+id/settings_home_screen_column_count"
                     style="@style/SettingsTextValueStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/settings_home_screen_row_count_label"
-                    tools:text="3" />
+                    android:layout_below="@+id/settings_home_screen_column_count_label"
+                    tools:text="5" />
 
             </RelativeLayout>
 
@@ -80,6 +80,22 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/settings_home_icon_scale_label"
                     tools:text="100%" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_show_home_app_labels_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
+
+                <org.fossify.commons.views.MyMaterialSwitch
+                    android:id="@+id/settings_show_home_app_labels"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/show_app_labels" />
 
             </RelativeLayout>
 

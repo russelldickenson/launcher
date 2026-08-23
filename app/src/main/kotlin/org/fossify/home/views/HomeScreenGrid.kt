@@ -84,7 +84,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     constructor(context: Context, attrs: AttributeSet) : this(context, attrs, 0)
 
     private lateinit var binding: HomeScreenGridBinding
-    private var columnCount = context.config.drawerColumnCount
+    private var columnCount = context.config.homeColumnCount
     private var rowCount = context.config.homeRowCount
     private var pageIndicatorsYPos = 0
     private val cells = mutableMapOf<Point, Rect>()
@@ -1553,9 +1553,12 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         } else {
             0
         }
-        // icon size comes from the shared, column/row-count-independent reference width, not from
-        // the actual current cell size, so it never drifts with the grid's row/column count
-        iconSize = (context.getReferenceIconWidth() * (context.config.homeIconScalePercent / 100f)).toInt()
+        // Match the app drawer: its icon view has 10% padding on both horizontal sides, so the
+        // drawable itself occupies 80% of the scaled reference frame.
+        val scaledIconFrameSize =
+            (context.getReferenceIconWidth() * (context.config.homeIconScalePercent / 100f)).toInt()
+        val iconPadding = (scaledIconFrameSize * 0.1f).toInt()
+        iconSize = scaledIconFrameSize - 2 * iconPadding
         android.util.Log.e(
             "IconSizeDebug",
             "HOME iconSize=$iconSize scale=${context.config.homeIconScalePercent} " +
@@ -1615,7 +1618,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                 cell.top - iconMargin
             } + sideMargins.top
         }
-        val additionalHeight = if (!item.docked && context.config.showDrawerAppLabels) {
+        val additionalHeight = if (!item.docked && context.config.showHomeAppLabels) {
             // multiply line count by line height to get label height
             // we multiply all line heights by 2 so all widgets get the same clickable area and 2 is the max line count
             (2 * (textPaint.fontMetrics.bottom - textPaint.fontMetrics.top)).toInt()
@@ -1933,7 +1936,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                     drawableY + iconSize
                 )
 
-                if (item.id != draggedItem?.id && item.title.isNotEmpty() && context.config.showDrawerAppLabels) {
+                if (item.id != draggedItem?.id && item.title.isNotEmpty() && context.config.showHomeAppLabels) {
                     val textX = cell.left.toFloat() + labelSideMargin
                     val textY = cell.top.toFloat() + iconSize + iconMargin + labelSideMargin
                     val textPaintToUse = if (item.parentId == null) {
@@ -2142,7 +2145,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             val rowsCount = ceil(count.toFloat() / columnsCount).toInt()
             val cellSize = getCellSize()
             val gap = getGapSize()
-            val yGap = if (context.config.showDrawerAppLabels) {
+            val yGap = if (context.config.showHomeAppLabels) {
                 gap + textPaint.textSize + 2 * labelSideMargin
             } else gap
             val cell = cells[item.getTopLeft(rowCount)] ?: return RectF(0f, 0f, 0f, 0f)
@@ -2197,7 +2200,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             val folderItemsRect = getItemsDrawingRect()
             val cellSize = getCellSize()
             val gap = getGapSize()
-            val yGap = if (context.config.showDrawerAppLabels) {
+            val yGap = if (context.config.showHomeAppLabels) {
                 gap + textPaint.textSize + 2 * labelSideMargin
             } else gap
             return (0 until columnsCount * rowsCount)
@@ -2225,7 +2228,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             val itemsRect = getItemsDrawingRect()
             val cellSize = getCellSize()
             val gapSize = getGapSize()
-            val yGapSize = if (context.config.showDrawerAppLabels) {
+            val yGapSize = if (context.config.showHomeAppLabels) {
                 gapSize + textPaint.textSize + 2 * labelSideMargin
             } else gapSize
             val left = (itemsRect.left + column * cellSize + column * gapSize).roundToInt()
