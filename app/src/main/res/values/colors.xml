@@ -4,4 +4,5 @@
     <!-- app drawer background used in system light mode instead of the normal (light) theme
          background, so the drawer and its white labels stay easy to read -->
     <color name="app_drawer_light_mode_background">#FF2C2C2C</color>
+    <color name="favourite_badge_heart">#FFFF0000</color>
 </resources>
