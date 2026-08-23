@@ -2,6 +2,7 @@ package org.fossify.home.activities
 
 import android.content.Intent
 import android.os.Bundle
+import org.fossify.commons.dialogs.ColorPickerDialog
 import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.updateTextColors
@@ -11,6 +12,8 @@ import org.fossify.commons.models.RadioItem
 import org.fossify.home.databinding.ActivityDrawerSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.darkenTextForLightMode
+import org.fossify.home.extensions.getAppDrawerBackgroundColor
+import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.helpers.DRAWER_LABEL_MAX_LINES_STEP
 import org.fossify.home.helpers.DRAWER_ICON_SCALE_PERCENT_STEP
 import org.fossify.home.helpers.DRAWER_LABEL_FONT_SIZE_STEP
@@ -42,7 +45,9 @@ class DrawerSettingsActivity : SimpleActivity() {
         setupDrawerSearchBar()
         setupOpenKeyboardOnAppDrawer()
         setupCloseAppDrawerOnOtherAppOpen()
+        setupDrawerBackgroundColor()
         setupShowDrawerAppLabels()
+        setupDrawerTextColor()
         setupColumnCount()
         setupDrawerIconScale()
         setupDrawerLabelFontSize()
@@ -86,6 +91,42 @@ class DrawerSettingsActivity : SimpleActivity() {
             config.showDrawerAppLabels = binding.settingsShowDrawerAppLabels.isChecked
         }
     }
+
+    private fun setupDrawerBackgroundColor() {
+        updateDrawerBackgroundColorSwatch()
+        binding.settingsDrawerBackgroundColorHolder.setOnClickListener {
+            ColorPickerDialog(this, currentDrawerBackgroundColor()) { wasPositivePressed, newColor ->
+                if (wasPositivePressed) {
+                    config.drawerBackgroundColor = newColor
+                    updateDrawerBackgroundColorSwatch()
+                }
+            }
+        }
+    }
+
+    private fun updateDrawerBackgroundColorSwatch() {
+        binding.settingsDrawerBackgroundColor.background?.mutate()?.setTint(currentDrawerBackgroundColor())
+    }
+
+    private fun currentDrawerBackgroundColor() = config.drawerBackgroundColor.takeIf { it != 0 } ?: getAppDrawerBackgroundColor()
+
+    private fun setupDrawerTextColor() {
+        updateDrawerTextColorSwatch()
+        binding.settingsDrawerTextColorHolder.setOnClickListener {
+            ColorPickerDialog(this, currentDrawerTextColor()) { wasPositivePressed, newColor ->
+                if (wasPositivePressed) {
+                    config.drawerTextColor = newColor
+                    updateDrawerTextColorSwatch()
+                }
+            }
+        }
+    }
+
+    private fun updateDrawerTextColorSwatch() {
+        binding.settingsDrawerTextColor.background?.mutate()?.setTint(currentDrawerTextColor())
+    }
+
+    private fun currentDrawerTextColor() = config.drawerTextColor.takeIf { it != 0 } ?: getAppDrawerTextColor()
 
     private fun setupColumnCount() {
         val currentColumnCount = config.drawerColumnCount

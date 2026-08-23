@@ -132,10 +132,20 @@ fun Context.getThemeAwareTextColor(originalColor: Int): Int {
 // normal light theme background, since a light drawer plus darkened text is harder to read than
 // a plain dark/light contrast
 fun Context.getAppDrawerBackgroundColor(): Int {
+    val customColor = config.drawerBackgroundColor
+    if (customColor != 0) {
+        return customColor
+    }
+
     return if (isSystemInLightMode()) getColor(org.fossify.home.R.color.app_drawer_light_mode_background) else getProperBackgroundColor()
 }
 
 fun Context.getAppDrawerTextColor(): Int {
+    val customColor = config.drawerTextColor
+    if (customColor != 0) {
+        return customColor
+    }
+
     return if (isSystemInLightMode()) Color.WHITE else getThemeAwareTextColor(getProperTextColor())
 }
 

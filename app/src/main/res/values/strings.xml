@@ -20,6 +20,8 @@
     <string name="drawer_label_max_lines">Maximum label lines</string>
     <string name="drawer_icon_scale">Icon scale</string>
     <string name="drawer_label_font_size">Label font size</string>
+    <string name="drawer_background_color">Background colour</string>
+    <string name="drawer_text_color">Label colour</string>
     <string name="icon_pack">Icon pack</string>
     <string name="appearance_settings">Appearance</string>
     <string name="show_favourites_divider">Divider between favourites and other apps</string>

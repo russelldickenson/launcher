@@ -82,6 +82,17 @@ class Config(context: Context) : BaseConfig(context) {
             .coerceIn(MIN_DRAWER_LABEL_FONT_SIZE, MAX_DRAWER_LABEL_FONT_SIZE)
         set(drawerLabelFontSize) = prefs.edit().putInt(DRAWER_LABEL_FONT_SIZE, drawerLabelFontSize).apply()
 
+    // 0 (fully transparent) means "no custom colour set - use the automatic theme/light-mode-based
+    // colour computed by getAppDrawerBackgroundColor()/getAppDrawerTextColor()", since it isn't a
+    // colour anyone would deliberately pick for a drawer background or label colour
+    var drawerBackgroundColor: Int
+        get() = prefs.getInt(DRAWER_BACKGROUND_COLOR, 0)
+        set(drawerBackgroundColor) = prefs.edit().putInt(DRAWER_BACKGROUND_COLOR, drawerBackgroundColor).apply()
+
+    var drawerTextColor: Int
+        get() = prefs.getInt(DRAWER_TEXT_COLOR, 0)
+        set(drawerTextColor) = prefs.edit().putInt(DRAWER_TEXT_COLOR, drawerTextColor).apply()
+
     // empty string means the device's default icons are used
     var iconPack: String
         get() = prefs.getString(ICON_PACK, "") ?: ""
