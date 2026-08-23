@@ -87,9 +87,9 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getString(ICON_PACK, "") ?: ""
         set(iconPack) = prefs.edit().putString(ICON_PACK, iconPack).apply()
 
-    var maskUnthemedIcons: Boolean
-        get() = prefs.getBoolean(MASK_UNTHEMED_ICONS, true)
-        set(maskUnthemedIcons) = prefs.edit().putBoolean(MASK_UNTHEMED_ICONS, maskUnthemedIcons).apply()
+    var reshapeAllIcons: Boolean
+        get() = prefs.getBoolean(RESHAPE_ALL_ICONS, true)
+        set(reshapeAllIcons) = prefs.edit().putBoolean(RESHAPE_ALL_ICONS, reshapeAllIcons).apply()
 
     var iconShape: Int
         get() = prefs.getInt(ICON_SHAPE, ICON_SHAPE_CIRCLE)

@@ -53,8 +53,8 @@ class IconSettingsActivity : SimpleActivity() {
         setupTopAppBar(binding.iconSettingsAppbar, NavigationIcon.Arrow)
 
         setupIconPack()
+        setupReshapeAllIcons()
         setupIconShape()
-        setupMaskUnthemedIcons()
         updateIconPreview()
         updateIconPreviewLabel()
         updateTextColors(binding.iconSettingsHolder)
@@ -100,7 +100,7 @@ class IconSettingsActivity : SimpleActivity() {
 
     private fun setupIconShape() {
         updateIconShapeLabel()
-        binding.settingsIconShapeHolder.beVisibleIf(config.maskUnthemedIcons)
+        binding.settingsIconShapeHolder.beVisibleIf(config.reshapeAllIcons)
         binding.settingsIconShapeHolder.setOnClickListener {
             val items = arrayListOf(
                 RadioItem(ICON_SHAPE_CIRCLE, getString(org.fossify.home.R.string.icon_shape_circle)),
@@ -130,12 +130,12 @@ class IconSettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupMaskUnthemedIcons() {
-        binding.settingsMaskUnthemedIcons.isChecked = config.maskUnthemedIcons
-        binding.settingsMaskUnthemedIconsHolder.setOnClickListener {
-            binding.settingsMaskUnthemedIcons.toggle()
-            config.maskUnthemedIcons = binding.settingsMaskUnthemedIcons.isChecked
-            binding.settingsIconShapeHolder.beVisibleIf(config.maskUnthemedIcons)
+    private fun setupReshapeAllIcons() {
+        binding.settingsReshapeAllIcons.isChecked = config.reshapeAllIcons
+        binding.settingsReshapeAllIconsHolder.setOnClickListener {
+            binding.settingsReshapeAllIcons.toggle()
+            config.reshapeAllIcons = binding.settingsReshapeAllIcons.isChecked
+            binding.settingsIconShapeHolder.beVisibleIf(config.reshapeAllIcons)
             updateIconPreview()
             iconSettingsChanged = true
         }

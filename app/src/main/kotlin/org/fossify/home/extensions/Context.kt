@@ -79,7 +79,7 @@ fun Context.getAppIcon(packageName: String, activityName: String, systemDrawable
         null
     } ?: systemDrawable() ?: getDrawableForPackageName(packageName)
 
-    return if (config.maskUnthemedIcons && icon != null) {
+    return if (config.reshapeAllIcons && icon != null) {
         IconPackHelper.getShapedIcon(this, "$packageName/$activityName", icon, config.iconShape)
     } else {
         icon
