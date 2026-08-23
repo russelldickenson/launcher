@@ -99,6 +99,10 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getBoolean(SHOW_NOTIFICATION_BADGES, true)
         set(showNotificationBadges) = prefs.edit().putBoolean(SHOW_NOTIFICATION_BADGES, showNotificationBadges).apply()
 
+    var showFavouritesDivider: Boolean
+        get() = prefs.getBoolean(SHOW_FAVOURITES_DIVIDER, false)
+        set(showFavouritesDivider) = prefs.edit().putBoolean(SHOW_FAVOURITES_DIVIDER, showFavouritesDivider).apply()
+
     var notificationBadgeColor: Int
         get() = prefs.getInt(NOTIFICATION_BADGE_COLOR, Color.RED)
         set(notificationBadgeColor) = prefs.edit().putInt(NOTIFICATION_BADGE_COLOR, notificationBadgeColor).apply()

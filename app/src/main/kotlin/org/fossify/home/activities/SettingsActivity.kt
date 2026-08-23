@@ -45,6 +45,7 @@ class SettingsActivity : SimpleActivity() {
         setupUseEnglish()
         setupDoubleTapToLock()
         setupLanguage()
+        setupShowFavouritesDivider()
         setupIconSettings()
         setupNotificationBadgeSettings()
         setupDrawerSettings()
@@ -117,6 +118,14 @@ class SettingsActivity : SimpleActivity() {
                 )
                 startActivity(intent)
             }
+        }
+    }
+
+    private fun setupShowFavouritesDivider() {
+        binding.settingsShowFavouritesDivider.isChecked = config.showFavouritesDivider
+        binding.settingsShowFavouritesDividerHolder.setOnClickListener {
+            binding.settingsShowFavouritesDivider.toggle()
+            config.showFavouritesDivider = binding.settingsShowFavouritesDivider.isChecked
         }
     }
 

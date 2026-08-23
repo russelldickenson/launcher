@@ -22,6 +22,7 @@
     <string name="drawer_label_font_size">Label font size</string>
     <string name="icon_pack">Icon pack</string>
     <string name="appearance_settings">Appearance</string>
+    <string name="show_favourites_divider">Divider between favourites and other apps</string>
     <string name="icons_subsection">Icons</string>
     <string name="icon_preview_label">Launcher</string>
     <string name="reshape_all_icons">Reshape all icons</string>

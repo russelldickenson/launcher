@@ -28,6 +28,7 @@ import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.models.AppLauncher
 import org.fossify.home.models.HomeScreenGridItem
+import org.fossify.home.views.FavouritesDividerDecoration
 
 class AllAppsFragment(
     context: Context,
@@ -172,6 +173,7 @@ class AllAppsFragment(
                 }.apply {
                     binding.allAppsGrid.itemAnimator = null
                     binding.allAppsGrid.adapter = this
+                    binding.allAppsGrid.addItemDecoration(FavouritesDividerDecoration())
                 }
             }
 
