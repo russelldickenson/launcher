@@ -164,13 +164,7 @@ fun Context.getReferenceIconWidth(): Float {
     val referenceColumnCount = resources.getInteger(R.integer.portrait_column_count)
     val referenceCellWidth = realScreenSize.x / referenceColumnCount
     val referenceMargin = resources.getDimension(R.dimen.icon_side_margin)
-    val result = (referenceCellWidth - 2 * referenceMargin) * 1.2f
-    android.util.Log.e(
-        "IconSizeDebug",
-        "referenceColumnCount=$referenceColumnCount realScreenSize=$realScreenSize " +
-            "referenceCellWidth=$referenceCellWidth referenceMargin=$referenceMargin result=$result"
-    )
-    return result
+    return (referenceCellWidth - 2 * referenceMargin) * 1.2f
 }
 
 fun Context.isDefaultLauncher(): Boolean {
