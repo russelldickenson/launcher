@@ -15,6 +15,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.DrawableImageViewTarget
 import com.bumptech.glide.request.transition.Transition
 import com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
+import org.fossify.commons.extensions.adjustForContrast
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getColoredDrawableWithColor
 import org.fossify.commons.extensions.getContrastColor
@@ -136,9 +137,10 @@ class LaunchersAdapter(
                         NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE -> R.drawable.notification_badge_sharp_square
                         else -> R.drawable.notification_badge_dot
                     }
+                    val badgeColor = activity.config.notificationBadgeColor
                     binding.launcherNotificationBadge.setBackgroundResource(badgeDrawableRes)
-                    binding.launcherNotificationBadge.background?.mutate()?.setTint(activity.config.notificationBadgeColor)
-                    binding.launcherNotificationBadge.setTextColor(activity.config.notificationBadgeColor.getContrastColor())
+                    binding.launcherNotificationBadge.background?.mutate()?.setTint(badgeColor)
+                    binding.launcherNotificationBadge.setTextColor(badgeColor.getContrastColor().adjustForContrast(badgeColor))
                 }
                 (binding.launcherNotificationBadge.layoutParams as RelativeLayout.LayoutParams).apply {
                     marginEnd = iconPadding

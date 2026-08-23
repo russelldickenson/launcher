@@ -3,6 +3,7 @@ package org.fossify.home.activities
 import android.os.Bundle
 import org.fossify.commons.dialogs.ColorPickerDialog
 import org.fossify.commons.dialogs.RadioGroupDialog
+import org.fossify.commons.extensions.adjustForContrast
 import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.toast
 import org.fossify.commons.extensions.updateTextColors
@@ -40,10 +41,10 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
         setupNotificationBadgeColor()
         setupNotificationBadgeShape()
         setupShowNotificationCount()
-        updateNotificationBadgePreview()
         promptForNotificationAccessIfNeeded()
         updateTextColors(binding.notificationBadgeSettingsHolder)
         darkenTextForLightMode(binding.notificationBadgeSettingsHolder)
+        updateNotificationBadgePreview()
     }
 
     private fun setupShowNotificationBadges() {
@@ -136,10 +137,11 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
             else -> R.drawable.notification_badge_dot
         }
 
+        val badgeColor = config.notificationBadgeColor
         binding.settingsNotificationBadgePreview.apply {
             setBackgroundResource(badgeDrawableRes)
-            background?.mutate()?.setTint(config.notificationBadgeColor)
-            setTextColor(config.notificationBadgeColor.getContrastColor())
+            background?.mutate()?.setTint(badgeColor)
+            setTextColor(badgeColor.getContrastColor().adjustForContrast(badgeColor))
             // a representative sample count, just to preview how digits look on the badge
             text = if (config.showNotificationCount) "3" else ""
         }
