@@ -24,7 +24,6 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.MenuCompat
 import androidx.core.view.forEach
 import com.google.android.material.color.MaterialColors
-import org.fossify.commons.extensions.getPopupMenuTheme
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.isDynamicTheme
 import org.fossify.commons.extensions.showErrorToast
@@ -109,8 +108,7 @@ fun Activity.handleGridItemPopupMenu(
     isOnAllAppsFragment: Boolean,
     listener: ItemMenuListener,
 ): PopupMenu {
-    val contextTheme = ContextThemeWrapper(this, getPopupMenuTheme())
-    return PopupMenu(contextTheme, anchorView, Gravity.TOP or Gravity.END).apply {
+    return PopupMenu(this, anchorView, Gravity.TOP or Gravity.END).apply {
         if (isQPlus()) {
             setForceShowIcon(true)
         }
@@ -126,12 +124,11 @@ fun Activity.handleGridItemPopupMenu(
         }
 
         menu.forEach {
-            val default = getProperTextColor()
-            val color = if (isSPlus() && isDynamicTheme()) {
-                default
-            } else {
-                MaterialColors.getColor(contextTheme, android.R.attr.actionMenuTextColor, default)
-            }
+            val color = MaterialColors.getColor(
+                this@handleGridItemPopupMenu,
+                com.google.android.material.R.attr.colorOnSurface,
+                getProperTextColor()
+            )
             it.iconTintList = ColorStateList.valueOf(color)
         }
         menu.findItem(R.id.rename).isVisible =

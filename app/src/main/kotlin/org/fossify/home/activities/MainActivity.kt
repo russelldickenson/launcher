@@ -49,7 +49,6 @@ import kotlinx.collections.immutable.toImmutableList
 import org.fossify.commons.extensions.appLaunched
 import org.fossify.commons.extensions.beVisible
 import org.fossify.commons.extensions.getContrastColor
-import org.fossify.commons.extensions.getPopupMenuTheme
 import org.fossify.commons.extensions.getProperBackgroundColor
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.insetsController
@@ -870,9 +869,8 @@ class MainActivity : SimpleActivity(), FlingListener {
         binding.homeScreenPopupMenuAnchor.x = x
         binding.homeScreenPopupMenuAnchor.y =
             y - resources.getDimension(R.dimen.long_press_anchor_button_offset_y) * 2
-        val contextTheme = ContextThemeWrapper(this, getPopupMenuTheme())
         PopupMenu(
-            contextTheme,
+            this,
             binding.homeScreenPopupMenuAnchor,
             Gravity.TOP or Gravity.END
         ).apply {
@@ -882,12 +880,11 @@ class MainActivity : SimpleActivity(), FlingListener {
 
             inflate(R.menu.menu_home_screen)
             menu.forEach {
-                val default = getProperTextColor()
-                val color = if (isSPlus() && isDynamicTheme()) {
-                    default
-                } else {
-                    MaterialColors.getColor(contextTheme, android.R.attr.actionMenuTextColor, default)
-                }
+                val color = MaterialColors.getColor(
+                    this@MainActivity,
+                    com.google.android.material.R.attr.colorOnSurface,
+                    getProperTextColor()
+                )
                 it.iconTintList = ColorStateList.valueOf(color)
             }
             menu.findItem(R.id.set_as_default).isVisible = !isDefaultLauncher()

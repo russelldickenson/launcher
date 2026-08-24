@@ -31,6 +31,7 @@
         <item name="alertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
         <item name="textInputStyle">@style/Widget.Material3.TextInputLayout.OutlinedBox</item>
+        <item name="popupMenuStyle">@style/Widget.Material3.PopupMenu</item>
     </style>
 
     <style name="SettingsSectionLabelStyle" parent="@style/TextAppearance.Material3.TitleSmall">
@@ -74,7 +75,7 @@
 
     <style name="WidgetPreviewSizeStyle" parent="@style/TextAppearance.Material3.BodySmall" />
 
-    <style name="LauncherTheme" parent="Theme.Material3.Dark.NoActionBar">
+    <style name="LauncherTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/m3_primary</item>
         <item name="colorOnPrimary">@color/m3_on_primary</item>
         <item name="colorPrimaryContainer">@color/m3_primary_container</item>
@@ -105,6 +106,7 @@
         <item name="alertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
         <item name="textInputStyle">@style/Widget.Material3.TextInputLayout.OutlinedBox</item>
+        <item name="popupMenuStyle">@style/Widget.Material3.PopupMenu</item>
 
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowShowWallpaper">true</item>
