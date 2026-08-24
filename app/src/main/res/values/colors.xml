@@ -3,7 +3,6 @@
     <color name="semitransparent_navigation">#33000000</color>
     <color name="app_drawer_light_mode_background">#FFF0F2F5</color>
     <color name="app_drawer_dark_mode_background">#FF2B2D30</color>
-    <color name="favourite_badge_heart">#FFFF0000</color>
 
     <!-- Material 3 Semantic Colors (Light) -->
     <color name="m3_primary">#0061A4</color>

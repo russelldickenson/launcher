@@ -4,32 +4,13 @@ import android.app.Activity
 import android.content.DialogInterface
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.fossify.commons.extensions.*
-import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.home.databinding.DialogRenameItemBinding
-import org.fossify.home.extensions.homeScreenGridItemsDB
-import org.fossify.home.models.HomeScreenGridItem
 
 class RenameItemDialog(
     val activity: Activity,
     val currentTitle: String,
     val onConfirm: (newTitle: String, dialog: DialogInterface) -> Unit
 ) {
-
-    constructor(activity: Activity, item: HomeScreenGridItem, callback: () -> Unit) : this(
-        activity = activity,
-        currentTitle = item.title,
-        onConfirm = { newTitle, dialog ->
-            ensureBackgroundThread {
-                val result = activity.homeScreenGridItemsDB.updateItemTitle(newTitle, item.id!!)
-                if (result == 1) {
-                    callback()
-                    dialog.dismiss()
-                } else {
-                    activity.toast(org.fossify.commons.R.string.unknown_error_occurred)
-                }
-            }
-        }
-    )
 
     init {
         val binding = DialogRenameItemBinding.inflate(activity.layoutInflater)

@@ -952,8 +952,25 @@ class MainActivity : SimpleActivity(), FlingListener {
     }
 
     private fun renameItem(homeScreenGridItem: HomeScreenGridItem) {
-        RenameItemDialog(this, homeScreenGridItem) {
-            binding.homeScreenGrid.root.fetchGridItems()
+        RenameItemDialog(this, homeScreenGridItem.title) { newTitle, dialog ->
+            ensureBackgroundThread {
+                val result = homeScreenGridItemsDB.updateItemTitle(newTitle, homeScreenGridItem.id!!)
+                if (result != 1) {
+                    runOnUiThread { toast(org.fossify.commons.R.string.unknown_error_occurred) }
+                    return@ensureBackgroundThread
+                }
+
+                // only real app icons have a drawer-side entry to keep in sync - folders,
+                // widgets, and shortcuts are only ever named through this home-screen path
+                if (homeScreenGridItem.type == ITEM_TYPE_ICON) {
+                    renameAppEverywhere(homeScreenGridItem.packageName, homeScreenGridItem.activityName, newTitle)
+                }
+
+                runOnUiThread {
+                    binding.homeScreenGrid.root.fetchGridItems()
+                    dialog.dismiss()
+                }
+            }
         }
     }
 
@@ -964,25 +981,37 @@ class MainActivity : SimpleActivity(), FlingListener {
 
         RenameItemDialog(this, launcher.title) { newTitle, dialog ->
             ensureBackgroundThread {
-                launchersDB.updateCustomTitle(item.packageName, newTitle, newTitle)
-
-                IconCache.launchers = IconCache.launchers.map {
-                    if (it.packageName == item.packageName && it.activityName == item.activityName) {
-                        it.copy(title = newTitle, customTitle = newTitle)
-                    } else {
-                        it
-                    }
-                }.sortedWith(
-                    compareByDescending<AppLauncher> { it.pinned }
-                        .thenBy { it.title.normalizeString().lowercase() }
-                        .thenBy { it.packageName }
-                )
+                renameAppEverywhere(item.packageName, item.activityName, newTitle)
 
                 runOnUiThread {
-                    binding.allAppsFragment.root.onIconTitleChanged(item.packageName, item.activityName, newTitle)
+                    binding.homeScreenGrid.root.fetchGridItems()
                     dialog.dismiss()
                 }
             }
+        }
+    }
+
+    // keeps an app's title consistent everywhere it can appear (the drawer, and any already-
+    // placed home screen icons) regardless of which surface the rename was started from -
+    // must be called on a background thread
+    private fun renameAppEverywhere(packageName: String, activityName: String, newTitle: String) {
+        launchersDB.updateCustomTitle(packageName, newTitle, newTitle)
+        homeScreenGridItemsDB.updateAppTitle(newTitle, packageName, activityName)
+
+        IconCache.launchers = IconCache.launchers.map {
+            if (it.packageName == packageName && it.activityName == activityName) {
+                it.copy(title = newTitle, customTitle = newTitle)
+            } else {
+                it
+            }
+        }.sortedWith(
+            compareByDescending<AppLauncher> { it.pinned }
+                .thenBy { it.title.normalizeString().lowercase() }
+                .thenBy { it.packageName }
+        )
+
+        runOnUiThread {
+            binding.allAppsFragment.root.onIconTitleChanged(packageName, activityName, newTitle)
         }
     }
 
