@@ -142,7 +142,9 @@ class DrawerLabelsSettingsActivity : SimpleActivity() {
     }
 
     private fun updateDrawerColorHoldersVisibility(useDefault: Boolean) {
+        binding.dividerBeforeDrawerTextColor.root.beVisibleIf(!useDefault)
         binding.settingsDrawerTextColorHolder.beVisibleIf(!useDefault)
+        binding.dividerBeforeDrawerBackgroundColor.root.beVisibleIf(!useDefault)
         binding.settingsDrawerBackgroundColorHolder.beVisibleIf(!useDefault)
     }
 

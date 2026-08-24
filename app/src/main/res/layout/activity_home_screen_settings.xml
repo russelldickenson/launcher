@@ -35,93 +35,112 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <RelativeLayout
-                android:id="@+id/settings_home_screen_column_count_holder"
-                style="@style/SettingsHolderTextViewStyle"
+            <com.google.android.material.card.MaterialCardView
+                style="@style/SettingsCardStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/settings_home_screen_column_count_label"
-                    style="@style/SettingsTextLabelStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/columns" />
-
-                <TextView
-                    android:id="@+id/settings_home_screen_column_count"
-                    style="@style/SettingsTextValueStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/settings_home_screen_column_count_label"
-                    tools:text="5" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/settings_home_icon_scale_holder"
-                style="@style/SettingsHolderTextViewStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
-
-                <TextView
-                    android:id="@+id/settings_home_icon_scale_label"
-                    style="@style/SettingsTextLabelStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/home_icon_scale" />
-
-                <TextView
-                    android:id="@+id/settings_home_icon_scale"
-                    style="@style/SettingsTextValueStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/settings_home_icon_scale_label"
-                    tools:text="100%" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/settings_show_home_app_labels_holder"
-                style="@style/SettingsHolderSwitchStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/settings_show_home_app_labels"
-                    style="@style/SettingsSwitchStyle"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/show_app_labels" />
+                    android:orientation="vertical">
 
-            </RelativeLayout>
+                    <RelativeLayout
+                        android:id="@+id/settings_home_screen_column_count_holder"
+                        style="@style/SettingsHolderTextViewStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ripple_background">
 
-            <RelativeLayout
-                android:id="@+id/settings_home_label_max_lines_holder"
-                style="@style/SettingsHolderTextViewStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                        <TextView
+                            android:id="@+id/settings_home_screen_column_count_label"
+                            style="@style/SettingsTextLabelStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/columns" />
 
-                <TextView
-                    android:id="@+id/settings_home_label_max_lines_label"
-                    style="@style/SettingsTextLabelStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/home_label_max_lines" />
+                        <TextView
+                            android:id="@+id/settings_home_screen_column_count"
+                            style="@style/SettingsTextValueStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/settings_home_screen_column_count_label"
+                            tools:text="5" />
 
-                <TextView
-                    android:id="@+id/settings_home_label_max_lines"
-                    style="@style/SettingsTextValueStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/settings_home_label_max_lines_label"
-                    tools:text="2" />
+                    </RelativeLayout>
 
-            </RelativeLayout>
+                    <include layout="@layout/divider_inset" />
+
+                    <RelativeLayout
+                        android:id="@+id/settings_home_icon_scale_holder"
+                        style="@style/SettingsHolderTextViewStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ripple_background">
+
+                        <TextView
+                            android:id="@+id/settings_home_icon_scale_label"
+                            style="@style/SettingsTextLabelStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/home_icon_scale" />
+
+                        <TextView
+                            android:id="@+id/settings_home_icon_scale"
+                            style="@style/SettingsTextValueStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/settings_home_icon_scale_label"
+                            tools:text="100%" />
+
+                    </RelativeLayout>
+
+                    <include layout="@layout/divider_inset" />
+
+                    <RelativeLayout
+                        android:id="@+id/settings_show_home_app_labels_holder"
+                        style="@style/SettingsHolderSwitchStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ripple_background">
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/settings_show_home_app_labels"
+                            style="@style/SettingsSwitchStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/show_app_labels" />
+
+                    </RelativeLayout>
+
+                    <include layout="@layout/divider_inset" />
+
+                    <RelativeLayout
+                        android:id="@+id/settings_home_label_max_lines_holder"
+                        style="@style/SettingsHolderTextViewStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/ripple_background">
+
+                        <TextView
+                            android:id="@+id/settings_home_label_max_lines_label"
+                            style="@style/SettingsTextLabelStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/home_label_max_lines" />
+
+                        <TextView
+                            android:id="@+id/settings_home_label_max_lines"
+                            style="@style/SettingsTextValueStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/settings_home_label_max_lines_label"
+                            tools:text="2" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
