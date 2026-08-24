@@ -42,12 +42,13 @@ class DrawerSettingsActivity : SimpleActivity() {
         super.onResume()
         setupTopAppBar(binding.drawerSettingsAppbar, NavigationIcon.Arrow)
 
+        setupShowFavouritesDivider()
         setupDrawerSearchBar()
         setupOpenKeyboardOnAppDrawer()
         setupCloseAppDrawerOnOtherAppOpen()
-        setupDrawerBackgroundColor()
         setupShowDrawerAppLabels()
         setupDrawerTextColor()
+        setupDrawerBackgroundColor()
         setupColumnCount()
         setupDrawerIconScale()
         setupDrawerLabelFontSize()
@@ -55,6 +56,14 @@ class DrawerSettingsActivity : SimpleActivity() {
         setupManageHiddenIcons()
         updateTextColors(binding.drawerSettingsHolder)
         darkenTextForLightMode(binding.drawerSettingsHolder)
+    }
+
+    private fun setupShowFavouritesDivider() {
+        binding.settingsShowFavouritesDivider.isChecked = config.showFavouritesDivider
+        binding.settingsShowFavouritesDividerHolder.setOnClickListener {
+            binding.settingsShowFavouritesDivider.toggle()
+            config.showFavouritesDivider = binding.settingsShowFavouritesDivider.isChecked
+        }
     }
 
     private fun setupDrawerSearchBar() {

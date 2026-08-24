@@ -111,22 +111,6 @@
                 android:text="@string/appearance_settings" />
 
             <RelativeLayout
-                android:id="@+id/settings_show_favourites_divider_holder"
-                style="@style/SettingsHolderSwitchStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
-
-                <org.fossify.commons.views.MyMaterialSwitch
-                    android:id="@+id/settings_show_favourites_divider"
-                    style="@style/SettingsSwitchStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/show_favourites_divider" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
                 android:id="@+id/settings_icon_settings_holder"
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
@@ -138,6 +122,7 @@
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="@string/icons_subsection" />
 
                 <ImageView
@@ -163,6 +148,7 @@
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="@string/notification_badges" />
 
                 <ImageView
@@ -188,6 +174,7 @@
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="@string/app_drawer_settings" />
 
                 <ImageView
@@ -213,6 +200,7 @@
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:text="@string/home_screen_settings" />
 
                 <ImageView

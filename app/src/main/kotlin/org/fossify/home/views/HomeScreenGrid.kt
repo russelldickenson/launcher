@@ -41,6 +41,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat.Type
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.customview.widget.ExploreByTouchHelper
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.math.MathUtils
 import kotlinx.collections.immutable.toImmutableList
 import org.fossify.commons.extensions.adjustAlpha
@@ -191,13 +192,18 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             style = Paint.Style.FILL
         }
 
+        val folderBg = MaterialColors.getColor(
+            context,
+            com.google.android.material.R.attr.colorSurfaceContainer,
+            context.getProperBackgroundColor()
+        )
         folderBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = context.getProperBackgroundColor()
+            color = folderBg
             style = Paint.Style.FILL
         }
 
         folderIconBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = context.getProperBackgroundColor().adjustAlpha(0.9f)
+            color = folderBg.adjustAlpha(0.9f)
             style = Paint.Style.FILL
         }
 
@@ -317,7 +323,13 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         contrastTextPaint.setShadowLayer(
             2f, 0f, 0f, context.getProperTextColor().getContrastColor()
         )
-        folderBackgroundPaint.color = context.getProperBackgroundColor()
+        val folderBg = MaterialColors.getColor(
+            context,
+            com.google.android.material.R.attr.colorSurfaceContainer,
+            context.getProperBackgroundColor()
+        )
+        folderBackgroundPaint.color = folderBg
+        folderIconBackgroundPaint.color = folderBg.adjustAlpha(0.9f)
     }
 
     fun removeAppIcon(item: HomeScreenGridItem) {

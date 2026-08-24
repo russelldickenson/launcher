@@ -232,7 +232,8 @@ object IconPackHelper {
         val path = Path()
         when (shape) {
             ICON_SHAPE_SQUARE -> path.addRect(0f, 0f, size, size, Path.Direction.CW)
-            ICON_SHAPE_ROUNDED_SQUARE -> path.addRoundRect(RectF(0f, 0f, size, size), size * 0.22f, size * 0.22f, Path.Direction.CW)
+            ICON_SHAPE_ROUNDED_SQUARE, ICON_SHAPE_IOS -> path.addRoundRect(RectF(0f, 0f, size, size), size * 0.225f, size * 0.225f, Path.Direction.CW)
+            ICON_SHAPE_ONE_UI -> path.addRoundRect(RectF(0f, 0f, size, size), size * 0.30f, size * 0.30f, Path.Direction.CW)
             // approximated with an extra-rounded rect - a true superellipse isn't worth the complexity here
             ICON_SHAPE_SQUIRCLE -> path.addRoundRect(RectF(0f, 0f, size, size), size * 0.4f, size * 0.4f, Path.Direction.CW)
             else -> path.addCircle(size / 2f, size / 2f, size / 2f, Path.Direction.CW)

@@ -7,6 +7,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import org.fossify.home.R
 import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.extensions.config
@@ -75,7 +76,11 @@ class FavouritesDividerDecoration : RecyclerView.ItemDecoration() {
 
     private fun paintFor(parent: RecyclerView): Paint {
         return linePaint ?: Paint().apply {
-            color = ContextCompat.getColor(parent.context, org.fossify.commons.R.color.divider_grey)
+            color = MaterialColors.getColor(
+                parent.context,
+                com.google.android.material.R.attr.colorOutlineVariant,
+                ContextCompat.getColor(parent.context, org.fossify.commons.R.color.divider_grey)
+            )
             strokeWidth = parent.resources.getDimension(org.fossify.commons.R.dimen.divider_height)
         }.also { linePaint = it }
     }

@@ -16,6 +16,7 @@
 
     <TextView
         android:id="@+id/widget_app_title"
+        style="@style/WidgetSectionTitleStyle"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignTop="@+id/widget_app_icon"
@@ -27,7 +28,6 @@
         android:paddingStart="@dimen/medium_margin"
         android:paddingTop="@dimen/normal_margin"
         android:paddingBottom="@dimen/normal_margin"
-        android:textSize="@dimen/bigger_text_size"
         tools:text="@string/app_name" />
 
 </RelativeLayout>

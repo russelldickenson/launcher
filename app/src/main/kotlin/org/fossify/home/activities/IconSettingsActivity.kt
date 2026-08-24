@@ -15,6 +15,8 @@ import org.fossify.home.extensions.getAppIcon
 import org.fossify.home.extensions.getDrawableForPackageName
 import org.fossify.home.extensions.getReferenceIconWidth
 import org.fossify.home.helpers.ICON_SHAPE_CIRCLE
+import org.fossify.home.helpers.ICON_SHAPE_IOS
+import org.fossify.home.helpers.ICON_SHAPE_ONE_UI
 import org.fossify.home.helpers.ICON_SHAPE_ROUNDED_SQUARE
 import org.fossify.home.helpers.ICON_SHAPE_SQUARE
 import org.fossify.home.helpers.ICON_SHAPE_SQUIRCLE
@@ -105,7 +107,8 @@ class IconSettingsActivity : SimpleActivity() {
             val items = arrayListOf(
                 RadioItem(ICON_SHAPE_CIRCLE, getString(org.fossify.home.R.string.icon_shape_circle)),
                 RadioItem(ICON_SHAPE_SQUIRCLE, getString(org.fossify.home.R.string.icon_shape_squircle)),
-                RadioItem(ICON_SHAPE_ROUNDED_SQUARE, getString(org.fossify.home.R.string.icon_shape_rounded_square)),
+                RadioItem(ICON_SHAPE_IOS, getString(org.fossify.home.R.string.icon_shape_ios)),
+                RadioItem(ICON_SHAPE_ONE_UI, getString(org.fossify.home.R.string.icon_shape_one_ui)),
                 RadioItem(ICON_SHAPE_SQUARE, getString(org.fossify.home.R.string.icon_shape_square))
             )
 
@@ -124,8 +127,9 @@ class IconSettingsActivity : SimpleActivity() {
     private fun updateIconShapeLabel() {
         binding.settingsIconShape.text = when (config.iconShape) {
             ICON_SHAPE_SQUIRCLE -> getString(org.fossify.home.R.string.icon_shape_squircle)
-            ICON_SHAPE_ROUNDED_SQUARE -> getString(org.fossify.home.R.string.icon_shape_rounded_square)
             ICON_SHAPE_SQUARE -> getString(org.fossify.home.R.string.icon_shape_square)
+            ICON_SHAPE_IOS, ICON_SHAPE_ROUNDED_SQUARE -> getString(org.fossify.home.R.string.icon_shape_ios)
+            ICON_SHAPE_ONE_UI -> getString(org.fossify.home.R.string.icon_shape_one_ui)
             else -> getString(org.fossify.home.R.string.icon_shape_circle)
         }
     }

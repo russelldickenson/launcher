@@ -19,6 +19,7 @@
 
     <org.fossify.commons.views.MyTextView
         android:id="@+id/widget_title"
+        style="@style/WidgetPreviewTitleStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/widget_image"
@@ -27,11 +28,11 @@
         android:layout_marginTop="@dimen/small_margin"
         android:ellipsize="end"
         android:lines="1"
-        android:textSize="@dimen/smaller_text_size"
         tools:text="Calendar" />
 
     <org.fossify.commons.views.MyTextView
         android:id="@+id/widget_size"
+        style="@style/WidgetPreviewSizeStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/widget_title"
@@ -40,7 +41,6 @@
         android:alpha="0.5"
         android:ellipsize="end"
         android:lines="1"
-        android:textSize="@dimen/smaller_text_size"
         tools:text="1 x 1" />
 
 </RelativeLayout>

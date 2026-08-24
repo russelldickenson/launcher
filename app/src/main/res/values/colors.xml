@@ -5,4 +5,33 @@
          background, so the drawer and its white labels stay easy to read -->
     <color name="app_drawer_light_mode_background">#FF2C2C2C</color>
     <color name="favourite_badge_heart">#FFFF0000</color>
+
+    <!-- Material 3 Semantic Colors (Light) -->
+    <color name="m3_primary">#0061A4</color>
+    <color name="m3_on_primary">#FFFFFF</color>
+    <color name="m3_primary_container">#D1E4FF</color>
+    <color name="m3_on_primary_container">#001D36</color>
+    <color name="m3_secondary">#535F70</color>
+    <color name="m3_on_secondary">#FFFFFF</color>
+    <color name="m3_secondary_container">#D7E3F7</color>
+    <color name="m3_on_secondary_container">#101C2B</color>
+    <color name="m3_tertiary">#6B5778</color>
+    <color name="m3_on_tertiary">#FFFFFF</color>
+    <color name="m3_tertiary_container">#F2DAFF</color>
+    <color name="m3_on_tertiary_container">#251431</color>
+    <color name="m3_error">#BA1A1A</color>
+    <color name="m3_on_error">#FFFFFF</color>
+    <color name="m3_error_container">#FFDAD6</color>
+    <color name="m3_on_error_container">#410002</color>
+    <color name="m3_background">#FDFCFF</color>
+    <color name="m3_on_background">#1A1C1E</color>
+    <color name="m3_surface">#FDFCFF</color>
+    <color name="m3_on_surface">#1A1C1E</color>
+    <color name="m3_surface_variant">#DFE2EB</color>
+    <color name="m3_on_surface_variant">#43474E</color>
+    <color name="m3_outline">#73777F</color>
+    <color name="m3_outline_variant">#C3C7D0</color>
+    <color name="m3_surface_container">#F0F4F8</color>
+    <color name="m3_surface_container_high">#EAEFF4</color>
+    <color name="m3_surface_container_low">#F6FAFE</color>
 </resources>

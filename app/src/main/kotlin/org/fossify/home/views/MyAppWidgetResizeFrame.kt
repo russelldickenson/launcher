@@ -3,12 +3,17 @@ package org.fossify.home.views
 import android.annotation.SuppressLint
 import android.appwidget.AppWidgetManager
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.PointF
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.RelativeLayout
 import kotlinx.collections.immutable.toImmutableList
+import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.home.R
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getCellCount
@@ -48,14 +53,15 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
     init {
         background = ColorDrawable(Color.TRANSPARENT)
 
+        val primaryAccent = context.getProperPrimaryColor()
         resizeWidgetLinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
+            color = primaryAccent
             strokeWidth = context.resources.getDimension(org.fossify.commons.R.dimen.tiny_margin)
             style = Paint.Style.STROKE
         }
 
         resizeWidgetLineDotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
+            color = primaryAccent
         }
     }
 
@@ -363,7 +369,15 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (x != 0f || y != 0f) {
-            canvas.drawRect(lineDotRadius, lineDotRadius, width.toFloat() - lineDotRadius, height.toFloat() - lineDotRadius, resizeWidgetLinePaint)
+            canvas.drawRoundRect(
+                lineDotRadius,
+                lineDotRadius,
+                width.toFloat() - lineDotRadius,
+                height.toFloat() - lineDotRadius,
+                lineDotRadius,
+                lineDotRadius,
+                resizeWidgetLinePaint
+            )
 
             canvas.drawCircle(lineDotRadius, height / 2f, lineDotRadius, resizeWidgetLineDotPaint)
             canvas.drawCircle(width / 2f, lineDotRadius, lineDotRadius, resizeWidgetLineDotPaint)

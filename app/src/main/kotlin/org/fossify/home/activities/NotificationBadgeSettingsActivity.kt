@@ -38,9 +38,9 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
         setupTopAppBar(binding.notificationBadgeSettingsAppbar, NavigationIcon.Arrow)
 
         setupShowNotificationBadges()
+        setupShowNotificationCount()
         setupNotificationBadgeColor()
         setupNotificationBadgeShape()
-        setupShowNotificationCount()
         promptForNotificationAccessIfNeeded()
         updateTextColors(binding.notificationBadgeSettingsHolder)
         darkenTextForLightMode(binding.notificationBadgeSettingsHolder)

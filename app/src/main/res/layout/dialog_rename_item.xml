@@ -7,16 +7,17 @@
 
     <org.fossify.commons.views.MyTextInputLayout
         android:id="@+id/rename_item_hint"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/label">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/rename_item_edittext"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textCapWords"
-            android:textSize="@dimen/bigger_text_size" />
+            android:inputType="textCapWords" />
 
     </org.fossify.commons.views.MyTextInputLayout>
 </FrameLayout>

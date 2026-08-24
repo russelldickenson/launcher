@@ -37,6 +37,8 @@ const val ICON_SHAPE_CIRCLE = 0
 const val ICON_SHAPE_SQUIRCLE = 1
 const val ICON_SHAPE_ROUNDED_SQUARE = 2
 const val ICON_SHAPE_SQUARE = 3
+const val ICON_SHAPE_IOS = 4
+const val ICON_SHAPE_ONE_UI = 5
 
 // default home screen grid size
 const val ROW_COUNT = 6

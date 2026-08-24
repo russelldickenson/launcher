@@ -47,13 +47,13 @@
 
     <org.fossify.commons.views.MyTextView
         android:id="@+id/launcher_label"
+        style="@style/LauncherLabelStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/launcher_icon"
         android:ellipsize="end"
         android:gravity="center_horizontal|top"
-        android:maxLines="2"
-        android:textSize="@dimen/smaller_text_size" />
+        android:maxLines="2" />
 
     <View
         android:id="@+id/popup_anchor"

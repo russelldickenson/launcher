@@ -1,7 +1,8 @@
 package org.fossify.home.dialogs
 
 import android.app.Activity
-import android.app.AlertDialog
+import android.content.DialogInterface
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.fossify.commons.extensions.*
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.home.databinding.DialogRenameItemBinding
@@ -15,13 +16,13 @@ class RenameItemDialog(val activity: Activity, val item: HomeScreenGridItem, val
         val view = binding.root
         binding.renameItemEdittext.setText(item.title)
 
-        activity.getAlertDialogBuilder()
+        MaterialAlertDialogBuilder(activity)
             .setPositiveButton(org.fossify.commons.R.string.ok, null)
             .setNegativeButton(org.fossify.commons.R.string.cancel, null)
             .apply {
                 activity.setupDialogStuff(view, this, org.fossify.commons.R.string.rename) { alertDialog ->
                     alertDialog.showKeyboard(binding.renameItemEdittext)
-                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
                         val newTitle = binding.renameItemEdittext.value
                         if (newTitle.isNotEmpty()) {
                             ensureBackgroundThread {
