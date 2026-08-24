@@ -22,6 +22,7 @@ import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.realScreenSize
 import org.fossify.home.R
 import org.fossify.home.activities.SimpleActivity
+import org.fossify.home.databinding.ItemDrawerSectionHeaderBinding
 import org.fossify.home.databinding.ItemFavouritesDividerBinding
 import org.fossify.home.databinding.ItemLauncherLabelBinding
 import org.fossify.home.extensions.animateScale
@@ -53,6 +54,7 @@ class LaunchersAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
+            is DrawerGridItem.Header -> VIEW_TYPE_HEADER
             is DrawerGridItem.Divider -> VIEW_TYPE_DIVIDER
             is DrawerGridItem.App -> VIEW_TYPE_APP
         }
@@ -60,6 +62,7 @@ class LaunchersAdapter(
 
     override fun getItemId(position: Int): Long {
         return when (val item = getItem(position)) {
+            is DrawerGridItem.Header -> -2L
             is DrawerGridItem.Divider -> -1L
             is DrawerGridItem.App -> item.launcher.getLauncherIdentifier().hashCode().toLong()
         }
@@ -73,19 +76,32 @@ class LaunchersAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        return if (viewType == VIEW_TYPE_DIVIDER) {
-            val binding = ItemFavouritesDividerBinding.inflate(inflater, parent, false)
-            DividerViewHolder(binding.root)
-        } else {
-            val binding = ItemLauncherLabelBinding.inflate(inflater, parent, false)
-            AppViewHolder(binding.root)
+        return when (viewType) {
+            VIEW_TYPE_HEADER -> {
+                val binding = ItemDrawerSectionHeaderBinding.inflate(inflater, parent, false)
+                HeaderViewHolder(binding)
+            }
+            VIEW_TYPE_DIVIDER -> {
+                val binding = ItemFavouritesDividerBinding.inflate(inflater, parent, false)
+                DividerViewHolder(binding.root)
+            }
+            else -> {
+                val binding = ItemLauncherLabelBinding.inflate(inflater, parent, false)
+                AppViewHolder(binding.root)
+            }
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is AppViewHolder) {
-            val item = getItem(position) as? DrawerGridItem.App ?: return
-            holder.bindView(item.launcher)
+        when (holder) {
+            is HeaderViewHolder -> {
+                val item = getItem(position) as? DrawerGridItem.Header ?: return
+                holder.bind(item.titleRes)
+            }
+            is AppViewHolder -> {
+                val item = getItem(position) as? DrawerGridItem.App ?: return
+                holder.bindView(item.launcher)
+            }
         }
     }
 
@@ -116,6 +132,12 @@ class LaunchersAdapter(
         notifyDataSetChanged()
     }
 
+    inner class HeaderViewHolder(private val binding: ItemDrawerSectionHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(titleRes: Int) {
+            binding.sectionHeaderLabel.setText(titleRes)
+        }
+    }
+
     inner class DividerViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     inner class AppViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -132,11 +154,6 @@ class LaunchersAdapter(
                 binding.launcherIcon.layoutParams = binding.launcherIcon.layoutParams.apply {
                     width = targetIconWidth
                     height = targetIconWidth
-                }
-
-                binding.launcherPinBadge.beVisibleIf(launcher.pinned)
-                (binding.launcherPinBadge.layoutParams as RelativeLayout.LayoutParams).apply {
-                    marginEnd = iconPadding
                 }
 
                 val notificationCount = NotificationCache.notificationCounts[launcher.packageName] ?: 0
@@ -232,6 +249,7 @@ class LaunchersAdapter(
     companion object {
         const val VIEW_TYPE_APP = 0
         const val VIEW_TYPE_DIVIDER = 1
+        const val VIEW_TYPE_HEADER = 2
 
         private const val LAUNCHER_SCALE_NORMAL = 1f
         private const val LAUNCHER_SCALE_PRESSED = 1.15f

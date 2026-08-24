@@ -17,7 +17,7 @@ import org.fossify.home.models.HomeScreenGridItem
 
 @Database(
     entities = [AppLauncher::class, HomeScreenGridItem::class, HiddenIcon::class],
-    version = 6
+    version = 7
 )
 @TypeConverters(Converters::class)
 abstract class AppsDatabase : RoomDatabase() {
@@ -37,6 +37,12 @@ abstract class AppsDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE apps ADD COLUMN custom_title TEXT")
+            }
+        }
+
         fun getInstance(context: Context): AppsDatabase {
             if (db == null) {
                 synchronized(AppsDatabase::class) {
@@ -45,7 +51,7 @@ abstract class AppsDatabase : RoomDatabase() {
                             context.applicationContext,
                             AppsDatabase::class.java,
                             "apps.db"
-                        ).addMigrations(MIGRATION_5_6).build()
+                        ).addMigrations(MIGRATION_5_6, MIGRATION_6_7).build()
                     }
                 }
             }

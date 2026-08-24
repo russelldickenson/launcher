@@ -113,7 +113,6 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     private var folderBackgroundPaint: Paint
     private var folderIconBackgroundPaint: Paint
     private var notificationBadgePaint: Paint
-    private var notificationBadgeStrokePaint: Paint
     private var notificationCountTextPaint: TextPaint
     private var draggedItem: HomeScreenGridItem? = null
     private var resizedWidget: HomeScreenGridItem? = null
@@ -209,11 +208,6 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
 
         notificationBadgePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = context.config.notificationBadgeColor
-            style = Paint.Style.FILL
-        }
-
-        notificationBadgeStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.WHITE
             style = Paint.Style.FILL
         }
 
@@ -1998,8 +1992,6 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             val badgeWidth = max(badgeHeight, textWidth + badgeHeight * 0.7f)
             val cx = bounds.right - badgeWidth / 2f
             val cy = bounds.bottom - badgeHeight / 2f
-            val strokeExtra = badgeHeight * (NOTIFICATION_BADGE_STROKE_FACTOR - 1f)
-            drawBadgeShape(cx, cy, badgeWidth + strokeExtra, badgeHeight + strokeExtra, notificationBadgeStrokePaint)
             drawBadgeShape(cx, cy, badgeWidth, badgeHeight, notificationBadgePaint)
             val textY = cy - (notificationCountTextPaint.descent() + notificationCountTextPaint.ascent()) / 2
             drawText(countText, cx, textY, notificationCountTextPaint)
@@ -2007,8 +1999,6 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             val size = iconSize * NOTIFICATION_BADGE_RADIUS_FACTOR * 2
             val cx = bounds.right - size / 2f
             val cy = bounds.bottom - size / 2f
-            val strokeSize = size * NOTIFICATION_BADGE_STROKE_FACTOR
-            drawBadgeShape(cx, cy, strokeSize, strokeSize, notificationBadgeStrokePaint)
             drawBadgeShape(cx, cy, size, size, notificationBadgePaint)
         }
     }
@@ -2296,7 +2286,6 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         private const val FOLDER_CLOSE_HOLD_THRESHOLD = 300L
         private const val FOLDER_ANIMATION_DURATION = 200L
         private const val NOTIFICATION_BADGE_RADIUS_FACTOR = 0.16f
-        private const val NOTIFICATION_BADGE_STROKE_FACTOR = 1.3f
         private const val NOTIFICATION_BADGE_COUNT_SIZE_FACTOR = 0.34f
         private const val NOTIFICATION_COUNT_TEXT_SIZE_FACTOR = 0.22f
     }

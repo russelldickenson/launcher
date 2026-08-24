@@ -54,6 +54,7 @@ import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.insetsController
 import org.fossify.commons.extensions.isDynamicTheme
 import org.fossify.commons.extensions.isPackageInstalled
+import org.fossify.commons.extensions.normalizeString
 import org.fossify.commons.extensions.onGlobalLayout
 import org.fossify.commons.extensions.performHapticFeedback
 import org.fossify.commons.extensions.realScreenSize
@@ -956,6 +957,35 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
     }
 
+    private fun renameAppDrawerItem(item: HomeScreenGridItem) {
+        val launcher = IconCache.launchers.firstOrNull {
+            it.packageName == item.packageName && it.activityName == item.activityName
+        } ?: return
+
+        RenameItemDialog(this, launcher.title) { newTitle, dialog ->
+            ensureBackgroundThread {
+                launchersDB.updateCustomTitle(item.packageName, newTitle, newTitle)
+
+                IconCache.launchers = IconCache.launchers.map {
+                    if (it.packageName == item.packageName && it.activityName == item.activityName) {
+                        it.copy(title = newTitle, customTitle = newTitle)
+                    } else {
+                        it
+                    }
+                }.sortedWith(
+                    compareByDescending<AppLauncher> { it.pinned }
+                        .thenBy { it.title.normalizeString().lowercase() }
+                        .thenBy { it.packageName }
+                )
+
+                runOnUiThread {
+                    binding.allAppsFragment.root.onIconTitleChanged(item.packageName, item.activityName, newTitle)
+                    dialog.dismiss()
+                }
+            }
+        }
+    }
+
     private fun launchWallpapersIntent() {
         try {
             Intent(Intent.ACTION_SET_WALLPAPER).apply {
@@ -1009,7 +1039,11 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
 
         override fun rename(gridItem: HomeScreenGridItem) {
-            renameItem(gridItem)
+            if (gridItem.id == null || isAllAppsFragmentExpanded()) {
+                renameAppDrawerItem(gridItem)
+            } else {
+                renameItem(gridItem)
+            }
         }
 
         override fun resize(gridItem: HomeScreenGridItem) {
@@ -1148,6 +1182,7 @@ class MainActivity : SimpleActivity(), FlingListener {
             it.getIconIdentifier()
         }
 
+        val existingApps = launchersDB.getAppLaunchers().associateBy { it.packageName }
         val pinnedPackages = launchersDB.getPinnedPackageNames().toSet()
 
         val allApps = ArrayList<AppLauncher>()
@@ -1179,15 +1214,18 @@ class MainActivity : SimpleActivity(), FlingListener {
                 config = Bitmap.Config.ARGB_8888
             )
             val placeholderColor = calculateAverageColor(bitmap)
+            val customTitle = existingApps[packageName]?.customTitle
+            val title = customTitle?.takeIf { it.isNotBlank() } ?: label
             allApps.add(
                 AppLauncher(
                     id = null,
-                    title = label,
+                    title = title,
                     packageName = packageName,
                     activityName = activityName,
                     order = 0,
                     thumbnailColor = placeholderColor,
                     pinned = pinnedPackages.contains(packageName),
+                    customTitle = customTitle,
                     drawable = bitmap.toDrawable(resources)
                 )
             )

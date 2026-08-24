@@ -8,6 +8,7 @@
     <string name="hide_icon">Hide icon</string>
     <string name="pin_app">Favourite</string>
     <string name="unpin_app">Unfavourite</string>
+    <string name="favourites_header">Favourites</string>
     <string name="add_hidden_icons">Add hidden icons</string>
     <string name="manage_hidden_icons">Manage hidden icons</string>
     <string name="hidden_icons">Hidden icons</string>

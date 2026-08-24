@@ -25,4 +25,7 @@ interface AppLaunchersDao {
 
     @Query("SELECT package_name FROM apps WHERE pinned = 1")
     fun getPinnedPackageNames(): List<String>
+
+    @Query("UPDATE apps SET title = :title, custom_title = :customTitle WHERE package_name = :packageName")
+    fun updateCustomTitle(packageName: String, title: String, customTitle: String?)
 }

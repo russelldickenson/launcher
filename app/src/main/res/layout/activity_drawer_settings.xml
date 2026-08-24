@@ -169,7 +169,8 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_chevron_right_vector" />
+                    android:src="@drawable/ic_chevron_right_vector"
+                    app:tint="?attr/colorOnSurfaceVariant" />
 
             </RelativeLayout>
 
@@ -187,6 +188,16 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="@string/manage_hidden_icons" />
+
+                <ImageView
+                    android:id="@+id/settings_manage_hidden_icons_chevron"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_chevron_right_vector"
+                    app:tint="?attr/colorOnSurfaceVariant" />
 
             </RelativeLayout>
         </LinearLayout>

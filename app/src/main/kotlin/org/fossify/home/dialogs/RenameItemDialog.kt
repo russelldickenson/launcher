@@ -9,12 +9,32 @@ import org.fossify.home.databinding.DialogRenameItemBinding
 import org.fossify.home.extensions.homeScreenGridItemsDB
 import org.fossify.home.models.HomeScreenGridItem
 
-class RenameItemDialog(val activity: Activity, val item: HomeScreenGridItem, val callback: () -> Unit) {
+class RenameItemDialog(
+    val activity: Activity,
+    val currentTitle: String,
+    val onConfirm: (newTitle: String, dialog: DialogInterface) -> Unit
+) {
+
+    constructor(activity: Activity, item: HomeScreenGridItem, callback: () -> Unit) : this(
+        activity = activity,
+        currentTitle = item.title,
+        onConfirm = { newTitle, dialog ->
+            ensureBackgroundThread {
+                val result = activity.homeScreenGridItemsDB.updateItemTitle(newTitle, item.id!!)
+                if (result == 1) {
+                    callback()
+                    dialog.dismiss()
+                } else {
+                    activity.toast(org.fossify.commons.R.string.unknown_error_occurred)
+                }
+            }
+        }
+    )
 
     init {
         val binding = DialogRenameItemBinding.inflate(activity.layoutInflater)
         val view = binding.root
-        binding.renameItemEdittext.setText(item.title)
+        binding.renameItemEdittext.setText(currentTitle)
 
         MaterialAlertDialogBuilder(activity)
             .setPositiveButton(org.fossify.commons.R.string.ok, null)
@@ -25,15 +45,7 @@ class RenameItemDialog(val activity: Activity, val item: HomeScreenGridItem, val
                     alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
                         val newTitle = binding.renameItemEdittext.value
                         if (newTitle.isNotEmpty()) {
-                            ensureBackgroundThread {
-                                val result = activity.homeScreenGridItemsDB.updateItemTitle(newTitle, item.id!!)
-                                if (result == 1) {
-                                    callback()
-                                    alertDialog.dismiss()
-                                } else {
-                                    activity.toast(org.fossify.commons.R.string.unknown_error_occurred)
-                                }
-                            }
+                            onConfirm(newTitle, alertDialog)
                         } else {
                             activity.toast(org.fossify.commons.R.string.value_cannot_be_empty)
                         }

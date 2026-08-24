@@ -15,11 +15,12 @@ data class AppLauncher(
     @ColumnInfo(name = "order") var order: Int,
     @ColumnInfo(name = "thumbnail_color") var thumbnailColor: Int,
     @ColumnInfo(name = "pinned", defaultValue = "0") var pinned: Boolean = false,
+    @ColumnInfo(name = "custom_title") var customTitle: String? = null,
 
     @Ignore var drawable: Drawable?
 ) : Comparable<AppLauncher> {
 
-    constructor() : this(null, "", "", "", 0, 0, false, null)
+    constructor() : this(null, "", "", "", 0, 0, false, null, null)
 
     companion object {
         var sorting = 0

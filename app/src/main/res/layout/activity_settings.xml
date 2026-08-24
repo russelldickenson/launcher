@@ -132,7 +132,8 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_chevron_right_vector" />
+                    android:src="@drawable/ic_chevron_right_vector"
+                    app:tint="?attr/colorOnSurfaceVariant" />
 
             </RelativeLayout>
 
@@ -158,7 +159,8 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_chevron_right_vector" />
+                    android:src="@drawable/ic_chevron_right_vector"
+                    app:tint="?attr/colorOnSurfaceVariant" />
 
             </RelativeLayout>
 
@@ -184,7 +186,8 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_chevron_right_vector" />
+                    android:src="@drawable/ic_chevron_right_vector"
+                    app:tint="?attr/colorOnSurfaceVariant" />
 
             </RelativeLayout>
 
@@ -210,7 +213,8 @@
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:contentDescription="@null"
-                    android:src="@drawable/ic_chevron_right_vector" />
+                    android:src="@drawable/ic_chevron_right_vector"
+                    app:tint="?attr/colorOnSurfaceVariant" />
 
             </RelativeLayout>
 

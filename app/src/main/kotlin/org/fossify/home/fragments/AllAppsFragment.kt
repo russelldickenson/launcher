@@ -16,6 +16,7 @@ import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.hideKeyboard
 import org.fossify.commons.extensions.normalizeString
 import org.fossify.commons.views.MyGridLayoutManager
+import org.fossify.home.R
 import org.fossify.home.activities.MainActivity
 import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.databinding.AllAppsFragmentBinding
@@ -182,7 +183,8 @@ class AllAppsFragment(
 
                 layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
-                        return if (getAdapter()?.getItemViewType(position) == LaunchersAdapter.VIEW_TYPE_DIVIDER) {
+                        val viewType = getAdapter()?.getItemViewType(position)
+                        return if (viewType == LaunchersAdapter.VIEW_TYPE_DIVIDER || viewType == LaunchersAdapter.VIEW_TYPE_HEADER) {
                             layoutManager.spanCount
                         } else {
                             1
@@ -219,6 +221,22 @@ class AllAppsFragment(
         if (index != -1) {
             launchers = launchers.toMutableList().apply {
                 this[index] = this[index].copy(pinned = pinned)
+            }.sortedWith(
+                compareByDescending<AppLauncher> { it.pinned }
+                    .thenBy { it.title.normalizeString().lowercase() }
+                    .thenBy { it.packageName }
+            )
+
+            submitList(launchers.toMutableList())
+        }
+    }
+
+    fun onIconTitleChanged(packageName: String, activityName: String, newTitle: String) {
+        val identifier = "$packageName/$activityName"
+        val index = launchers.indexOfFirst { it.getLauncherIdentifier() == identifier }
+        if (index != -1) {
+            launchers = launchers.toMutableList().apply {
+                this[index] = this[index].copy(title = newTitle, customTitle = newTitle)
             }.sortedWith(
                 compareByDescending<AppLauncher> { it.pinned }
                     .thenBy { it.title.normalizeString().lowercase() }
@@ -354,10 +372,13 @@ class AllAppsFragment(
         if (context.config.showFavouritesDivider) {
             val pinned = filtered.filter { it.pinned }
             val unpinned = filtered.filter { !it.pinned }
-            if (pinned.isNotEmpty() && unpinned.isNotEmpty()) {
+            if (pinned.isNotEmpty()) {
+                drawerItems.add(DrawerGridItem.Header(R.string.favourites_header))
                 pinned.forEach { drawerItems.add(DrawerGridItem.App(it)) }
-                drawerItems.add(DrawerGridItem.Divider)
-                unpinned.forEach { drawerItems.add(DrawerGridItem.App(it)) }
+                if (unpinned.isNotEmpty()) {
+                    drawerItems.add(DrawerGridItem.Divider)
+                    unpinned.forEach { drawerItems.add(DrawerGridItem.App(it)) }
+                }
             } else {
                 filtered.forEach { drawerItems.add(DrawerGridItem.App(it)) }
             }

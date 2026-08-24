@@ -17,24 +17,11 @@
         android:layout_centerHorizontal="true"
         android:contentDescription="@null" />
 
-    <ImageView
-        android:id="@+id/launcher_pin_badge"
-        android:layout_width="14dp"
-        android:layout_height="14dp"
-        android:layout_alignBottom="@id/launcher_icon"
-        android:layout_alignEnd="@id/launcher_icon"
-        android:background="@drawable/notification_badge_dot"
-        android:contentDescription="@null"
-        android:padding="3dp"
-        android:src="@drawable/ic_heart_filled_vector"
-        android:tint="@color/favourite_badge_heart"
-        android:visibility="gone" />
-
     <TextView
         android:id="@+id/launcher_notification_badge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/launcher_icon"
+        android:layout_alignBottom="@id/launcher_icon"
         android:layout_alignEnd="@id/launcher_icon"
         android:background="@drawable/notification_badge_dot"
         android:gravity="center"

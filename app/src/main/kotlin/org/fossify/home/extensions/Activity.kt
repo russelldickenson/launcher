@@ -130,7 +130,7 @@ fun Activity.handleGridItemPopupMenu(
             it.iconTintList = ColorStateList.valueOf(color)
         }
         menu.findItem(R.id.rename).isVisible =
-            (gridItem.type == ITEM_TYPE_ICON || gridItem.type == ITEM_TYPE_FOLDER) && !isOnAllAppsFragment
+            gridItem.type == ITEM_TYPE_ICON || (gridItem.type == ITEM_TYPE_FOLDER && !isOnAllAppsFragment)
         menu.findItem(R.id.pin_icon).isVisible =
             gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment
         menu.findItem(R.id.hide_icon).isVisible =
