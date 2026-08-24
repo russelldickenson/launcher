@@ -1,7 +1,6 @@
 package org.fossify.home.activities
 
 import android.os.Bundle
-import org.fossify.commons.dialogs.ColorPickerDialog
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
@@ -10,6 +9,7 @@ import org.fossify.home.databinding.ActivityDrawerLabelsSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppDrawerBackgroundColor
 import org.fossify.home.extensions.getAppDrawerTextColor
+import org.fossify.home.extensions.showColorPickerDialog
 import org.fossify.home.extensions.showRadioGroupDialog
 import org.fossify.home.helpers.DRAWER_LABEL_FONT_SIZE_STEP
 import org.fossify.home.helpers.DRAWER_LABEL_MAX_LINES_STEP
@@ -150,11 +150,9 @@ class DrawerLabelsSettingsActivity : SimpleActivity() {
         updateDrawerTextColorSwatch()
         binding.settingsDrawerTextColorHolder.setOnClickListener {
             if (!config.showDrawerAppLabels) return@setOnClickListener
-            ColorPickerDialog(this, currentDrawerTextColor()) { wasPositivePressed, newColor ->
-                if (wasPositivePressed) {
-                    config.drawerTextColor = newColor
-                    updateDrawerTextColorSwatch()
-                }
+            showColorPickerDialog(currentDrawerTextColor()) { newColor ->
+                config.drawerTextColor = newColor
+                updateDrawerTextColorSwatch()
             }
         }
     }
@@ -169,11 +167,9 @@ class DrawerLabelsSettingsActivity : SimpleActivity() {
         updateDrawerBackgroundColorSwatch()
         binding.settingsDrawerBackgroundColorHolder.setOnClickListener {
             if (!config.showDrawerAppLabels) return@setOnClickListener
-            ColorPickerDialog(this, currentDrawerBackgroundColor()) { wasPositivePressed, newColor ->
-                if (wasPositivePressed) {
-                    config.drawerBackgroundColor = newColor
-                    updateDrawerBackgroundColorSwatch()
-                }
+            showColorPickerDialog(currentDrawerBackgroundColor()) { newColor ->
+                config.drawerBackgroundColor = newColor
+                updateDrawerBackgroundColorSwatch()
             }
         }
     }

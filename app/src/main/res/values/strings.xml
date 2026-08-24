@@ -23,6 +23,7 @@
     <string name="drawer_label_font_size">Label font size</string>
     <string name="drawer_labels_settings">Labels</string>
     <string name="use_default_drawer_colors">Use default theme colours</string>
+    <string name="select_color">Select colour</string>
     <string name="drawer_background_color">Background colour</string>
     <string name="drawer_text_color">Label colour</string>
     <string name="icon_pack">Icon pack</string>

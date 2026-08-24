@@ -1,7 +1,6 @@
 package org.fossify.home.activities
 
 import android.os.Bundle
-import org.fossify.commons.dialogs.ColorPickerDialog
 import org.fossify.commons.extensions.adjustForContrast
 import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.toast
@@ -13,6 +12,7 @@ import org.fossify.home.databinding.ActivityNotificationBadgeSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.isNotificationListenerEnabled
 import org.fossify.home.extensions.openNotificationListenerSettings
+import org.fossify.home.extensions.showColorPickerDialog
 import org.fossify.home.extensions.showRadioGroupDialog
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_CIRCLE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
@@ -75,12 +75,10 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
     private fun setupNotificationBadgeColor() {
         updateNotificationBadgeColorSwatch()
         binding.settingsNotificationBadgeColorHolder.setOnClickListener {
-            ColorPickerDialog(this, config.notificationBadgeColor) { wasPositivePressed, newColor ->
-                if (wasPositivePressed) {
-                    config.notificationBadgeColor = newColor
-                    updateNotificationBadgeColorSwatch()
-                    updateNotificationBadgePreview()
-                }
+            showColorPickerDialog(config.notificationBadgeColor) { newColor ->
+                config.notificationBadgeColor = newColor
+                updateNotificationBadgeColorSwatch()
+                updateNotificationBadgePreview()
             }
         }
     }

@@ -15,14 +15,19 @@ import android.provider.Settings
 import android.view.Gravity
 import android.view.Menu
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.MenuCompat
 import androidx.core.view.forEach
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.isDynamicTheme
 import org.fossify.commons.extensions.showErrorToast
@@ -37,6 +42,69 @@ import org.fossify.home.helpers.IconCache
 import org.fossify.home.helpers.UNINSTALL_APP_REQUEST_CODE
 import org.fossify.home.interfaces.ItemMenuListener
 import org.fossify.home.models.HomeScreenGridItem
+
+// a fixed palette instead of a full hue/saturation picker - keeps the picker guaranteed
+// Material (MaterialAlertDialogBuilder) on every supported OS version, unlike the commons
+// library's ColorPickerDialog, which only gets Material dialog chrome on Android 12+
+private val COLOR_PICKER_PALETTE = intArrayOf(
+    Color.RED,
+    Color.parseColor("#000080"), // navy blue
+    Color.YELLOW,
+    Color.GREEN,
+    Color.CYAN,
+)
+
+fun Activity.showColorPickerDialog(currentColor: Int, onColorSelected: (Int) -> Unit) {
+    val swatchSize = resources.getDimensionPixelSize(R.dimen.color_picker_swatch_size)
+    val spacing = resources.getDimensionPixelSize(R.dimen.color_picker_swatch_spacing)
+    val checkSize = (swatchSize * 0.5f).toInt()
+
+    val row = LinearLayout(this).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER
+        setPadding(spacing, spacing, spacing, spacing)
+    }
+
+    lateinit var dialog: androidx.appcompat.app.AlertDialog
+
+    COLOR_PICKER_PALETTE.forEach { color ->
+        val swatch = FrameLayout(this).apply {
+            layoutParams = LinearLayout.LayoutParams(swatchSize, swatchSize).apply {
+                marginStart = spacing
+                marginEnd = spacing
+            }
+
+            addView(View(context).apply {
+                layoutParams = FrameLayout.LayoutParams(swatchSize, swatchSize)
+                background = ContextCompat.getDrawable(context, R.drawable.notification_badge_dot)
+                    ?.mutate()
+                    ?.apply { setTint(color) }
+            })
+
+            if (color == currentColor) {
+                addView(ImageView(context).apply {
+                    layoutParams = FrameLayout.LayoutParams(checkSize, checkSize, Gravity.CENTER)
+                    setImageResource(org.fossify.commons.R.drawable.ic_check_vector)
+                    setColorFilter(color.getContrastColor())
+                })
+            }
+
+            setOnClickListener {
+                dialog.dismiss()
+                onColorSelected(color)
+            }
+        }
+
+        row.addView(swatch)
+    }
+
+    dialog = MaterialAlertDialogBuilder(this)
+        .setTitle(R.string.select_color)
+        .setView(row)
+        .setNegativeButton(org.fossify.commons.R.string.cancel, null)
+        .create()
+    dialog.show()
+}
 
 fun Activity.showRadioGroupDialog(
     @StringRes titleId: Int? = null,
