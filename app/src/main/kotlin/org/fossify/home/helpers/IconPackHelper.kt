@@ -34,13 +34,11 @@ object IconPackHelper {
 
     private const val SHAPED_ICON_SIZE = 108
 
-    // how much of the badge an icon whose own silhouette already matches the chosen shape
-    // should fill - just enough inset that it doesn't touch the very edge
-    private const val SHAPE_MATCH_FILL_FRACTION = 0.94f
-
-    // alpha at which a pixel counts as part of the icon rather than its transparent margin -
-    // above zero so a faint antialiasing fringe isn't mistaken for the icon's real edge
-    private const val MIN_EDGE_ALPHA = 32
+    // alpha at which a pixel counts as part of the icon rather than its transparent margin or
+    // antialiasing fringe - kept close to fully opaque, since icon bitmaps are re-rasterized to
+    // a small size before sampling, which blurs their edges further; a low threshold here ends
+    // up sampling that faded fringe instead of the icon's actual ink colour
+    private const val MIN_EDGE_ALPHA = 250
 
     private data class ParsedAppFilter(
         val componentMap: Map<ComponentName, String>
@@ -140,9 +138,9 @@ object IconPackHelper {
                 normalizedShapePath = getShapePath(shape, 1f)
             )
             if (normalized.matchesShape) {
-                // the icon's own silhouette already closely matches the chosen shape - a small
-                // inset is enough, no need to shrink it further onto a visible colored backdrop
-                (size * SHAPE_MATCH_FILL_FRACTION).toInt()
+                // the icon's own silhouette already closely matches the chosen shape - render it
+                // full-bleed like an adaptive icon, with no backdrop needed behind it
+                size
             } else {
                 (size * normalized.scale).toInt()
             }.coerceAtLeast(1)
