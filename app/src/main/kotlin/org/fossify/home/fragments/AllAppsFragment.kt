@@ -15,6 +15,7 @@ import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.hideKeyboard
 import org.fossify.commons.extensions.normalizeString
+import org.fossify.commons.extensions.showKeyboard
 import org.fossify.commons.views.MyGridLayoutManager
 import org.fossify.home.R
 import org.fossify.home.activities.MainActivity
@@ -265,7 +266,8 @@ class AllAppsFragment(
         setupDrawerBackground(context.getAppDrawerBackgroundColor())
         getAdapter()?.updateTextColor(context.getAppDrawerTextColor())
 
-        binding.searchBar.beVisibleIf(context.config.showSearchBar)
+        binding.searchIconCollapsed.beVisibleIf(context.config.showSearchBar)
+        binding.searchIconCollapsed.setOnClickListener { expandSearchBar() }
         binding.searchBar.requireToolbar().beGone()
         binding.searchBar.updateColors()
         binding.searchBar.setupMenu()
@@ -273,6 +275,10 @@ class AllAppsFragment(
 
         binding.searchBar.onSearchTextChangedListener = {
             submitList(launchers)
+        }
+
+        binding.searchBar.onSearchClosedListener = {
+            updateSearchBarExpanded(false)
         }
 
         binding.searchBar.binding.topToolbarSearch.setOnEditorActionListener { _, actionId, _ ->
@@ -284,6 +290,19 @@ class AllAppsFragment(
                 else -> false
             }
         }
+    }
+
+    // expands the collapsed search icon into the full field and focuses it - shared by tapping
+    // the icon and by MainActivity's auto-show-keyboard-on-drawer-open path
+    fun expandSearchBar() {
+        updateSearchBarExpanded(true)
+        binding.searchBar.focusView()
+        activity?.showKeyboard(binding.searchBar.binding.topToolbarSearch)
+    }
+
+    private fun updateSearchBarExpanded(expanded: Boolean) {
+        binding.searchIconCollapsed.beVisibleIf(!expanded)
+        binding.searchBar.beVisibleIf(expanded)
     }
 
     // MySearchMenu's own updateColors() fills the search field from the theme's primary color,

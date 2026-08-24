@@ -59,7 +59,6 @@ import org.fossify.commons.extensions.onGlobalLayout
 import org.fossify.commons.extensions.performHapticFeedback
 import org.fossify.commons.extensions.realScreenSize
 import org.fossify.commons.extensions.showErrorToast
-import org.fossify.commons.extensions.showKeyboard
 import org.fossify.commons.extensions.toast
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.DARK_GREY
@@ -682,7 +681,7 @@ class MainActivity : SimpleActivity(), FlingListener {
             && config.autoShowKeyboardInAppDrawer
         ) {
             fragment.root.post {
-                showKeyboard(fragment.searchBar.binding.topToolbarSearch)
+                fragment.root.expandSearchBar()
             }
         }
 

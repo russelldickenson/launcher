@@ -5,17 +5,34 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <org.fossify.commons.views.MySearchMenu
-        android:id="@+id/search_bar"
+    <FrameLayout
+        android:id="@+id/search_bar_slot"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:applyWindowInsets="false" />
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/search_icon_collapsed"
+            android:layout_width="@dimen/search_icon_collapsed_size"
+            android:layout_height="@dimen/search_icon_collapsed_size"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/search"
+            android:padding="12dp"
+            android:src="@drawable/ic_search_vector" />
+
+        <org.fossify.commons.views.MySearchMenu
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:applyWindowInsets="false" />
+
+    </FrameLayout>
 
     <com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
         android:id="@+id/all_apps_fastscroller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/search_bar"
+        android:layout_below="@+id/search_bar_slot"
         app:fastScrollEnabled="true">
 
         <org.fossify.commons.views.MyRecyclerView
@@ -35,7 +52,7 @@
         style="@style/TextAppearance.Material3.BodyLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/search_bar"
+        android:layout_below="@+id/search_bar_slot"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/bigger_margin"
         android:alpha="0.8"
