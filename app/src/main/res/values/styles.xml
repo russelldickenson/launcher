@@ -37,13 +37,24 @@
     <style name="SettingsSectionLabelStyle" parent="@style/TextAppearance.Material3.TitleSmall">
         <item name="android:layout_marginStart">@dimen/settings_label_start_margin</item>
         <item name="android:layout_marginEnd">@dimen/settings_label_start_margin</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- Map settings text labels and switches to M3 BodyLarge -->
-    <style name="SettingsTextLabelStyle" parent="@style/TextAppearance.Material3.BodyLarge" />
+    <!-- Map settings text labels and switches to M3 tokens -->
+    <style name="SettingsTextLabelStyle" parent="@style/TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
 
-    <style name="SettingsSwitchStyle" parent="@style/TextAppearance.Material3.BodyLarge" />
+    <style name="SettingsTextValueStyle" parent="@style/TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+
+    <style name="SettingsSwitchStyle" parent="@style/TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:clickable">false</item>
+        <item name="android:focusable">false</item>
+    </style>
 
     <!-- Minimum 48dp touch targets and horizontal padding matching section headings -->
     <style name="SettingsHolderSwitchStyle" parent="@style/SettingsHolderSwitchStyle">

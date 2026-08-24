@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import androidx.core.graphics.ColorUtils
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import org.fossify.commons.extensions.beGone
@@ -27,8 +28,8 @@ import org.fossify.home.extensions.setupDrawerBackground
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.models.AppLauncher
+import org.fossify.home.models.DrawerGridItem
 import org.fossify.home.models.HomeScreenGridItem
-import org.fossify.home.views.FavouritesDividerDecoration
 
 class AllAppsFragment(
     context: Context,
@@ -42,6 +43,7 @@ class AllAppsFragment(
     private var lastIconScalePercent = -1
     private var lastLabelFontSize = -1
     private var lastLabelMaxLines = -1
+    private var lastShowFavouritesDivider: Boolean? = null
 
     private var launchers = emptyList<AppLauncher>()
 
@@ -71,7 +73,9 @@ class AllAppsFragment(
         }
 
         val layoutManager = binding.allAppsGrid.layoutManager as MyGridLayoutManager
-        if (layoutManager.spanCount != context.config.drawerColumnCount) {
+        val showFavouritesDividerChanged = lastShowFavouritesDivider != null && lastShowFavouritesDivider != context.config.showFavouritesDivider
+        if (layoutManager.spanCount != context.config.drawerColumnCount || showFavouritesDividerChanged) {
+            lastShowFavouritesDivider = context.config.showFavouritesDivider
             onConfigurationChanged()
             // Force redraw due to changed item size
             (binding.allAppsGrid.adapter as LaunchersAdapter).notifyDataSetChanged()
@@ -86,6 +90,7 @@ class AllAppsFragment(
         lastIconScalePercent = context.config.drawerIconScalePercent
         lastLabelFontSize = context.config.drawerLabelFontSize
         lastLabelMaxLines = context.config.drawerLabelMaxLines
+        lastShowFavouritesDivider = context.config.showFavouritesDivider
     }
 
     fun onConfigurationChanged() {
@@ -173,11 +178,20 @@ class AllAppsFragment(
                 }.apply {
                     binding.allAppsGrid.itemAnimator = null
                     binding.allAppsGrid.adapter = this
-                    binding.allAppsGrid.addItemDecoration(FavouritesDividerDecoration())
+                }
+
+                layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int {
+                        return if (getAdapter()?.getItemViewType(position) == LaunchersAdapter.VIEW_TYPE_DIVIDER) {
+                            layoutManager.spanCount
+                        } else {
+                            1
+                        }
+                    }
                 }
             }
 
-            submitList(launchers.toMutableList())
+            submitList(launchers)
         }
     }
 
@@ -284,8 +298,9 @@ class AllAppsFragment(
     }
 
     private fun showNoResultsPlaceholderIfNeeded() {
-        val itemCount = getAdapter()?.itemCount
-        binding.noResultsPlaceholder.beVisibleIf(itemCount != null && itemCount == 0)
+        val adapter = getAdapter() ?: return
+        val hasApps = adapter.currentList.any { it is DrawerGridItem.App }
+        binding.noResultsPlaceholder.beVisibleIf(!hasApps)
     }
 
     override fun onAppLauncherLongPressed(x: Float, y: Float, appLauncher: AppLauncher) {
@@ -335,7 +350,22 @@ class AllAppsFragment(
             items
         }
 
-        getAdapter()?.submitList(filtered) {
+        val drawerItems = mutableListOf<DrawerGridItem>()
+        if (context.config.showFavouritesDivider) {
+            val pinned = filtered.filter { it.pinned }
+            val unpinned = filtered.filter { !it.pinned }
+            if (pinned.isNotEmpty() && unpinned.isNotEmpty()) {
+                pinned.forEach { drawerItems.add(DrawerGridItem.App(it)) }
+                drawerItems.add(DrawerGridItem.Divider)
+                unpinned.forEach { drawerItems.add(DrawerGridItem.App(it)) }
+            } else {
+                filtered.forEach { drawerItems.add(DrawerGridItem.App(it)) }
+            }
+        } else {
+            filtered.forEach { drawerItems.add(DrawerGridItem.App(it)) }
+        }
+
+        getAdapter()?.submitList(drawerItems) {
             showNoResultsPlaceholderIfNeeded()
         }
     }

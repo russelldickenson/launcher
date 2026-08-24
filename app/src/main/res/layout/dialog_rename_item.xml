@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:padding="@dimen/activity_margin">
 
-    <org.fossify.commons.views.MyTextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/rename_item_hint"
         style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
@@ -19,5 +19,5 @@
             android:layout_height="wrap_content"
             android:inputType="textCapWords" />
 
-    </org.fossify.commons.views.MyTextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 </FrameLayout>

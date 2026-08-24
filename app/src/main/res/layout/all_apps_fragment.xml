@@ -30,7 +30,7 @@
 
     </com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller>
 
-    <org.fossify.commons.views.MyTextView
+    <TextView
         android:id="@+id/no_results_placeholder"
         style="@style/TextAppearance.Material3.BodyLarge"
         android:layout_width="match_parent"

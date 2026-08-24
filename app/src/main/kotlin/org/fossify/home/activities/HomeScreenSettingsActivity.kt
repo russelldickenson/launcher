@@ -1,14 +1,12 @@
 package org.fossify.home.activities
 
 import android.os.Bundle
-import org.fossify.commons.dialogs.RadioGroupDialog
-import org.fossify.commons.extensions.updateTextColors
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.models.RadioItem
 import org.fossify.home.databinding.ActivityHomeScreenSettingsBinding
 import org.fossify.home.extensions.config
-import org.fossify.home.extensions.darkenTextForLightMode
+import org.fossify.home.extensions.showRadioGroupDialog
 import org.fossify.home.helpers.DRAWER_ICON_SCALE_PERCENT_STEP
 import org.fossify.home.helpers.DRAWER_LABEL_MAX_LINES_STEP
 import org.fossify.home.helpers.MAX_DRAWER_COLUMN_COUNT
@@ -38,8 +36,6 @@ class HomeScreenSettingsActivity : SimpleActivity() {
         setupHomeIconScale()
         setupShowHomeAppLabels()
         setupHomeLabelMaxLines()
-        updateTextColors(binding.homeScreenSettingsHolder)
-        darkenTextForLightMode(binding.homeScreenSettingsHolder)
     }
 
     private fun setupHomeColumnCount() {
@@ -58,7 +54,7 @@ class HomeScreenSettingsActivity : SimpleActivity() {
                 )
             }
 
-            RadioGroupDialog(this, items, currentColumnCount) {
+            showRadioGroupDialog(items = items, checkedItemId = currentColumnCount) {
                 val newColumnCount = it as Int
                 if (currentColumnCount != newColumnCount) {
                     config.homeColumnCount = newColumnCount
@@ -82,7 +78,7 @@ class HomeScreenSettingsActivity : SimpleActivity() {
                 scale += DRAWER_ICON_SCALE_PERCENT_STEP
             }
 
-            RadioGroupDialog(this, items, currentScale) {
+            showRadioGroupDialog(items = items, checkedItemId = currentScale) {
                 val newScale = it as Int
                 if (currentScale != newScale) {
                     config.homeIconScalePercent = newScale
@@ -120,7 +116,7 @@ class HomeScreenSettingsActivity : SimpleActivity() {
                 lines += DRAWER_LABEL_MAX_LINES_STEP
             }
 
-            RadioGroupDialog(this, items, currentMaxLines) {
+            showRadioGroupDialog(items = items, checkedItemId = currentMaxLines) {
                 val newMaxLines = it as Int
                 if (currentMaxLines != newMaxLines) {
                     config.homeLabelMaxLines = newMaxLines

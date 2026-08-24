@@ -10,11 +10,12 @@
     android:paddingEnd="@dimen/small_margin"
     android:paddingBottom="@dimen/small_margin">
 
-    <org.fossify.commons.views.MySquareImageView
+    <ImageView
         android:id="@+id/launcher_icon"
         android:layout_width="match_parent"
         android:layout_height="@dimen/launcher_icon_size"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@null" />
 
     <ImageView
         android:id="@+id/launcher_pin_badge"
@@ -29,7 +30,7 @@
         android:tint="@color/favourite_badge_heart"
         android:visibility="gone" />
 
-    <org.fossify.commons.views.MyTextView
+    <TextView
         android:id="@+id/launcher_notification_badge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,7 +46,7 @@
         android:textSize="9sp"
         android:visibility="gone" />
 
-    <org.fossify.commons.views.MyTextView
+    <TextView
         android:id="@+id/launcher_label"
         style="@style/LauncherLabelStyle"
         android:layout_width="match_parent"

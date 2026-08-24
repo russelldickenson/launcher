@@ -42,7 +42,7 @@
                 android:paddingTop="24dp"
                 android:paddingBottom="24dp">
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_notification_badge_preview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyMaterialSwitch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_show_notification_badges"
                     style="@style/SettingsSwitchStyle"
                     android:layout_width="match_parent"
@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyMaterialSwitch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_show_notification_count"
                     style="@style/SettingsSwitchStyle"
                     android:layout_width="match_parent"
@@ -98,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_notification_badge_color_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
@@ -123,14 +123,14 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_notification_badge_shape_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/notification_badge_shape" />
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_notification_badge_shape"
                     style="@style/SettingsTextValueStyle"
                     android:layout_width="wrap_content"

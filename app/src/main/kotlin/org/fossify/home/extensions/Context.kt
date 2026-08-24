@@ -128,31 +128,41 @@ fun Context.getThemeAwareTextColor(originalColor: Int): Int {
     return if (isSystemInLightMode()) Color.argb(230, 0, 0, 0) else originalColor
 }
 
-// in system light mode the app drawer keeps a dark background with white labels instead of the
-// normal light theme background, since a light drawer plus darkened text is harder to read than
-// a plain dark/light contrast
 fun Context.getAppDrawerBackgroundColor(): Int {
-    val customColor = config.drawerBackgroundColor
-    if (customColor != 0) {
-        return customColor
+    if (!config.useDefaultDrawerColors) {
+        val customColor = config.drawerBackgroundColor
+        if (customColor != 0) {
+            return customColor
+        }
     }
 
-    return if (isSystemInLightMode()) getColor(org.fossify.home.R.color.app_drawer_light_mode_background) else getProperBackgroundColor()
+    return if (isSystemInLightMode()) {
+        getColor(org.fossify.home.R.color.app_drawer_light_mode_background)
+    } else {
+        getColor(org.fossify.home.R.color.app_drawer_dark_mode_background)
+    }
 }
 
 fun Context.getAppDrawerTextColor(): Int {
-    val customColor = config.drawerTextColor
-    if (customColor != 0) {
-        return customColor
+    if (!config.useDefaultDrawerColors) {
+        val customColor = config.drawerTextColor
+        if (customColor != 0) {
+            return customColor
+        }
     }
 
-    return if (isSystemInLightMode()) Color.WHITE else getThemeAwareTextColor(getProperTextColor())
+    return if (isSystemInLightMode()) {
+        getColor(org.fossify.home.R.color.m3_on_surface)
+    } else {
+        Color.WHITE
+    }
 }
 
-// a border color for the app drawer's search field, slightly lighter than the drawer's own
+// a border color for the app drawer's search field, contrasting slightly with the drawer's own
 // background so the field still reads as a distinct control against it
 fun Context.getAppDrawerSearchBorderColor(): Int {
-    return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), Color.WHITE, 0.25f)
+    val blendTarget = if (isSystemInLightMode()) Color.BLACK else Color.WHITE
+    return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), blendTarget, 0.15f)
 }
 
 // what an unscaled (100%) icon should measure, in px, shared by the app drawer and the home

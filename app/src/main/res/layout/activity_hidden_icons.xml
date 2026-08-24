@@ -34,8 +34,9 @@
             android:scrollbars="vertical"
             app:layoutManager="org.fossify.commons.views.MyGridLayoutManager" />
 
-        <org.fossify.commons.views.MyTextView
+        <TextView
             android:id="@+id/manage_hidden_icons_placeholder"
+            style="@style/SettingsTextLabelStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"

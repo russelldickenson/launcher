@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/small_margin"
+    android:paddingEnd="@dimen/small_margin"
+    android:paddingTop="@dimen/favourites_divider_spacing"
+    android:paddingBottom="@dimen/favourites_divider_spacing">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?attr/colorOutlineVariant" />
+
+</FrameLayout>

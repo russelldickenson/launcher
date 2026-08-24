@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="app_drawer_light_mode_background">#FFF0F2F5</color>
+    <color name="app_drawer_dark_mode_background">#FF2B2D30</color>
+
     <!-- Material 3 Semantic Colors (Dark) -->
     <color name="m3_primary">#9ECAFF</color>
     <color name="m3_on_primary">#003258</color>

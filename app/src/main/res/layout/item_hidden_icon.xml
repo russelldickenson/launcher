@@ -12,11 +12,12 @@
     android:paddingEnd="@dimen/small_margin"
     android:paddingBottom="@dimen/small_margin">
 
-    <org.fossify.commons.views.MySquareImageView
+    <ImageView
         android:id="@+id/hidden_icon"
         android:layout_width="match_parent"
         android:layout_height="@dimen/launcher_icon_size"
-        android:layout_gravity="center_horizontal|bottom" />
+        android:layout_gravity="center_horizontal|bottom"
+        android:contentDescription="@null" />
 
     <TextView
         android:id="@+id/hidden_icon_label"

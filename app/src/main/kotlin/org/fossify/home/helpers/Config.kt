@@ -93,6 +93,10 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getInt(DRAWER_TEXT_COLOR, 0)
         set(drawerTextColor) = prefs.edit().putInt(DRAWER_TEXT_COLOR, drawerTextColor).apply()
 
+    var useDefaultDrawerColors: Boolean
+        get() = prefs.getBoolean(USE_DEFAULT_DRAWER_COLORS, true)
+        set(useDefaultDrawerColors) = prefs.edit().putBoolean(USE_DEFAULT_DRAWER_COLORS, useDefaultDrawerColors).apply()
+
     // empty string means the device's default icons are used
     var iconPack: String
         get() = prefs.getString(ICON_PACK, "") ?: ""

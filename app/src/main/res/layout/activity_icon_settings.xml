@@ -44,13 +44,15 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp">
 
-                <org.fossify.commons.views.MySquareImageView
+                <ImageView
                     android:id="@+id/settings_icon_preview"
                     android:layout_width="@dimen/icon_preview_size"
-                    android:layout_height="@dimen/icon_preview_size" />
+                    android:layout_height="@dimen/icon_preview_size"
+                    android:contentDescription="@null" />
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_icon_preview_label"
+                    style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
@@ -66,14 +68,14 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_icon_pack_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/icon_pack" />
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_icon_pack"
                     style="@style/SettingsTextValueStyle"
                     android:layout_width="wrap_content"
@@ -90,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyMaterialSwitch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_reshape_all_icons"
                     style="@style/SettingsSwitchStyle"
                     android:layout_width="match_parent"
@@ -106,14 +108,14 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_icon_shape_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/icon_shape" />
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_icon_shape"
                     style="@style/SettingsTextValueStyle"
                     android:layout_width="wrap_content"

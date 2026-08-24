@@ -2,27 +2,27 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_settings_coordinator"
+    android:id="@+id/drawer_labels_settings_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <org.fossify.commons.views.MyAppBarLayout
-        android:id="@+id/drawer_settings_appbar"
+        android:id="@+id/drawer_labels_settings_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/drawer_settings_toolbar"
+            android:id="@+id/drawer_labels_settings_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/color_primary"
-            app:title="@string/app_drawer_settings"
+            app:title="@string/drawer_labels_settings"
             app:titleTextAppearance="@style/AppTheme.ActionBar.TitleTextStyle" />
 
     </org.fossify.commons.views.MyAppBarLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/drawer_settings_nested_scrollview"
+        android:id="@+id/drawer_labels_settings_nested_scrollview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true"
@@ -30,165 +30,141 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
-            android:id="@+id/drawer_settings_holder"
+            android:id="@+id/drawer_labels_settings_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <RelativeLayout
-                android:id="@+id/settings_show_favourites_divider_holder"
+                android:id="@+id/settings_show_drawer_app_labels_holder"
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
                 <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/settings_show_favourites_divider"
+                    android:id="@+id/settings_show_drawer_app_labels"
                     style="@style/SettingsSwitchStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/show_favourites_divider" />
+                    android:text="@string/show_app_labels" />
 
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/settings_drawer_search_holder"
-                style="@style/SettingsHolderSwitchStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/settings_show_search_bar"
-                    style="@style/SettingsSwitchStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/show_search" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/settings_open_keyboard_on_app_drawer_holder"
-                style="@style/SettingsHolderSwitchStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/settings_open_keyboard_on_app_drawer"
-                    style="@style/SettingsSwitchStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/auto_show_keyboard_in_app_drawer" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/settings_close_app_drawer_on_other_app_holder"
-                style="@style/SettingsHolderSwitchStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/settings_close_app_drawer_on_other_app"
-                    style="@style/SettingsSwitchStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/close_app_drawer_on_app_open" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/settings_column_count_holder"
+                android:id="@+id/settings_drawer_label_font_size_holder"
                 style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
                 <TextView
-                    android:id="@+id/settings_column_count_label"
+                    android:id="@+id/settings_drawer_label_font_size_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/columns" />
+                    android:text="@string/drawer_label_font_size" />
 
                 <TextView
-                    android:id="@+id/settings_column_count"
+                    android:id="@+id/settings_drawer_label_font_size"
                     style="@style/SettingsTextValueStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/settings_column_count_label"
-                    tools:text="5" />
+                    android:layout_below="@+id/settings_drawer_label_font_size_label"
+                    tools:text="12sp" />
 
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/settings_drawer_icon_scale_holder"
+                android:id="@+id/settings_drawer_label_max_lines_holder"
                 style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
                 <TextView
-                    android:id="@+id/settings_drawer_icon_scale_label"
+                    android:id="@+id/settings_drawer_label_max_lines_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/drawer_icon_scale" />
+                    android:text="@string/drawer_label_max_lines" />
 
                 <TextView
-                    android:id="@+id/settings_drawer_icon_scale"
+                    android:id="@+id/settings_drawer_label_max_lines"
                     style="@style/SettingsTextValueStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/settings_drawer_icon_scale_label"
-                    tools:text="100%" />
+                    android:layout_below="@+id/settings_drawer_label_max_lines_label"
+                    tools:text="2" />
 
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/settings_drawer_labels_holder"
+                android:id="@+id/settings_use_default_drawer_colors_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/settings_use_default_drawer_colors"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/use_default_drawer_colors" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_drawer_text_color_holder"
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
                 <TextView
-                    android:id="@+id/settings_drawer_labels"
+                    android:id="@+id/settings_drawer_text_color_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="@string/drawer_labels_settings" />
+                    android:text="@string/drawer_text_color" />
 
-                <ImageView
-                    android:id="@+id/settings_drawer_labels_chevron"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <View
+                    android:id="@+id/settings_drawer_text_color"
+                    android:layout_width="@dimen/color_sample_size"
+                    android:layout_height="@dimen/color_sample_size"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:contentDescription="@null"
-                    android:src="@drawable/ic_chevron_right_vector" />
+                    android:background="@drawable/notification_badge_dot" />
 
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/settings_manage_hidden_icons_holder"
+                android:id="@+id/settings_drawer_background_color_holder"
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
                 <TextView
-                    android:id="@+id/settings_manage_hidden_icons"
+                    android:id="@+id/settings_drawer_background_color_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="@string/manage_hidden_icons" />
+                    android:text="@string/drawer_background_color" />
+
+                <View
+                    android:id="@+id/settings_drawer_background_color"
+                    android:layout_width="@dimen/color_sample_size"
+                    android:layout_height="@dimen/color_sample_size"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/notification_badge_dot" />
 
             </RelativeLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

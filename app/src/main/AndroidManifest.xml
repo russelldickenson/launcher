@@ -96,6 +96,12 @@
             android:parentActivityName=".activities.SettingsActivity" />
 
         <activity
+            android:name=".activities.DrawerLabelsSettingsActivity"
+            android:exported="false"
+            android:label="@string/drawer_labels_settings"
+            android:parentActivityName=".activities.DrawerSettingsActivity" />
+
+        <activity
             android:name=".activities.HomeScreenSettingsActivity"
             android:exported="false"
             android:label="@string/home_screen_settings"

@@ -6,11 +6,12 @@
     android:layout_height="wrap_content"
     android:padding="@dimen/medium_margin">
 
-    <org.fossify.commons.views.MySquareImageView
+    <ImageView
         android:id="@+id/widget_app_icon"
         android:layout_width="@dimen/launcher_icon_size"
         android:layout_height="@dimen/launcher_icon_size"
         android:layout_gravity="center_horizontal|bottom"
+        android:contentDescription="@null"
         android:padding="@dimen/small_margin"
         tools:src="@mipmap/ic_launcher" />
 

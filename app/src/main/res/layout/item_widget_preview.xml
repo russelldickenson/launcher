@@ -17,7 +17,7 @@
         android:scaleType="centerInside"
         tools:src="@mipmap/ic_launcher" />
 
-    <org.fossify.commons.views.MyTextView
+    <TextView
         android:id="@+id/widget_title"
         style="@style/WidgetPreviewTitleStyle"
         android:layout_width="wrap_content"
@@ -30,7 +30,7 @@
         android:lines="1"
         tools:text="Calendar" />
 
-    <org.fossify.commons.views.MyTextView
+    <TextView
         android:id="@+id/widget_size"
         style="@style/WidgetPreviewSizeStyle"
         android:layout_width="wrap_content"

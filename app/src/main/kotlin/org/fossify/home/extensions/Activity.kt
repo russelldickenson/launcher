@@ -12,21 +12,21 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Process
 import android.provider.Settings
-import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.Menu
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.MenuCompat
 import androidx.core.view.forEach
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.isDynamicTheme
 import org.fossify.commons.extensions.showErrorToast
+import org.fossify.commons.models.RadioItem
 import org.fossify.commons.helpers.isQPlus
 import org.fossify.commons.helpers.isSPlus
 import org.fossify.home.R
@@ -38,26 +38,24 @@ import org.fossify.home.helpers.UNINSTALL_APP_REQUEST_CODE
 import org.fossify.home.interfaces.ItemMenuListener
 import org.fossify.home.models.HomeScreenGridItem
 
-// darkens all text under `root` when the system is in light mode, without touching text sizes
-fun Activity.darkenTextForLightMode(root: View) {
-    if (!isSystemInLightMode()) {
-        return
-    }
-
-    val darkTextColor = getThemeAwareTextColor(Color.BLACK)
-    fun darkenRecursively(view: View) {
-        if (view is TextView) {
-            view.setTextColor(darkTextColor)
+fun Activity.showRadioGroupDialog(
+    @StringRes titleId: Int? = null,
+    items: ArrayList<RadioItem>,
+    checkedItemId: Any?,
+    onItemSelected: (selectedId: Any) -> Unit,
+) {
+    val titles = items.map { it.title }.toTypedArray()
+    val checkedIndex = items.indexOfFirst { it.id == checkedItemId }
+    MaterialAlertDialogBuilder(this)
+        .apply {
+            if (titleId != null) setTitle(titleId)
         }
-
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
-                darkenRecursively(view.getChildAt(i))
-            }
+        .setSingleChoiceItems(titles, checkedIndex) { dialog, which ->
+            dialog.dismiss()
+            onItemSelected(items[which].id)
         }
-    }
-
-    darkenRecursively(root)
+        .setNegativeButton(org.fossify.commons.R.string.cancel, null)
+        .show()
 }
 
 fun Activity.launchApp(packageName: String, activityName: String) {

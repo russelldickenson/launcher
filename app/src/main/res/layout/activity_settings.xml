@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyMaterialSwitch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_use_english"
                     style="@style/SettingsSwitchStyle"
                     android:layout_width="match_parent"
@@ -66,14 +66,14 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_language_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/language" />
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_language"
                     style="@style/SettingsTextValueStyle"
                     android:layout_width="wrap_content"
@@ -90,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyMaterialSwitch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_double_tap_to_lock"
                     style="@style/SettingsSwitchStyle"
                     android:layout_width="match_parent"
@@ -117,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_icon_settings_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
@@ -143,7 +143,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_notification_badge_settings_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
@@ -169,7 +169,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_drawer_settings_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"
@@ -195,7 +195,7 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <org.fossify.commons.views.MyTextView
+                <TextView
                     android:id="@+id/settings_home_screen_settings_label"
                     style="@style/SettingsTextLabelStyle"
                     android:layout_width="wrap_content"

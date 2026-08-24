@@ -2,29 +2,18 @@ package org.fossify.home.activities
 
 import android.content.Intent
 import android.os.Bundle
-import org.fossify.commons.dialogs.ColorPickerDialog
-import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.updateTextColors
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.models.RadioItem
 import org.fossify.home.databinding.ActivityDrawerSettingsBinding
 import org.fossify.home.extensions.config
-import org.fossify.home.extensions.darkenTextForLightMode
-import org.fossify.home.extensions.getAppDrawerBackgroundColor
-import org.fossify.home.extensions.getAppDrawerTextColor
-import org.fossify.home.helpers.DRAWER_LABEL_MAX_LINES_STEP
+import org.fossify.home.extensions.showRadioGroupDialog
 import org.fossify.home.helpers.DRAWER_ICON_SCALE_PERCENT_STEP
-import org.fossify.home.helpers.DRAWER_LABEL_FONT_SIZE_STEP
 import org.fossify.home.helpers.MAX_DRAWER_COLUMN_COUNT
 import org.fossify.home.helpers.MAX_DRAWER_ICON_SCALE_PERCENT
-import org.fossify.home.helpers.MAX_DRAWER_LABEL_FONT_SIZE
-import org.fossify.home.helpers.MAX_DRAWER_LABEL_MAX_LINES
 import org.fossify.home.helpers.MIN_DRAWER_COLUMN_COUNT
 import org.fossify.home.helpers.MIN_DRAWER_ICON_SCALE_PERCENT
-import org.fossify.home.helpers.MIN_DRAWER_LABEL_FONT_SIZE
-import org.fossify.home.helpers.MIN_DRAWER_LABEL_MAX_LINES
 
 class DrawerSettingsActivity : SimpleActivity() {
 
@@ -46,16 +35,10 @@ class DrawerSettingsActivity : SimpleActivity() {
         setupDrawerSearchBar()
         setupOpenKeyboardOnAppDrawer()
         setupCloseAppDrawerOnOtherAppOpen()
-        setupShowDrawerAppLabels()
-        setupDrawerTextColor()
-        setupDrawerBackgroundColor()
         setupColumnCount()
         setupDrawerIconScale()
-        setupDrawerLabelFontSize()
-        setupDrawerLabelMaxLines()
+        setupDrawerLabels()
         setupManageHiddenIcons()
-        updateTextColors(binding.drawerSettingsHolder)
-        darkenTextForLightMode(binding.drawerSettingsHolder)
     }
 
     private fun setupShowFavouritesDivider() {
@@ -93,50 +76,6 @@ class DrawerSettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupShowDrawerAppLabels() {
-        binding.settingsShowDrawerAppLabels.isChecked = config.showDrawerAppLabels
-        binding.settingsShowDrawerAppLabelsHolder.setOnClickListener {
-            binding.settingsShowDrawerAppLabels.toggle()
-            config.showDrawerAppLabels = binding.settingsShowDrawerAppLabels.isChecked
-        }
-    }
-
-    private fun setupDrawerBackgroundColor() {
-        updateDrawerBackgroundColorSwatch()
-        binding.settingsDrawerBackgroundColorHolder.setOnClickListener {
-            ColorPickerDialog(this, currentDrawerBackgroundColor()) { wasPositivePressed, newColor ->
-                if (wasPositivePressed) {
-                    config.drawerBackgroundColor = newColor
-                    updateDrawerBackgroundColorSwatch()
-                }
-            }
-        }
-    }
-
-    private fun updateDrawerBackgroundColorSwatch() {
-        binding.settingsDrawerBackgroundColor.background?.mutate()?.setTint(currentDrawerBackgroundColor())
-    }
-
-    private fun currentDrawerBackgroundColor() = config.drawerBackgroundColor.takeIf { it != 0 } ?: getAppDrawerBackgroundColor()
-
-    private fun setupDrawerTextColor() {
-        updateDrawerTextColorSwatch()
-        binding.settingsDrawerTextColorHolder.setOnClickListener {
-            ColorPickerDialog(this, currentDrawerTextColor()) { wasPositivePressed, newColor ->
-                if (wasPositivePressed) {
-                    config.drawerTextColor = newColor
-                    updateDrawerTextColorSwatch()
-                }
-            }
-        }
-    }
-
-    private fun updateDrawerTextColorSwatch() {
-        binding.settingsDrawerTextColor.background?.mutate()?.setTint(currentDrawerTextColor())
-    }
-
-    private fun currentDrawerTextColor() = config.drawerTextColor.takeIf { it != 0 } ?: getAppDrawerTextColor()
-
     private fun setupColumnCount() {
         val currentColumnCount = config.drawerColumnCount
         binding.settingsColumnCount.text = currentColumnCount.toString()
@@ -153,7 +92,7 @@ class DrawerSettingsActivity : SimpleActivity() {
                 )
             }
 
-            RadioGroupDialog(this, items, currentColumnCount) {
+            showRadioGroupDialog(items = items, checkedItemId = currentColumnCount) {
                 val newColumnCount = it as Int
                 if (currentColumnCount != newColumnCount) {
                     config.drawerColumnCount = newColumnCount
@@ -174,7 +113,7 @@ class DrawerSettingsActivity : SimpleActivity() {
                 scale += DRAWER_ICON_SCALE_PERCENT_STEP
             }
 
-            RadioGroupDialog(this, items, currentScale) {
+            showRadioGroupDialog(items = items, checkedItemId = currentScale) {
                 val newScale = it as Int
                 if (currentScale != newScale) {
                     config.drawerIconScalePercent = newScale
@@ -184,45 +123,9 @@ class DrawerSettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupDrawerLabelFontSize() {
-        val currentFontSize = config.drawerLabelFontSize
-        binding.settingsDrawerLabelFontSize.text = "${currentFontSize}sp"
-        binding.settingsDrawerLabelFontSizeHolder.setOnClickListener {
-            val items = ArrayList<RadioItem>()
-            var size = MIN_DRAWER_LABEL_FONT_SIZE
-            while (size <= MAX_DRAWER_LABEL_FONT_SIZE) {
-                items.add(RadioItem(id = size, title = "${size}sp"))
-                size += DRAWER_LABEL_FONT_SIZE_STEP
-            }
-
-            RadioGroupDialog(this, items, currentFontSize) {
-                val newFontSize = it as Int
-                if (currentFontSize != newFontSize) {
-                    config.drawerLabelFontSize = newFontSize
-                    setupDrawerLabelFontSize()
-                }
-            }
-        }
-    }
-
-    private fun setupDrawerLabelMaxLines() {
-        val currentMaxLines = config.drawerLabelMaxLines
-        binding.settingsDrawerLabelMaxLines.text = currentMaxLines.toString()
-        binding.settingsDrawerLabelMaxLinesHolder.setOnClickListener {
-            val items = ArrayList<RadioItem>()
-            var lines = MIN_DRAWER_LABEL_MAX_LINES
-            while (lines <= MAX_DRAWER_LABEL_MAX_LINES) {
-                items.add(RadioItem(id = lines, title = lines.toString()))
-                lines += DRAWER_LABEL_MAX_LINES_STEP
-            }
-
-            RadioGroupDialog(this, items, currentMaxLines) {
-                val newMaxLines = it as Int
-                if (currentMaxLines != newMaxLines) {
-                    config.drawerLabelMaxLines = newMaxLines
-                    setupDrawerLabelMaxLines()
-                }
-            }
+    private fun setupDrawerLabels() {
+        binding.settingsDrawerLabelsHolder.setOnClickListener {
+            startActivity(Intent(this, DrawerLabelsSettingsActivity::class.java))
         }
     }
 

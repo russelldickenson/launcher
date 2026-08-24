@@ -7,10 +7,8 @@ import android.content.Intent
 import android.os.Bundle
 import org.fossify.commons.extensions.applyColorFilter
 import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.launchMoreAppsFromUsIntent
-import org.fossify.commons.extensions.updateTextColors
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.helpers.isTiramisuPlus
@@ -19,7 +17,6 @@ import org.fossify.home.BuildConfig
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivitySettingsBinding
 import org.fossify.home.extensions.config
-import org.fossify.home.extensions.darkenTextForLightMode
 import org.fossify.home.receivers.LockDeviceAdminReceiver
 import java.util.Locale
 import kotlin.system.exitProcess
@@ -49,14 +46,6 @@ class SettingsActivity : SimpleActivity() {
         setupNotificationBadgeSettings()
         setupDrawerSettings()
         setupHomeScreenSettings()
-        updateTextColors(binding.settingsHolder)
-        arrayOf(
-            binding.settingsAppearanceSettingsLabel,
-            binding.settingsGeneralSettingsLabel
-        ).forEach {
-            it.setTextColor(getProperPrimaryColor())
-        }
-        darkenTextForLightMode(binding.settingsHolder)
     }
 
     private fun setupOptionsMenu() {

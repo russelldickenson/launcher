@@ -2,20 +2,18 @@ package org.fossify.home.activities
 
 import android.os.Bundle
 import org.fossify.commons.dialogs.ColorPickerDialog
-import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.adjustForContrast
 import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.toast
-import org.fossify.commons.extensions.updateTextColors
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.models.RadioItem
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivityNotificationBadgeSettingsBinding
 import org.fossify.home.extensions.config
-import org.fossify.home.extensions.darkenTextForLightMode
 import org.fossify.home.extensions.isNotificationListenerEnabled
 import org.fossify.home.extensions.openNotificationListenerSettings
+import org.fossify.home.extensions.showRadioGroupDialog
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_CIRCLE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
@@ -42,8 +40,6 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
         setupNotificationBadgeColor()
         setupNotificationBadgeShape()
         promptForNotificationAccessIfNeeded()
-        updateTextColors(binding.notificationBadgeSettingsHolder)
-        darkenTextForLightMode(binding.notificationBadgeSettingsHolder)
         updateNotificationBadgePreview()
     }
 
@@ -102,7 +98,7 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
                 RadioItem(NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE, getString(R.string.notification_badge_shape_sharp_square))
             )
 
-            RadioGroupDialog(this, items, config.notificationBadgeShape) {
+            showRadioGroupDialog(items = items, checkedItemId = config.notificationBadgeShape) {
                 val newShape = it as Int
                 if (config.notificationBadgeShape != newShape) {
                     config.notificationBadgeShape = newShape

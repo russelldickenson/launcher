@@ -1,19 +1,17 @@
 package org.fossify.home.activities
 
 import android.os.Bundle
-import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.updateTextColors
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.models.RadioItem
 import org.fossify.home.databinding.ActivityIconSettingsBinding
 import org.fossify.home.extensions.config
-import org.fossify.home.extensions.darkenTextForLightMode
 import org.fossify.home.extensions.getAppIcon
 import org.fossify.home.extensions.getDrawableForPackageName
 import org.fossify.home.extensions.getReferenceIconWidth
+import org.fossify.home.extensions.showRadioGroupDialog
 import org.fossify.home.helpers.ICON_SHAPE_CIRCLE
 import org.fossify.home.helpers.ICON_SHAPE_IOS
 import org.fossify.home.helpers.ICON_SHAPE_ONE_UI
@@ -59,8 +57,6 @@ class IconSettingsActivity : SimpleActivity() {
         setupIconShape()
         updateIconPreview()
         updateIconPreviewLabel()
-        updateTextColors(binding.iconSettingsHolder)
-        darkenTextForLightMode(binding.iconSettingsHolder)
     }
 
     private fun setupIconPack() {
@@ -76,7 +72,7 @@ class IconSettingsActivity : SimpleActivity() {
             val selectedIndex = iconPacks.indexOfFirst { it.packageName == config.iconPack }
             val currentId = if (selectedIndex == -1) 0 else selectedIndex + 1
 
-            RadioGroupDialog(this, items, currentId) {
+            showRadioGroupDialog(items = items, checkedItemId = currentId) {
                 val selectedId = it as Int
                 val newIconPack = if (selectedId == 0) "" else iconPacks[selectedId - 1].packageName
                 if (config.iconPack != newIconPack) {
@@ -112,7 +108,7 @@ class IconSettingsActivity : SimpleActivity() {
                 RadioItem(ICON_SHAPE_SQUARE, getString(org.fossify.home.R.string.icon_shape_square))
             )
 
-            RadioGroupDialog(this, items, config.iconShape) {
+            showRadioGroupDialog(items = items, checkedItemId = config.iconShape) {
                 val newShape = it as Int
                 if (config.iconShape != newShape) {
                     config.iconShape = newShape

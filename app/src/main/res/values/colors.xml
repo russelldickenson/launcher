@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="semitransparent_navigation">#33000000</color>
-    <!-- app drawer background used in system light mode instead of the normal (light) theme
-         background, so the drawer and its white labels stay easy to read -->
-    <color name="app_drawer_light_mode_background">#FF2C2C2C</color>
+    <color name="app_drawer_light_mode_background">#FFF0F2F5</color>
+    <color name="app_drawer_dark_mode_background">#FF2B2D30</color>
     <color name="favourite_badge_heart">#FFFF0000</color>
 
     <!-- Material 3 Semantic Colors (Light) -->

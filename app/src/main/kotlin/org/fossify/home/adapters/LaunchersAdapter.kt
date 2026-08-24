@@ -22,6 +22,7 @@ import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.realScreenSize
 import org.fossify.home.R
 import org.fossify.home.activities.SimpleActivity
+import org.fossify.home.databinding.ItemFavouritesDividerBinding
 import org.fossify.home.databinding.ItemLauncherLabelBinding
 import org.fossify.home.extensions.animateScale
 import org.fossify.home.extensions.config
@@ -32,12 +33,13 @@ import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
 import org.fossify.home.helpers.NotificationCache
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.models.AppLauncher
+import org.fossify.home.models.DrawerGridItem
 
 class LaunchersAdapter(
     val activity: SimpleActivity,
     val allAppsListener: AllAppsListener,
     val itemClick: (Any) -> Unit
-) : ListAdapter<AppLauncher, LaunchersAdapter.ViewHolder>(AppLauncherDiffCallback()),
+) : ListAdapter<DrawerGridItem, RecyclerView.ViewHolder>(DrawerGridItemDiffCallback()),
     RecyclerViewFastScroller.OnPopupTextUpdate {
 
     private var textColor = activity.getAppDrawerTextColor()
@@ -49,28 +51,45 @@ class LaunchersAdapter(
         calculateIconWidth()
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return when (getItem(position)) {
+            is DrawerGridItem.Divider -> VIEW_TYPE_DIVIDER
+            is DrawerGridItem.App -> VIEW_TYPE_APP
+        }
+    }
+
     override fun getItemId(position: Int): Long {
-        return getItem(position).getLauncherIdentifier().hashCode().toLong()
+        return when (val item = getItem(position)) {
+            is DrawerGridItem.Divider -> -1L
+            is DrawerGridItem.App -> item.launcher.getLauncherIdentifier().hashCode().toLong()
+        }
     }
 
     fun launchFirstApp(): Boolean {
-        val launcher = currentList.firstOrNull() ?: return false
+        val launcher = (currentList.firstOrNull { it is DrawerGridItem.App } as? DrawerGridItem.App)?.launcher ?: return false
         itemClick(launcher)
         return true
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemLauncherLabelBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
-        )
-        return ViewHolder(binding.root)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return if (viewType == VIEW_TYPE_DIVIDER) {
+            val binding = ItemFavouritesDividerBinding.inflate(inflater, parent, false)
+            DividerViewHolder(binding.root)
+        } else {
+            val binding = ItemLauncherLabelBinding.inflate(inflater, parent, false)
+            AppViewHolder(binding.root)
+        }
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bindView(getItem(position))
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is AppViewHolder) {
+            val item = getItem(position) as? DrawerGridItem.App ?: return
+            holder.bindView(item.launcher)
+        }
     }
 
-    override fun submitList(list: MutableList<AppLauncher>?) {
+    override fun submitList(list: MutableList<DrawerGridItem>?) {
         calculateIconWidth()
         super.submitList(list)
     }
@@ -97,7 +116,9 @@ class LaunchersAdapter(
         notifyDataSetChanged()
     }
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class DividerViewHolder(view: View) : RecyclerView.ViewHolder(view)
+
+    inner class AppViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         @SuppressLint("ClickableViewAccessibility")
         fun bindView(launcher: AppLauncher): View {
             val binding = ItemLauncherLabelBinding.bind(itemView)
@@ -205,9 +226,13 @@ class LaunchersAdapter(
         }
     }
 
-    override fun onChange(position: Int) = currentList.getOrNull(position)?.getBubbleText() ?: ""
+    override fun onChange(position: Int) =
+        (currentList.getOrNull(position) as? DrawerGridItem.App)?.launcher?.getBubbleText() ?: ""
 
     companion object {
+        const val VIEW_TYPE_APP = 0
+        const val VIEW_TYPE_DIVIDER = 1
+
         private const val LAUNCHER_SCALE_NORMAL = 1f
         private const val LAUNCHER_SCALE_PRESSED = 1.15f
         private const val LAUNCHER_SCALE_UP_DURATION = 100L
@@ -217,18 +242,26 @@ class LaunchersAdapter(
     }
 }
 
-private class AppLauncherDiffCallback : DiffUtil.ItemCallback<AppLauncher>() {
-    override fun areItemsTheSame(oldItem: AppLauncher, newItem: AppLauncher): Boolean {
-        return oldItem.getLauncherIdentifier().hashCode().toLong() ==
-                newItem.getLauncherIdentifier().hashCode().toLong()
+private class DrawerGridItemDiffCallback : DiffUtil.ItemCallback<DrawerGridItem>() {
+    override fun areItemsTheSame(oldItem: DrawerGridItem, newItem: DrawerGridItem): Boolean {
+        return if (oldItem is DrawerGridItem.App && newItem is DrawerGridItem.App) {
+            oldItem.launcher.getLauncherIdentifier().hashCode().toLong() ==
+                    newItem.launcher.getLauncherIdentifier().hashCode().toLong()
+        } else {
+            oldItem == newItem
+        }
     }
 
-    override fun areContentsTheSame(oldItem: AppLauncher, newItem: AppLauncher): Boolean {
-        return oldItem.title == newItem.title &&
-                oldItem.order == newItem.order &&
-                oldItem.thumbnailColor == newItem.thumbnailColor &&
-                oldItem.pinned == newItem.pinned &&
-                oldItem.drawable != null &&
-                newItem.drawable != null
+    override fun areContentsTheSame(oldItem: DrawerGridItem, newItem: DrawerGridItem): Boolean {
+        return if (oldItem is DrawerGridItem.App && newItem is DrawerGridItem.App) {
+            oldItem.launcher.title == newItem.launcher.title &&
+                    oldItem.launcher.order == newItem.launcher.order &&
+                    oldItem.launcher.thumbnailColor == newItem.launcher.thumbnailColor &&
+                    oldItem.launcher.pinned == newItem.launcher.pinned &&
+                    oldItem.launcher.drawable != null &&
+                    newItem.launcher.drawable != null
+        } else {
+            oldItem == newItem
+        }
     }
 }
