@@ -332,6 +332,7 @@ class AllAppsFragment(
         searchBinding.topToolbarSearch.setTextColor(textColor)
         searchBinding.topToolbarSearch.setHintTextColor(ColorUtils.setAlphaComponent(textColor, 150))
         searchBinding.topToolbarSearchIcon.setColorFilter(textColor)
+        binding.searchIconCollapsed.setColorFilter(textColor)
     }
 
     private fun showNoResultsPlaceholderIfNeeded() {
