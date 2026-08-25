@@ -9,6 +9,7 @@ import android.graphics.Path
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import java.nio.ByteBuffer
 import kotlin.math.PI
@@ -42,7 +43,10 @@ object IconNormalizer {
     private const val BOUND_RATIO_MARGIN = .05f
     private const val PIXEL_DIFF_PERCENTAGE_THRESHOLD = 0.005f
 
-    data class Result(val scale: Float, val matchesShape: Boolean)
+    // boundsFraction is the icon's own visible ("ink") bounding box, as a fraction of its full
+    // canvas ([0,1] on each axis) - lets callers tell how much of the icon's own canvas its
+    // actual artwork occupies, independent of analysisSize
+    data class Result(val scale: Float, val matchesShape: Boolean, val boundsFraction: RectF)
 
     /**
      * @param drawable the icon to analyze
@@ -100,7 +104,7 @@ object IconNormalizer {
 
         if (topY == -1 || rightX == -1) {
             // fully transparent icon, nothing to normalize
-            return Result(scale = 1f, matchesShape = false)
+            return Result(scale = 1f, matchesShape = false, boundsFraction = RectF())
         }
 
         convertToConvexArray(leftBorder, 1, topY, bottomY)
@@ -118,8 +122,14 @@ object IconNormalizer {
         val rectArea = (bottomY + 1 - topY).toFloat() * (rightX + 1 - leftX)
         val scale = getScale(hullArea, rectArea, (analysisSize * analysisSize).toFloat())
         val matchesShape = isShape(bitmap, pixels, bounds, analysisSize, normalizedShapePath)
+        val boundsFraction = RectF(
+            leftX / analysisSize.toFloat(),
+            topY / analysisSize.toFloat(),
+            (rightX + 1) / analysisSize.toFloat(),
+            (bottomY + 1) / analysisSize.toFloat()
+        )
 
-        return Result(scale = scale, matchesShape = matchesShape)
+        return Result(scale = scale, matchesShape = matchesShape, boundsFraction = boundsFraction)
     }
 
     private fun getScale(hullArea: Float, boundingArea: Float, fullArea: Float): Float {

@@ -21,6 +21,9 @@ import org.fossify.commons.extensions.getProperBackgroundColor
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
+import kotlin.math.min
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 object IconPackHelper {
     private const val TAG = "IconPackHelper"
@@ -39,6 +42,15 @@ object IconPackHelper {
     // a small size before sampling, which blurs their edges further; a low threshold here ends
     // up sampling that faded fringe instead of the icon's actual ink colour
     private const val MIN_EDGE_ALPHA = 250
+
+    // icons whose own "ink" occupies less than this fraction of their canvas area count as
+    // under-filled - a small centered logo on a big transparent canvas, for example - and get
+    // cropped/zoomed in rather than rendered at their original, mostly-empty scale
+    private const val MIN_INK_FILL_TO_ZOOM = 0.55f
+
+    // hard cap on how far an under-filled icon gets zoomed in, so icons with deliberate padding,
+    // a badge, or a drop shadow baked into their art don't get cropped away
+    private const val MAX_ZOOM_SCALE = 1.35f
 
     private data class ParsedAppFilter(
         val componentMap: Map<ComponentName, String>
@@ -125,29 +137,35 @@ object IconPackHelper {
         val canvas = Canvas(result)
         val path = getShapePath(shape, size.toFloat())
 
-        val iconSize = if (originalIcon is AdaptiveIconDrawable) {
-            // already designed to fill its own bounds and be clipped externally, no normalization needed
-            size
+        // legacy icons vary wildly in how much of their canvas is actual "ink" (a small round
+        // logo vs. a full-bleed square icon), so a flat scale either over- or under-fills the
+        // badge depending on the icon - normalize based on the icon's own visible silhouette
+        // instead. Not needed for adaptive icons, which are already designed to fill their own
+        // bounds and be clipped externally
+        val normalized = if (originalIcon is AdaptiveIconDrawable) {
+            null
         } else {
-            // legacy icons vary wildly in how much of their canvas is actual "ink" (a small round
-            // logo vs. a full-bleed square icon), so a flat scale either over- or under-fills the
-            // badge depending on the icon - normalize based on the icon's own visible silhouette instead
-            val normalized = IconNormalizer.analyze(
+            IconNormalizer.analyze(
                 drawable = originalIcon,
                 analysisSize = size * 2,
                 normalizedShapePath = getShapePath(shape, 1f)
             )
-            if (normalized.matchesShape) {
-                // the icon's own silhouette already closely matches the chosen shape - render it
-                // full-bleed like an adaptive icon, with no backdrop needed behind it
-                size
-            } else {
-                (size * normalized.scale).toInt()
-            }.coerceAtLeast(1)
+        }
+
+        val iconSize = when {
+            normalized == null -> size
+            // the icon's own silhouette already closely matches the chosen shape - render it
+            // full-bleed like an adaptive icon, with no backdrop needed behind it
+            normalized.matchesShape -> size
+            else -> (size * normalized.scale).toInt().coerceAtLeast(1)
         }
 
         val offset = (size - iconSize) / 2
-        val iconBitmap = originalIcon.toBitmap(width = iconSize, height = iconSize, config = Bitmap.Config.ARGB_8888)
+        val iconBitmap = if (normalized != null && !normalized.matchesShape) {
+            renderZoomedIconBitmap(originalIcon, iconSize, normalized.boundsFraction)
+        } else {
+            originalIcon.toBitmap(width = iconSize, height = iconSize, config = Bitmap.Config.ARGB_8888)
+        }
 
         // fill the gap between the icon and the shape with a color sampled from the icon's own
         // edge pixels, so it reads as a natural bleed instead of an unrelated colored halo
@@ -161,6 +179,34 @@ object IconPackHelper {
         canvas.restore()
 
         return BitmapDrawable(context.resources, result)
+    }
+
+    // icons whose ink occupies only a small fraction of their own canvas (a small centered logo
+    // on a big transparent margin, for example) would otherwise render with all that transparent
+    // margin baked in, leaving most of the shape filled by the sampled backdrop colour instead of
+    // the icon itself - crop in around the icon's own visible bounds and scale it up, capped so
+    // icons with deliberate padding/badges/shadows baked into their art don't get over-cropped
+    private fun renderZoomedIconBitmap(originalIcon: Drawable, iconSize: Int, boundsFraction: RectF): Bitmap {
+        val widthFraction = boundsFraction.width()
+        val heightFraction = boundsFraction.height()
+        val fillRatio = widthFraction * heightFraction
+        if (fillRatio <= 0f || fillRatio >= MIN_INK_FILL_TO_ZOOM) {
+            return originalIcon.toBitmap(width = iconSize, height = iconSize, config = Bitmap.Config.ARGB_8888)
+        }
+
+        val targetFraction = sqrt(MIN_INK_FILL_TO_ZOOM)
+        val zoom = min(targetFraction / widthFraction, targetFraction / heightFraction).coerceIn(1f, MAX_ZOOM_SCALE)
+
+        val enlargedSize = (iconSize * zoom).roundToInt().coerceAtLeast(iconSize)
+        val enlargedBitmap = originalIcon.toBitmap(width = enlargedSize, height = enlargedSize, config = Bitmap.Config.ARGB_8888)
+
+        // crop centered on the ink's own centroid, not the canvas center, in case the icon isn't centered
+        val centerX = (boundsFraction.left + boundsFraction.right) / 2f * enlargedSize
+        val centerY = (boundsFraction.top + boundsFraction.bottom) / 2f * enlargedSize
+        val cropLeft = (centerX - iconSize / 2f).roundToInt().coerceIn(0, enlargedSize - iconSize)
+        val cropTop = (centerY - iconSize / 2f).roundToInt().coerceIn(0, enlargedSize - iconSize)
+
+        return Bitmap.createBitmap(enlargedBitmap, cropLeft, cropTop, iconSize, iconSize)
     }
 
     // averages the color of the icon's own silhouette edge (alpha-weighted), to use as the
