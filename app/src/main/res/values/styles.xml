@@ -32,6 +32,17 @@
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
         <item name="textInputStyle">@style/Widget.Material3.TextInputLayout.OutlinedBox</item>
         <item name="popupMenuStyle">@style/Widget.Material3.PopupMenu</item>
+        <!-- roomier popup/dropdown menu rows (stock Android's default 48dp reads as cramped) -
+             shared by every PopupMenu-backed menu in the app: the home screen icon's long-press
+             menu and the settings toolbar's overflow menu -->
+        <item name="android:listPreferredItemHeightSmall">56dp</item>
+    </style>
+
+    <!-- overrides Commons' same-named style (app-module resources win over library ones) with a
+         bigger, bolder title closer to Material 3's Large Top App Bar treatment -->
+    <style name="AppTheme.ActionBar.TitleTextStyle">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="SettingsSectionLabelStyle" parent="@style/TextAppearance.Material3.TitleSmall">
@@ -130,6 +141,8 @@
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.Material3.MaterialAlertDialog</item>
         <item name="textInputStyle">@style/Widget.Material3.TextInputLayout.OutlinedBox</item>
         <item name="popupMenuStyle">@style/Widget.Material3.PopupMenu</item>
+        <!-- roomier popup/dropdown menu rows - see AppTheme's copy of this item for why -->
+        <item name="android:listPreferredItemHeightSmall">56dp</item>
 
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowShowWallpaper">true</item>
