@@ -4,11 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="AppCompatResource,AlwaysShowAction">
     <item
-        android:id="@+id/about"
-        android:icon="@drawable/ic_info_vector"
-        android:title="@string/about"
-        app:showAsAction="always" />
-    <item
         android:id="@+id/more_apps_from_us"
         android:icon="@drawable/ic_apps_vector"
         android:title="@string/more_fossify_apps"
