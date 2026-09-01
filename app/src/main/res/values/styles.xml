@@ -97,6 +97,15 @@
         <item name="android:paddingEnd">@dimen/settings_label_start_margin</item>
     </style>
 
+    <!-- extra-generous vertical padding for the main Settings screen's icon+title+description
+         nav rows specifically, matching Lawnchair's spread-out row rhythm - kept separate from
+         SettingsHolderTextViewOneLinerStyle since that style's other consumers are plain
+         single-line rows that shouldn't grow this much -->
+    <style name="SettingsNavRowHolderStyle" parent="SettingsHolderTextViewOneLinerStyle">
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">24dp</item>
+    </style>
+
     <!-- M3 Type Scale styles for launcher items & dialogs -->
     <style name="LauncherLabelStyle" parent="@style/TextAppearance.Material3.BodySmall">
         <item name="android:textSize">@dimen/smaller_text_size</item>
