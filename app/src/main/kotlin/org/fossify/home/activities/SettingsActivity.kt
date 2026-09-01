@@ -5,9 +5,7 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
-import org.fossify.commons.extensions.applyColorFilter
 import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.launchMoreAppsFromUsIntent
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
@@ -107,28 +105,24 @@ class SettingsActivity : SimpleActivity() {
     }
 
     private fun setupIconSettings() {
-        binding.settingsIconSettingsChevron.applyColorFilter(getProperTextColor())
         binding.settingsIconSettingsHolder.setOnClickListener {
             startActivity(Intent(this, IconSettingsActivity::class.java))
         }
     }
 
     private fun setupNotificationBadgeSettings() {
-        binding.settingsNotificationBadgeSettingsChevron.applyColorFilter(getProperTextColor())
         binding.settingsNotificationBadgeSettingsHolder.setOnClickListener {
             startActivity(Intent(this, NotificationBadgeSettingsActivity::class.java))
         }
     }
 
     private fun setupDrawerSettings() {
-        binding.settingsDrawerSettingsChevron.applyColorFilter(getProperTextColor())
         binding.settingsDrawerSettingsHolder.setOnClickListener {
             startActivity(Intent(this, DrawerSettingsActivity::class.java))
         }
     }
 
     private fun setupHomeScreenSettings() {
-        binding.settingsHomeScreenSettingsChevron.applyColorFilter(getProperTextColor())
         binding.settingsHomeScreenSettingsHolder.setOnClickListener {
             startActivity(Intent(this, HomeScreenSettingsActivity::class.java))
         }

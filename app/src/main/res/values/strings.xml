@@ -14,6 +14,7 @@
     <string name="hidden_icons">Hidden icons</string>
     <string name="hidden_icons_placeholder">Some apps cannot be uninstalled due to system restrictions, but you can at least hide their icons to avoid seeing them.</string>
     <string name="app_drawer_settings">App drawer</string>
+    <string name="app_drawer_settings_description">Search, columns, labels</string>
     <string name="columns">Columns</string>
     <string name="close_app_drawer_on_app_open">Close app drawer on opening an app</string>
     <string name="auto_show_keyboard_in_app_drawer">Automatically show keyboard in drawer</string>
@@ -30,6 +31,7 @@
     <string name="appearance_settings">Appearance</string>
     <string name="show_favourites_divider">Divide favourites from other apps</string>
     <string name="icons_subsection">Icons</string>
+    <string name="icons_subsection_description">Icon packs, shape, reshaping</string>
     <string name="icon_preview_label">Launcher</string>
     <string name="reshape_all_icons">Reshape all icons</string>
     <string name="icon_shape">Icon shape</string>
@@ -39,6 +41,7 @@
     <string name="icon_shape_ios">iOS</string>
     <string name="icon_shape_one_ui">OneUI</string>
     <string name="notification_badges">Notification badges</string>
+    <string name="notification_badges_description">Colour, shape, count</string>
     <string name="notification_badge_color">Badge colour</string>
     <string name="notification_badge_shape">Badge shape</string>
     <string name="show_notification_count">Show notification count</string>
@@ -47,6 +50,7 @@
     <string name="notification_badge_shape_sharp_square">Sharp square</string>
     <string name="notification_access_required">Notification access is required to show badges</string>
     <string name="home_screen_settings">Home screen</string>
+    <string name="home_screen_settings_description">Columns, icon scale, labels</string>
     <string name="home_icon_scale">Icon scale</string>
     <string name="home_label_max_lines">Maximum label lines</string>
     <string name="widget_too_big">Widget is too big for current home screen size</string>

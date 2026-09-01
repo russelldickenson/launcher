@@ -140,23 +140,38 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/ripple_background">
 
-                        <TextView
-                            android:id="@+id/settings_icon_settings_label"
-                            style="@style/SettingsTextLabelStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:text="@string/icons_subsection" />
-
                         <ImageView
-                            android:id="@+id/settings_icon_settings_chevron"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
+                            android:id="@+id/settings_icon_settings_icon"
+                            android:layout_width="@dimen/settings_nav_icon_size"
+                            android:layout_height="@dimen/settings_nav_icon_size"
+                            android:layout_alignParentStart="true"
                             android:layout_centerVertical="true"
                             android:contentDescription="@null"
-                            android:src="@drawable/ic_chevron_right_vector"
+                            android:src="@drawable/ic_settings_cog_vector"
                             app:tint="?attr/colorOnSurfaceVariant" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="@dimen/settings_label_start_margin"
+                            android:layout_toEndOf="@id/settings_icon_settings_icon"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/settings_icon_settings_label"
+                                style="@style/SettingsNavRowTitleStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/icons_subsection" />
+
+                            <TextView
+                                style="@style/SettingsTextValueStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/icons_subsection_description" />
+
+                        </LinearLayout>
 
                     </RelativeLayout>
 
@@ -169,23 +184,38 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/ripple_background">
 
-                        <TextView
-                            android:id="@+id/settings_notification_badge_settings_label"
-                            style="@style/SettingsTextLabelStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:text="@string/notification_badges" />
-
                         <ImageView
-                            android:id="@+id/settings_notification_badge_settings_chevron"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
+                            android:id="@+id/settings_notification_badge_settings_icon"
+                            android:layout_width="@dimen/settings_nav_icon_size"
+                            android:layout_height="@dimen/settings_nav_icon_size"
+                            android:layout_alignParentStart="true"
                             android:layout_centerVertical="true"
                             android:contentDescription="@null"
-                            android:src="@drawable/ic_chevron_right_vector"
+                            android:src="@drawable/ic_bell_vector"
                             app:tint="?attr/colorOnSurfaceVariant" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="@dimen/settings_label_start_margin"
+                            android:layout_toEndOf="@id/settings_notification_badge_settings_icon"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/settings_notification_badge_settings_label"
+                                style="@style/SettingsNavRowTitleStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/notification_badges" />
+
+                            <TextView
+                                style="@style/SettingsTextValueStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/notification_badges_description" />
+
+                        </LinearLayout>
 
                     </RelativeLayout>
 
@@ -198,23 +228,38 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/ripple_background">
 
-                        <TextView
-                            android:id="@+id/settings_drawer_settings_label"
-                            style="@style/SettingsTextLabelStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:text="@string/app_drawer_settings" />
-
                         <ImageView
-                            android:id="@+id/settings_drawer_settings_chevron"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
+                            android:id="@+id/settings_drawer_settings_icon"
+                            android:layout_width="@dimen/settings_nav_icon_size"
+                            android:layout_height="@dimen/settings_nav_icon_size"
+                            android:layout_alignParentStart="true"
                             android:layout_centerVertical="true"
                             android:contentDescription="@null"
-                            android:src="@drawable/ic_chevron_right_vector"
+                            android:src="@drawable/ic_apps_vector"
                             app:tint="?attr/colorOnSurfaceVariant" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="@dimen/settings_label_start_margin"
+                            android:layout_toEndOf="@id/settings_drawer_settings_icon"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/settings_drawer_settings_label"
+                                style="@style/SettingsNavRowTitleStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/app_drawer_settings" />
+
+                            <TextView
+                                style="@style/SettingsTextValueStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/app_drawer_settings_description" />
+
+                        </LinearLayout>
 
                     </RelativeLayout>
 
@@ -227,23 +272,38 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/ripple_background">
 
-                        <TextView
-                            android:id="@+id/settings_home_screen_settings_label"
-                            style="@style/SettingsTextLabelStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:text="@string/home_screen_settings" />
-
                         <ImageView
-                            android:id="@+id/settings_home_screen_settings_chevron"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
+                            android:id="@+id/settings_home_screen_settings_icon"
+                            android:layout_width="@dimen/settings_nav_icon_size"
+                            android:layout_height="@dimen/settings_nav_icon_size"
+                            android:layout_alignParentStart="true"
                             android:layout_centerVertical="true"
                             android:contentDescription="@null"
-                            android:src="@drawable/ic_chevron_right_vector"
+                            android:src="@drawable/ic_home_vector"
                             app:tint="?attr/colorOnSurfaceVariant" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginStart="@dimen/settings_label_start_margin"
+                            android:layout_toEndOf="@id/settings_home_screen_settings_icon"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/settings_home_screen_settings_label"
+                                style="@style/SettingsNavRowTitleStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/home_screen_settings" />
+
+                            <TextView
+                                style="@style/SettingsTextValueStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/home_screen_settings_description" />
+
+                        </LinearLayout>
 
                     </RelativeLayout>
 
