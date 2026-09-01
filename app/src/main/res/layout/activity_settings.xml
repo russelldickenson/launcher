@@ -36,13 +36,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/settings_general_settings_label"
-                style="@style/SettingsSectionLabelStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/general_settings" />
-
             <com.google.android.material.card.MaterialCardView
                 style="@style/SettingsCardStyle"
                 android:layout_width="match_parent"
@@ -113,25 +106,7 @@
 
                     </RelativeLayout>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <TextView
-                android:id="@+id/settings_appearance_settings_label"
-                style="@style/SettingsSectionLabelStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/appearance_settings" />
-
-            <com.google.android.material.card.MaterialCardView
-                style="@style/SettingsCardStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    <include layout="@layout/divider_inset" />
 
                     <RelativeLayout
                         android:id="@+id/settings_icon_settings_holder"

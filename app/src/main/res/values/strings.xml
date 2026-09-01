@@ -28,7 +28,6 @@
     <string name="drawer_background_color">Background colour</string>
     <string name="drawer_text_color">Label colour</string>
     <string name="icon_pack">Icon pack</string>
-    <string name="appearance_settings">Appearance</string>
     <string name="show_favourites_divider">Divide favourites from other apps</string>
     <string name="icons_subsection">Icons</string>
     <string name="icons_subsection_description">Icon packs, shape, reshaping</string>

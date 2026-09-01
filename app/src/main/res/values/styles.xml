@@ -45,13 +45,6 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="SettingsSectionLabelStyle" parent="@style/TextAppearance.Material3.TitleSmall">
-        <item name="android:layout_marginStart">@dimen/settings_label_start_margin</item>
-        <item name="android:layout_marginEnd">@dimen/settings_label_start_margin</item>
-        <item name="android:textColor">?attr/colorPrimary</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <!-- groups a settings section's rows into a single rounded, tonal surface so each section
          reads as a distinct block, per Material 3's grouped-list convention -->
     <style name="SettingsCardStyle" parent="Widget.Material3.CardView.Filled">
