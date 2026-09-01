@@ -97,37 +97,33 @@ class IconSettingsActivity : SimpleActivity() {
     }
 
     private fun setupIconShape() {
-        updateIconShapeLabel()
-        binding.settingsIconShapeHolder.beVisibleIf(config.reshapeAllIcons)
-        binding.settingsIconShapeHolder.setOnClickListener {
-            val items = arrayListOf(
-                RadioItem(ICON_SHAPE_CIRCLE, getString(org.fossify.home.R.string.icon_shape_circle)),
-                RadioItem(ICON_SHAPE_SQUIRCLE, getString(org.fossify.home.R.string.icon_shape_squircle)),
-                RadioItem(ICON_SHAPE_IOS, getString(org.fossify.home.R.string.icon_shape_ios)),
-                RadioItem(ICON_SHAPE_ONE_UI, getString(org.fossify.home.R.string.icon_shape_one_ui)),
-                RadioItem(ICON_SHAPE_SQUARE, getString(org.fossify.home.R.string.icon_shape_square))
-            )
+        updateIconShapeVisibility()
 
-            showRadioGroupDialog(items = items, checkedItemId = config.iconShape) {
-                val newShape = it as Int
-                if (config.iconShape != newShape) {
-                    config.iconShape = newShape
-                    updateIconShapeLabel()
-                    updateIconPreview()
-                    iconSettingsChanged = true
-                }
+        val chipForShape = mapOf(
+            ICON_SHAPE_CIRCLE to binding.settingsIconShapeCircle,
+            ICON_SHAPE_SQUIRCLE to binding.settingsIconShapeSquircle,
+            ICON_SHAPE_IOS to binding.settingsIconShapeIos,
+            // a legacy stored value from before "Rounded square" was renamed to "iOS" - same shape
+            ICON_SHAPE_ROUNDED_SQUARE to binding.settingsIconShapeIos,
+            ICON_SHAPE_ONE_UI to binding.settingsIconShapeOneUi,
+            ICON_SHAPE_SQUARE to binding.settingsIconShapeSquare,
+        )
+        (chipForShape[config.iconShape] ?: binding.settingsIconShapeCircle).isChecked = true
+
+        binding.settingsIconShapeChips.setOnCheckedStateChangeListener { _, checkedIds ->
+            val newShape = chipForShape.entries.firstOrNull { it.value.id == checkedIds.firstOrNull() }?.key
+                ?: return@setOnCheckedStateChangeListener
+            if (config.iconShape != newShape) {
+                config.iconShape = newShape
+                updateIconPreview()
+                iconSettingsChanged = true
             }
         }
     }
 
-    private fun updateIconShapeLabel() {
-        binding.settingsIconShape.text = when (config.iconShape) {
-            ICON_SHAPE_SQUIRCLE -> getString(org.fossify.home.R.string.icon_shape_squircle)
-            ICON_SHAPE_SQUARE -> getString(org.fossify.home.R.string.icon_shape_square)
-            ICON_SHAPE_IOS, ICON_SHAPE_ROUNDED_SQUARE -> getString(org.fossify.home.R.string.icon_shape_ios)
-            ICON_SHAPE_ONE_UI -> getString(org.fossify.home.R.string.icon_shape_one_ui)
-            else -> getString(org.fossify.home.R.string.icon_shape_circle)
-        }
+    private fun updateIconShapeVisibility() {
+        binding.settingsIconShapeHeading.beVisibleIf(config.reshapeAllIcons)
+        binding.settingsIconShapeChips.beVisibleIf(config.reshapeAllIcons)
     }
 
     private fun setupReshapeAllIcons() {
@@ -135,7 +131,7 @@ class IconSettingsActivity : SimpleActivity() {
         binding.settingsReshapeAllIconsHolder.setOnClickListener {
             binding.settingsReshapeAllIcons.toggle()
             config.reshapeAllIcons = binding.settingsReshapeAllIcons.isChecked
-            binding.settingsIconShapeHolder.beVisibleIf(config.reshapeAllIcons)
+            updateIconShapeVisibility()
             updateIconPreview()
             iconSettingsChanged = true
         }

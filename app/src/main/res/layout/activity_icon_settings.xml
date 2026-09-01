@@ -33,7 +33,11 @@
             android:id="@+id/icon_settings_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingStart="@dimen/settings_page_padding"
+            android:paddingTop="@dimen/settings_page_padding"
+            android:paddingEnd="@dimen/settings_page_padding"
+            android:paddingBottom="@dimen/settings_page_padding">
 
             <LinearLayout
                 android:id="@+id/settings_icon_preview_holder"
@@ -61,16 +65,24 @@
 
             </LinearLayout>
 
+            <TextView
+                style="@style/SettingsChapterHeadingStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/icons_subsection" />
+
             <RelativeLayout
                 android:id="@+id/settings_icon_pack_holder"
-                style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/ripple_background"
+                android:minHeight="48dp">
 
                 <TextView
                     android:id="@+id/settings_icon_pack_label"
-                    style="@style/SettingsTextLabelStyle"
+                    style="@style/SettingsSubHeadingStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/icon_pack" />
@@ -81,53 +93,87 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/settings_icon_pack_label"
+                    android:layout_marginTop="4dp"
                     tools:text="System default" />
 
             </RelativeLayout>
 
-            <include layout="@layout/divider_inset" />
+            <TextView
+                style="@style/SettingsSubHeadingStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/reshape_all_icons" />
 
             <RelativeLayout
                 android:id="@+id/settings_reshape_all_icons_holder"
-                style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/ripple_background"
+                android:minHeight="48dp">
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_reshape_all_icons"
-                    style="@style/SettingsSwitchStyle"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/reshape_all_icons" />
+                    android:clickable="false"
+                    android:focusable="false" />
 
             </RelativeLayout>
 
-            <include layout="@layout/divider_inset" />
+            <TextView
+                android:id="@+id/settings_icon_shape_heading"
+                style="@style/SettingsSubHeadingStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/icon_shape" />
 
-            <RelativeLayout
-                android:id="@+id/settings_icon_shape_holder"
-                style="@style/SettingsHolderTextViewStyle"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/settings_icon_shape_chips"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                app:chipSpacingHorizontal="@dimen/settings_chip_spacing"
+                app:chipSpacingVertical="@dimen/settings_chip_spacing"
+                app:singleSelection="true">
 
-                <TextView
-                    android:id="@+id/settings_icon_shape_label"
-                    style="@style/SettingsTextLabelStyle"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/settings_icon_shape_circle"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/icon_shape" />
+                    android:text="@string/icon_shape_circle" />
 
-                <TextView
-                    android:id="@+id/settings_icon_shape"
-                    style="@style/SettingsTextValueStyle"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/settings_icon_shape_squircle"
+                    style="@style/Widget.Material3.Chip.Filter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/settings_icon_shape_label"
-                    tools:text="Circle" />
+                    android:text="@string/icon_shape_squircle" />
 
-            </RelativeLayout>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/settings_icon_shape_ios"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/icon_shape_ios" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/settings_icon_shape_one_ui"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/icon_shape_one_ui" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/settings_icon_shape_square"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/icon_shape_square" />
+
+            </com.google.android.material.chip.ChipGroup>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

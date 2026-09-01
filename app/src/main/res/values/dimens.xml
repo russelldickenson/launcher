@@ -17,6 +17,9 @@
     <dimen name="color_picker_swatch_spacing">8dp</dimen>
     <dimen name="settings_nav_icon_size">28dp</dimen>
     <dimen name="search_icon_collapsed_size">48dp</dimen>
+    <dimen name="settings_page_padding">20dp</dimen>
+    <dimen name="settings_chip_spacing">8dp</dimen>
+    <dimen name="settings_stepper_gap">16dp</dimen>
     <!-- matches launcher_icon_size so the Appearance > Icons preview shows the icon at the same
          size the app drawer will actually render it at (before the user's own scale setting) -->
     <dimen name="icon_preview_size">@dimen/launcher_icon_size</dimen>

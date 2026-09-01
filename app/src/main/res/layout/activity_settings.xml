@@ -16,7 +16,6 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/color_primary"
-            app:menu="@menu/menu_settings"
             app:title="@string/settings"
             app:titleTextAppearance="@style/AppTheme.ActionBar.TitleTextStyle" />
 
@@ -34,7 +33,11 @@
             android:id="@+id/settings_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingStart="@dimen/settings_page_padding"
+            android:paddingTop="@dimen/settings_page_padding"
+            android:paddingEnd="@dimen/settings_page_padding"
+            android:paddingBottom="@dimen/settings_page_padding">
 
             <RelativeLayout
                 android:id="@+id/settings_use_english_holder"

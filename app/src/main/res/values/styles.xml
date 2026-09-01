@@ -36,6 +36,14 @@
              shared by every PopupMenu-backed menu in the app: the home screen icon's long-press
              menu and the settings toolbar's overflow menu -->
         <item name="android:listPreferredItemHeightSmall">56dp</item>
+        <!-- PopupMenu item text size isn't controlled by popupMenuStyle at all (confirmed against
+             AppCompat's abc_popup_menu_item_layout.xml) - only these two theme attrs reach it -->
+        <item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.Launcher.PopupMenuItem</item>
+        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.Launcher.PopupMenuItem</item>
+    </style>
+
+    <style name="TextAppearance.Launcher.PopupMenuItem" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">18sp</item>
     </style>
 
     <!-- overrides Commons' same-named style (app-module resources win over library ones) with a
@@ -58,6 +66,16 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <!-- the few broad topic headings within a settings sub-screen, e.g. "Search"/"Layout" -->
+    <style name="SettingsChapterHeadingStyle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- one per individual setting within a chapter, sitting above its own control -->
+    <style name="SettingsSubHeadingStyle" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
     <style name="SettingsSwitchStyle" parent="@style/TextAppearance.Material3.BodyLarge">
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:clickable">false</item>
@@ -65,25 +83,27 @@
     </style>
 
     <!-- 64dp - a step beyond Material 3's 56dp one-line minimum, for the same more-generous,
-         Lawnchair-like row rhythm applied across every settings screen -->
+         Lawnchair-like row rhythm applied across every settings screen. Horizontal padding is
+         0dp here - the page itself now supplies the 20dp side inset (settings_page_padding), so
+         rows don't double up on it -->
     <style name="SettingsHolderSwitchStyle" parent="@style/SettingsHolderSwitchStyle">
         <item name="android:minHeight">64dp</item>
-        <item name="android:paddingStart">@dimen/settings_label_start_margin</item>
-        <item name="android:paddingEnd">@dimen/settings_label_start_margin</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
     </style>
 
     <style name="SettingsHolderTextViewStyle" parent="@style/SettingsHolderTextViewStyle">
         <item name="android:minHeight">48dp</item>
-        <item name="android:paddingStart">@dimen/settings_label_start_margin</item>
-        <item name="android:paddingEnd">@dimen/settings_label_start_margin</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
         <item name="android:paddingTop">20dp</item>
         <item name="android:paddingBottom">20dp</item>
     </style>
 
     <style name="SettingsHolderTextViewOneLinerStyle" parent="@style/SettingsHolderTextViewOneLinerStyle">
         <item name="android:minHeight">48dp</item>
-        <item name="android:paddingStart">@dimen/settings_label_start_margin</item>
-        <item name="android:paddingEnd">@dimen/settings_label_start_margin</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
         <item name="android:paddingTop">24dp</item>
         <item name="android:paddingBottom">24dp</item>
     </style>
@@ -133,6 +153,9 @@
         <item name="popupMenuStyle">@style/Widget.Material3.PopupMenu</item>
         <!-- roomier popup/dropdown menu rows - see AppTheme's copy of this item for why -->
         <item name="android:listPreferredItemHeightSmall">56dp</item>
+        <!-- see AppTheme's copy of these two items for why -->
+        <item name="android:textAppearanceLargePopupMenu">@style/TextAppearance.Launcher.PopupMenuItem</item>
+        <item name="android:textAppearanceSmallPopupMenu">@style/TextAppearance.Launcher.PopupMenuItem</item>
 
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowShowWallpaper">true</item>
