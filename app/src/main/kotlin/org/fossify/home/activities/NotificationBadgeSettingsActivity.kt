@@ -6,14 +6,12 @@ import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.toast
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
-import org.fossify.commons.models.RadioItem
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivityNotificationBadgeSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.isNotificationListenerEnabled
 import org.fossify.home.extensions.openNotificationListenerSettings
 import org.fossify.home.extensions.showColorPickerDialog
-import org.fossify.home.extensions.showRadioGroupDialog
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_CIRCLE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
@@ -88,30 +86,20 @@ class NotificationBadgeSettingsActivity : SimpleActivity() {
     }
 
     private fun setupNotificationBadgeShape() {
-        updateNotificationBadgeShapeLabel()
-        binding.settingsNotificationBadgeShapeHolder.setOnClickListener {
-            val items = arrayListOf(
-                RadioItem(NOTIFICATION_BADGE_SHAPE_CIRCLE, getString(R.string.notification_badge_shape_circle)),
-                RadioItem(NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE, getString(R.string.notification_badge_shape_rounded_square)),
-                RadioItem(NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE, getString(R.string.notification_badge_shape_sharp_square))
-            )
+        val chipForShape = mapOf(
+            NOTIFICATION_BADGE_SHAPE_CIRCLE to binding.settingsNotificationBadgeShapeCircle,
+            NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE to binding.settingsNotificationBadgeShapeRoundedSquare,
+            NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE to binding.settingsNotificationBadgeShapeSharpSquare,
+        )
+        (chipForShape[config.notificationBadgeShape] ?: binding.settingsNotificationBadgeShapeCircle).isChecked = true
 
-            showRadioGroupDialog(items = items, checkedItemId = config.notificationBadgeShape) {
-                val newShape = it as Int
-                if (config.notificationBadgeShape != newShape) {
-                    config.notificationBadgeShape = newShape
-                    updateNotificationBadgeShapeLabel()
-                    updateNotificationBadgePreview()
-                }
+        binding.settingsNotificationBadgeShapeChips.setOnCheckedStateChangeListener { _, checkedIds ->
+            val newShape = chipForShape.entries.firstOrNull { it.value.id == checkedIds.firstOrNull() }?.key
+                ?: return@setOnCheckedStateChangeListener
+            if (config.notificationBadgeShape != newShape) {
+                config.notificationBadgeShape = newShape
+                updateNotificationBadgePreview()
             }
-        }
-    }
-
-    private fun updateNotificationBadgeShapeLabel() {
-        binding.settingsNotificationBadgeShape.text = when (config.notificationBadgeShape) {
-            NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE -> getString(R.string.notification_badge_shape_rounded_square)
-            NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE -> getString(R.string.notification_badge_shape_sharp_square)
-            else -> getString(R.string.notification_badge_shape_circle)
         }
     }
 
