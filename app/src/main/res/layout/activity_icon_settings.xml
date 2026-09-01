@@ -61,86 +61,73 @@
 
             </LinearLayout>
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/SettingsCardStyle"
+            <RelativeLayout
+                android:id="@+id/settings_icon_pack_holder"
+                style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/settings_icon_pack_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/icon_pack" />
+
+                <TextView
+                    android:id="@+id/settings_icon_pack"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_icon_pack_label"
+                    tools:text="System default" />
+
+            </RelativeLayout>
+
+            <include layout="@layout/divider_inset" />
+
+            <RelativeLayout
+                android:id="@+id/settings_reshape_all_icons_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/settings_reshape_all_icons"
+                    style="@style/SettingsSwitchStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:text="@string/reshape_all_icons" />
 
-                    <RelativeLayout
-                        android:id="@+id/settings_icon_pack_holder"
-                        style="@style/SettingsHolderTextViewStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ripple_background">
+            </RelativeLayout>
 
-                        <TextView
-                            android:id="@+id/settings_icon_pack_label"
-                            style="@style/SettingsTextLabelStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/icon_pack" />
+            <include layout="@layout/divider_inset" />
 
-                        <TextView
-                            android:id="@+id/settings_icon_pack"
-                            style="@style/SettingsTextValueStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/settings_icon_pack_label"
-                            tools:text="System default" />
+            <RelativeLayout
+                android:id="@+id/settings_icon_shape_holder"
+                style="@style/SettingsHolderTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
 
-                    </RelativeLayout>
+                <TextView
+                    android:id="@+id/settings_icon_shape_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/icon_shape" />
 
-                    <include layout="@layout/divider_inset" />
+                <TextView
+                    android:id="@+id/settings_icon_shape"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_icon_shape_label"
+                    tools:text="Circle" />
 
-                    <RelativeLayout
-                        android:id="@+id/settings_reshape_all_icons_holder"
-                        style="@style/SettingsHolderSwitchStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ripple_background">
-
-                        <com.google.android.material.materialswitch.MaterialSwitch
-                            android:id="@+id/settings_reshape_all_icons"
-                            style="@style/SettingsSwitchStyle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/reshape_all_icons" />
-
-                    </RelativeLayout>
-
-                    <include layout="@layout/divider_inset" />
-
-                    <RelativeLayout
-                        android:id="@+id/settings_icon_shape_holder"
-                        style="@style/SettingsHolderTextViewStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ripple_background">
-
-                        <TextView
-                            android:id="@+id/settings_icon_shape_label"
-                            style="@style/SettingsTextLabelStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/icon_shape" />
-
-                        <TextView
-                            android:id="@+id/settings_icon_shape"
-                            style="@style/SettingsTextValueStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/settings_icon_shape_label"
-                            tools:text="Circle" />
-
-                    </RelativeLayout>
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            </RelativeLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

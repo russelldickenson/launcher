@@ -100,7 +100,7 @@
 
             <RelativeLayout
                 android:id="@+id/settings_icon_settings_holder"
-                style="@style/SettingsNavRowHolderStyle"
+                style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
@@ -144,7 +144,7 @@
 
             <RelativeLayout
                 android:id="@+id/settings_notification_badge_settings_holder"
-                style="@style/SettingsNavRowHolderStyle"
+                style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
@@ -188,7 +188,7 @@
 
             <RelativeLayout
                 android:id="@+id/settings_drawer_settings_holder"
-                style="@style/SettingsNavRowHolderStyle"
+                style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
@@ -232,7 +232,7 @@
 
             <RelativeLayout
                 android:id="@+id/settings_home_screen_settings_holder"
-                style="@style/SettingsNavRowHolderStyle"
+                style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">

@@ -59,105 +59,92 @@
 
             </RelativeLayout>
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/SettingsCardStyle"
+            <RelativeLayout
+                android:id="@+id/settings_show_notification_badges_holder"
+                style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
 
-                <LinearLayout
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/settings_show_notification_badges"
+                    style="@style/SettingsSwitchStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:text="@string/notification_badges" />
 
-                    <RelativeLayout
-                        android:id="@+id/settings_show_notification_badges_holder"
-                        style="@style/SettingsHolderSwitchStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ripple_background">
+            </RelativeLayout>
 
-                        <com.google.android.material.materialswitch.MaterialSwitch
-                            android:id="@+id/settings_show_notification_badges"
-                            style="@style/SettingsSwitchStyle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/notification_badges" />
+            <include layout="@layout/divider_inset" />
 
-                    </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/settings_show_notification_count_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
 
-                    <include layout="@layout/divider_inset" />
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/settings_show_notification_count"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/show_notification_count" />
 
-                    <RelativeLayout
-                        android:id="@+id/settings_show_notification_count_holder"
-                        style="@style/SettingsHolderSwitchStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ripple_background">
+            </RelativeLayout>
 
-                        <com.google.android.material.materialswitch.MaterialSwitch
-                            android:id="@+id/settings_show_notification_count"
-                            style="@style/SettingsSwitchStyle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/show_notification_count" />
+            <include layout="@layout/divider_inset" />
 
-                    </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/settings_notification_badge_color_holder"
+                style="@style/SettingsHolderTextViewOneLinerStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
 
-                    <include layout="@layout/divider_inset" />
+                <TextView
+                    android:id="@+id/settings_notification_badge_color_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/notification_badge_color" />
 
-                    <RelativeLayout
-                        android:id="@+id/settings_notification_badge_color_holder"
-                        style="@style/SettingsHolderTextViewOneLinerStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ripple_background">
+                <View
+                    android:id="@+id/settings_notification_badge_color"
+                    android:layout_width="@dimen/color_sample_size"
+                    android:layout_height="@dimen/color_sample_size"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/notification_badge_dot" />
 
-                        <TextView
-                            android:id="@+id/settings_notification_badge_color_label"
-                            style="@style/SettingsTextLabelStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_centerVertical="true"
-                            android:text="@string/notification_badge_color" />
+            </RelativeLayout>
 
-                        <View
-                            android:id="@+id/settings_notification_badge_color"
-                            android:layout_width="@dimen/color_sample_size"
-                            android:layout_height="@dimen/color_sample_size"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:background="@drawable/notification_badge_dot" />
+            <include layout="@layout/divider_inset" />
 
-                    </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/settings_notification_badge_shape_holder"
+                style="@style/SettingsHolderTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
 
-                    <include layout="@layout/divider_inset" />
+                <TextView
+                    android:id="@+id/settings_notification_badge_shape_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/notification_badge_shape" />
 
-                    <RelativeLayout
-                        android:id="@+id/settings_notification_badge_shape_holder"
-                        style="@style/SettingsHolderTextViewStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ripple_background">
+                <TextView
+                    android:id="@+id/settings_notification_badge_shape"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_notification_badge_shape_label"
+                    tools:text="Circle" />
 
-                        <TextView
-                            android:id="@+id/settings_notification_badge_shape_label"
-                            style="@style/SettingsTextLabelStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/notification_badge_shape" />
-
-                        <TextView
-                            android:id="@+id/settings_notification_badge_shape"
-                            style="@style/SettingsTextValueStyle"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/settings_notification_badge_shape_label"
-                            tools:text="Circle" />
-
-                    </RelativeLayout>
-
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            </RelativeLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

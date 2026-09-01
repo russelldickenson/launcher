@@ -45,18 +45,6 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- groups a settings section's rows into a single rounded, tonal surface so each section
-         reads as a distinct block, per Material 3's grouped-list convention -->
-    <style name="SettingsCardStyle" parent="Widget.Material3.CardView.Filled">
-        <item name="cardCornerRadius">16dp</item>
-        <item name="cardElevation">0dp</item>
-        <item name="contentPadding">0dp</item>
-        <item name="android:layout_marginStart">@dimen/settings_card_margin_horizontal</item>
-        <item name="android:layout_marginEnd">@dimen/settings_card_margin_horizontal</item>
-        <item name="android:layout_marginTop">@dimen/settings_card_margin_vertical</item>
-        <item name="android:layout_marginBottom">@dimen/settings_card_margin_vertical</item>
-    </style>
-
     <!-- Map settings text labels and switches to M3 tokens -->
     <style name="SettingsTextLabelStyle" parent="@style/TextAppearance.Material3.BodyLarge">
         <item name="android:textColor">?attr/colorOnSurface</item>
@@ -76,11 +64,10 @@
         <item name="android:focusable">false</item>
     </style>
 
-    <!-- 56dp matches Material 3's one-line list-item spec exactly - the inherited vertical
-         padding plus a single BodyLarge line only totals ~40dp on its own, so this floor is
-         what actually determines the row's rendered height -->
+    <!-- 64dp - a step beyond Material 3's 56dp one-line minimum, for the same more-generous,
+         Lawnchair-like row rhythm applied across every settings screen -->
     <style name="SettingsHolderSwitchStyle" parent="@style/SettingsHolderSwitchStyle">
-        <item name="android:minHeight">56dp</item>
+        <item name="android:minHeight">64dp</item>
         <item name="android:paddingStart">@dimen/settings_label_start_margin</item>
         <item name="android:paddingEnd">@dimen/settings_label_start_margin</item>
     </style>
@@ -89,19 +76,14 @@
         <item name="android:minHeight">48dp</item>
         <item name="android:paddingStart">@dimen/settings_label_start_margin</item>
         <item name="android:paddingEnd">@dimen/settings_label_start_margin</item>
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingBottom">20dp</item>
     </style>
 
     <style name="SettingsHolderTextViewOneLinerStyle" parent="@style/SettingsHolderTextViewOneLinerStyle">
         <item name="android:minHeight">48dp</item>
         <item name="android:paddingStart">@dimen/settings_label_start_margin</item>
         <item name="android:paddingEnd">@dimen/settings_label_start_margin</item>
-    </style>
-
-    <!-- extra-generous vertical padding for the main Settings screen's icon+title+description
-         nav rows specifically, matching Lawnchair's spread-out row rhythm - kept separate from
-         SettingsHolderTextViewOneLinerStyle since that style's other consumers are plain
-         single-line rows that shouldn't grow this much -->
-    <style name="SettingsNavRowHolderStyle" parent="SettingsHolderTextViewOneLinerStyle">
         <item name="android:paddingTop">24dp</item>
         <item name="android:paddingBottom">24dp</item>
     </style>

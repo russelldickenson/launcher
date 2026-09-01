@@ -15,8 +15,6 @@
     <dimen name="favourites_divider_spacing">12dp</dimen>
     <dimen name="color_picker_swatch_size">40dp</dimen>
     <dimen name="color_picker_swatch_spacing">8dp</dimen>
-    <dimen name="settings_card_margin_horizontal">16dp</dimen>
-    <dimen name="settings_card_margin_vertical">8dp</dimen>
     <dimen name="settings_nav_icon_size">28dp</dimen>
     <dimen name="search_icon_collapsed_size">48dp</dimen>
     <!-- matches launcher_icon_size so the Appearance > Icons preview shows the icon at the same
