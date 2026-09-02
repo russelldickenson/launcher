@@ -11,6 +11,8 @@
         android:id="@+id/folder_contents_grid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/smaller_margin"
+        android:layout_marginEnd="@dimen/smaller_margin"
         android:clipToPadding="false"
         app:layoutManager="org.fossify.commons.views.MyGridLayoutManager"
         app:spanCount="4" />

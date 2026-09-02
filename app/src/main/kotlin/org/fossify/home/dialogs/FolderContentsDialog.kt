@@ -1,12 +1,16 @@
 package org.fossify.home.dialogs
 
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.fossify.commons.views.MyGridLayoutManager
 import org.fossify.home.activities.MainActivity
 import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.databinding.DialogFolderContentsBinding
 import org.fossify.home.extensions.config
+import org.fossify.home.extensions.getAppDrawerBackgroundColor
 import org.fossify.home.extensions.handleGridItemPopupMenu
+import org.fossify.home.extensions.setupDrawerBackground
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.interfaces.ItemMenuListener
@@ -31,11 +35,20 @@ class FolderContentsDialog(
     private lateinit var dialog: androidx.appcompat.app.AlertDialog
 
     init {
+        binding.root.setupDrawerBackground(activity.getAppDrawerBackgroundColor())
+
         dialog = MaterialAlertDialogBuilder(activity)
             .setTitle(folder.title)
             .setView(binding.root)
             .setNegativeButton(org.fossify.commons.R.string.cancel, null)
             .show()
+
+        // MaterialAlertDialogBuilder caps the dialog at a fixed, narrower-than-screen width by
+        // default - that's fine for a few lines of text, but it's what was squashing this grid's
+        // icons/labels, which are sized on the assumption of a full-screen-width drawer column
+        // (see Context.getReferenceIconWidth()). Force it back to full width, same as the real
+        // app drawer, so that sizing math actually holds here too
+        dialog.window?.setLayout(MATCH_PARENT, WRAP_CONTENT)
 
         val layoutManager = binding.folderContentsGrid.layoutManager as MyGridLayoutManager
         layoutManager.spanCount = activity.config.drawerColumnCount
