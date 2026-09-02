@@ -1,37 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/medium_margin"
-    android:paddingBottom="@dimen/medium_margin">
+    android:paddingStart="@dimen/activity_margin"
+    android:paddingEnd="@dimen/activity_margin">
 
-    <TextView
-        android:id="@+id/folder_contents_title"
-        style="@style/TextAppearance.Material3.TitleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/activity_margin"
-        android:layout_marginEnd="@dimen/activity_margin"
-        android:layout_marginBottom="@dimen/medium_margin"
-        android:textStyle="bold"
-        tools:text="Games" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/folder_contents_grid"
+    <LinearLayout
+        android:id="@+id/folder_contents_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/smaller_margin"
-        android:layout_marginEnd="@dimen/smaller_margin"
-        android:clipToPadding="false"
-        app:layoutManager="org.fossify.commons.views.MyGridLayoutManager"
-        app:spanCount="4" />
+        android:orientation="vertical"
+        android:paddingTop="@dimen/medium_margin"
+        android:paddingBottom="@dimen/medium_margin">
 
-    <View
-        android:id="@+id/folder_contents_popup_anchor"
-        android:layout_width="0dp"
-        android:layout_height="0dp" />
+        <TextView
+            android:id="@+id/folder_contents_title"
+            style="@style/TextAppearance.Material3.TitleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/activity_margin"
+            android:layout_marginEnd="@dimen/activity_margin"
+            android:layout_marginBottom="@dimen/medium_margin"
+            android:textStyle="bold"
+            tools:text="Games" />
 
-</LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/folder_contents_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/smaller_margin"
+            android:layout_marginEnd="@dimen/smaller_margin"
+            android:clipToPadding="false"
+            app:layoutManager="org.fossify.commons.views.MyGridLayoutManager"
+            app:spanCount="4" />
+
+        <View
+            android:id="@+id/folder_contents_popup_anchor"
+            android:layout_width="0dp"
+            android:layout_height="0dp" />
+
+    </LinearLayout>
+
+</FrameLayout>

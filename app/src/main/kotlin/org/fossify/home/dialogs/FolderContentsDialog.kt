@@ -3,6 +3,7 @@ package org.fossify.home.dialogs
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.view.Window
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -14,7 +15,6 @@ import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppDrawerBackgroundColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.handleGridItemPopupMenu
-import org.fossify.home.extensions.setupDrawerBackground
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.interfaces.ItemMenuListener
@@ -31,7 +31,11 @@ import org.fossify.home.models.HomeScreenGridItem
 // MaterialAlertDialogBuilder - the Material dialog's own card chrome (title bar, corner radius,
 // content insets) shows through in a different colour than the drawer background we set on our
 // own content view, so the whole thing reads as two mismatched panels rather than one seamless
-// drawer-like surface. Dismissing is tap-outside only, no separate cancel button needed
+// drawer-like surface. Rounded corners (matching material_dialog_corner_radius, the same radius
+// used elsewhere in this app's dialogs) are applied to the inner card view instead, inset from the
+// dialog window's own edges by activity_margin so the rounding has room to actually read as
+// rounded rather than clipping into the screen edge. Dismissing is tap-outside only, no separate
+// cancel button needed
 class FolderContentsDialog(
     private val activity: MainActivity,
     folder: DrawerFolder,
@@ -44,15 +48,21 @@ class FolderContentsDialog(
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setContentView(binding.root)
         setCanceledOnTouchOutside(true)
-        // let binding.root's own drawer-coloured background be the only visible background,
-        // rather than the theme's default dialog window background peeking out around it
+        // binding.root is just a transparent inset frame around the real (rounded, coloured)
+        // card view - make the window background transparent too, or the theme's default dialog
+        // window background would show through around/behind that rounded card
         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         window?.setLayout(MATCH_PARENT, WRAP_CONTENT)
     }
 
     init {
         val backgroundColor = activity.getAppDrawerBackgroundColor()
-        binding.root.setupDrawerBackground(backgroundColor)
+        val cornerRadius = activity.resources.getDimension(org.fossify.commons.R.dimen.material_dialog_corner_radius)
+        binding.folderContentsCard.background = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            this.cornerRadius = cornerRadius
+            setColor(backgroundColor)
+        }
         binding.folderContentsTitle.text = folder.title
         binding.folderContentsTitle.setTextColor(activity.getAppDrawerTextColor())
 
