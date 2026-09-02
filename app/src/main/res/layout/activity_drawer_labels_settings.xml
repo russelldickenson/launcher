@@ -33,7 +33,11 @@
             android:id="@+id/drawer_labels_settings_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingStart="@dimen/settings_page_padding"
+            android:paddingTop="@dimen/settings_page_padding"
+            android:paddingEnd="@dimen/settings_page_padding"
+            android:paddingBottom="@dimen/settings_page_padding">
 
             <RelativeLayout
                 android:id="@+id/settings_show_drawer_app_labels_holder"
