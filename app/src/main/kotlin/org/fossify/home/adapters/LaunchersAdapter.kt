@@ -133,6 +133,10 @@ class LaunchersAdapter(
         iconPadding = (targetIconWidth * 0.1f).toInt()
     }
 
+    // exposes the already-computed icon size for the drag-shadow view to match, rather than
+    // duplicating the calculateIconWidth() formula elsewhere
+    fun getIconSizePx() = targetIconWidth
+
     @SuppressLint("NotifyDataSetChanged")
     fun updateTextColor(newTextColor: Int) {
         if (newTextColor != textColor) {
@@ -240,6 +244,12 @@ class LaunchersAdapter(
                 }
                 setOnLongClickListener {
                     if (isSelectionModeActive) {
+                        // long-pressing an already-checked icon arms a drag of the whole
+                        // selection; long-pressing an unchecked one does nothing special here
+                        if (selectedIdentifiers.contains(launcher.getLauncherIdentifier())) {
+                            allAppsListener.onSelectionDragRequested(launcher)
+                            return@setOnLongClickListener true
+                        }
                         return@setOnLongClickListener false
                     }
 

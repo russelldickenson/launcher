@@ -2,20 +2,26 @@ package org.fossify.home.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
+import android.widget.PopupMenu
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
+import com.google.android.material.color.MaterialColors
 import org.fossify.commons.extensions.beGone
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperPrimaryColor
+import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.hideKeyboard
 import org.fossify.commons.extensions.normalizeString
 import org.fossify.commons.extensions.showKeyboard
+import org.fossify.commons.helpers.isQPlus
 import org.fossify.commons.views.MyGridLayoutManager
 import org.fossify.home.R
 import org.fossify.home.activities.MainActivity
@@ -27,6 +33,7 @@ import org.fossify.home.extensions.getAppDrawerSearchBorderColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.launchApp
 import org.fossify.home.extensions.setupDrawerBackground
+import org.fossify.home.helpers.FolderDragHelper
 import org.fossify.home.helpers.IconCache
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.interfaces.AllAppsListener
@@ -55,6 +62,18 @@ class AllAppsFragment(
     private var isSelectionModeActive = false
     private val selectedIdentifiers = mutableSetOf<String>()
 
+    private val folderDragHelper by lazy {
+        FolderDragHelper(
+            recyclerView = binding.allAppsGrid,
+            dragShadowContainer = binding.dragShadowContainer,
+            dragShadowIcon = binding.dragShadowIcon,
+            dragShadowCountBadge = binding.dragShadowCountBadge,
+            getCurrentSelectionSize = { selectedIdentifiers.size },
+            onDrop = { folderId -> onSelectionDroppedOnFolder(folderId) },
+            onCancel = {}
+        )
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun setupFragment(activity: MainActivity) {
         this.activity = activity
@@ -69,7 +88,30 @@ class AllAppsFragment(
         }
 
         binding.selectionCancelButton.setOnClickListener { exitSelectionMode() }
-        binding.selectionConfirmButton.setOnClickListener { confirmSelectionAddToFolder() }
+        binding.overflowMenuIcon.setOnClickListener { showOverflowMenu() }
+    }
+
+    private fun showOverflowMenu() {
+        PopupMenu(context, binding.overflowMenuIcon).apply {
+            if (isQPlus()) {
+                setForceShowIcon(true)
+            }
+
+            inflate(R.menu.menu_all_apps)
+            menu.forEach {
+                val color = MaterialColors.getColor(
+                    context, com.google.android.material.R.attr.colorOnSurface, context.getProperTextColor()
+                )
+                it.iconTintList = ColorStateList.valueOf(color)
+            }
+            setOnMenuItemClickListener { item ->
+                if (item.itemId == R.id.create_folder) {
+                    activity?.createNewFolder()
+                }
+                true
+            }
+            show()
+        }
     }
 
     // entry point for the long-press "Add to folder..." action - puts the whole drawer into a
@@ -79,29 +121,31 @@ class AllAppsFragment(
         isSelectionModeActive = true
         selectedIdentifiers.clear()
         selectedIdentifiers.add(initialLauncher.getLauncherIdentifier())
+        folderDragHelper.attach()
         updateSelectionUi()
     }
 
     private fun exitSelectionMode() {
         isSelectionModeActive = false
         selectedIdentifiers.clear()
+        folderDragHelper.detach()
         updateSelectionUi()
     }
 
-    private fun confirmSelectionAddToFolder() {
+    // called by FolderDragHelper once the current selection is dropped on a folder cell - the
+    // actual assignment lives on MainActivity, same place the old confirm-button flow called into
+    private fun onSelectionDroppedOnFolder(folderId: Long) {
         val selected = launchers.filter { selectedIdentifiers.contains(it.getLauncherIdentifier()) }
         exitSelectionMode()
-        if (selected.isNotEmpty()) {
-            activity?.showAddToFolderDialogForSelection(selected)
-        }
+        activity?.assignSelectedAppsToFolder(selected, folderId)
     }
 
     private fun updateSelectionUi() {
         binding.selectionActionBar.beVisibleIf(isSelectionModeActive)
+        binding.overflowMenuIcon.beVisibleIf(!isSelectionModeActive && !binding.searchBar.isSearchOpen)
         binding.selectionCountLabel.text = context.resources.getQuantityString(
-            R.plurals.folder_apps_count, selectedIdentifiers.size, selectedIdentifiers.size
+            R.plurals.drag_to_folder_hint, selectedIdentifiers.size, selectedIdentifiers.size
         )
-        binding.selectionConfirmButton.isEnabled = selectedIdentifiers.isNotEmpty()
         getAdapter()?.setSelectionMode(isSelectionModeActive, selectedIdentifiers)
     }
 
@@ -111,6 +155,10 @@ class AllAppsFragment(
             selectedIdentifiers.add(identifier)
         }
         updateSelectionUi()
+    }
+
+    override fun onSelectionDragRequested(appLauncher: AppLauncher) {
+        folderDragHelper.armDrag(appLauncher)
     }
 
     override fun onAttachedToWindow() {
@@ -353,6 +401,7 @@ class AllAppsFragment(
 
     private fun updateSearchBarExpanded(expanded: Boolean) {
         binding.searchIconCollapsed.beVisibleIf(!expanded)
+        binding.overflowMenuIcon.beVisibleIf(!expanded && !isSelectionModeActive)
         binding.searchBar.beVisibleIf(expanded)
     }
 
@@ -384,6 +433,7 @@ class AllAppsFragment(
         searchBinding.topToolbarSearch.setHintTextColor(ColorUtils.setAlphaComponent(textColor, 150))
         searchBinding.topToolbarSearchIcon.setColorFilter(textColor)
         binding.searchIconCollapsed.setColorFilter(textColor)
+        binding.overflowMenuIcon.setColorFilter(textColor)
     }
 
     private fun showNoResultsPlaceholderIfNeeded() {

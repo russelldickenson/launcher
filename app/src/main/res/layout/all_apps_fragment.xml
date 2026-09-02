@@ -12,6 +12,17 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:id="@+id/overflow_menu_icon"
+            android:layout_width="@dimen/search_icon_collapsed_size"
+            android:layout_height="@dimen/search_icon_collapsed_size"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/search_icon_collapsed_size"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/create_folder"
+            android:padding="12dp"
+            android:src="@drawable/ic_three_dots_vector" />
+
+        <ImageView
             android:id="@+id/search_icon_collapsed"
             android:layout_width="@dimen/search_icon_collapsed_size"
             android:layout_height="@dimen/search_icon_collapsed_size"
@@ -92,16 +103,40 @@
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/small_margin"
             android:text="@android:string/cancel" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/selection_confirm_button"
-            style="@style/Widget.Material3.Button"
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/drag_shadow_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="12dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/drag_shadow_icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/drag_shadow_count_badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add_to_folder" />
+            android:layout_gravity="top|end"
+            android:background="@drawable/notification_badge_dot"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:minWidth="20dp"
+            android:minHeight="20dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:textColor="@android:color/white"
+            android:textSize="11sp"
+            android:visibility="gone"
+            tools:text="3" />
 
-    </LinearLayout>
+    </FrameLayout>
 
 </org.fossify.home.fragments.AllAppsFragment>

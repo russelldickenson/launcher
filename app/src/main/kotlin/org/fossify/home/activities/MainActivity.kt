@@ -72,7 +72,6 @@ import org.fossify.home.R
 import org.fossify.home.databinding.ActivityMainBinding
 import org.fossify.home.databinding.AllAppsFragmentBinding
 import org.fossify.home.databinding.WidgetsFragmentBinding
-import org.fossify.home.dialogs.AddToFolderDialog
 import org.fossify.home.dialogs.FolderContentsDialog
 import org.fossify.home.dialogs.RenameItemDialog
 import org.fossify.home.extensions.config
@@ -1031,28 +1030,32 @@ class MainActivity : SimpleActivity(), FlingListener {
         binding.allAppsFragment.root.startSelectionMode(launcher)
     }
 
-    // called once the user has checked off every app they want and pressed the confirm button
-    fun showAddToFolderDialogForSelection(selected: List<AppLauncher>) {
+    // prompts for a name and creates a brand-new, empty folder - independent of any app
+    // selection, unlike the old "Add to folder" flow this replaces
+    fun createNewFolder() {
+        RenameItemDialog(this, "", titleRes = R.string.new_folder) { title, dialog ->
+            ensureBackgroundThread {
+                val folderId = drawerFoldersDB.insert(DrawerFolder(id = null, title = title))
+                IconCache.folders = IconCache.folders + DrawerFolder(folderId, title)
+                runOnUiThread {
+                    binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+                    dialog.dismiss()
+                }
+            }
+        }
+    }
+
+    // called once the drawer's drag-to-folder gesture drops a selection onto an existing folder -
+    // assignAppsToFolder() itself must run on a background thread, same contract as
+    // removeAppFromFolder()'s own ensureBackgroundThread wrapping below
+    fun assignSelectedAppsToFolder(selected: List<AppLauncher>, folderId: Long) {
         if (selected.isEmpty()) {
             return
         }
 
-        AddToFolderDialog(
-            activity = this,
-            existingFolders = IconCache.folders,
-            onCreateNewFolder = { title ->
-                ensureBackgroundThread {
-                    val folderId = drawerFoldersDB.insert(DrawerFolder(id = null, title = title))
-                    IconCache.folders = IconCache.folders + DrawerFolder(folderId, title)
-                    assignAppsToFolder(selected, folderId)
-                }
-            },
-            onAddToExistingFolder = { folderId ->
-                ensureBackgroundThread {
-                    assignAppsToFolder(selected, folderId)
-                }
-            }
-        )
+        ensureBackgroundThread {
+            assignAppsToFolder(selected, folderId)
+        }
     }
 
     // must be called on a background thread

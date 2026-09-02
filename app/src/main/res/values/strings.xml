@@ -57,14 +57,15 @@
     <string name="lock_device_admin_hint">To enable the double tap to lock screen feature, you need to grant admin permission. Note that the app cannot be uninstalled until this permission is removed.</string>
     <string name="lock_device_admin_warning">Deactivating admin permission will disable the double tap to lock screen feature.</string>
     <string name="add_to_folder">Add to folder</string>
+    <string name="create_folder">Create folder</string>
     <string name="new_folder">New folder</string>
     <string name="remove_from_folder">Remove from folder</string>
     <string name="rename_folder">Rename folder</string>
     <string name="delete_folder">Delete folder</string>
     <string name="delete_folder_confirmation">Delete this folder? Its apps will move back to the main app drawer.</string>
-    <plurals name="folder_apps_count">
-        <item quantity="one">%d app</item>
-        <item quantity="other">%d apps</item>
+    <plurals name="drag_to_folder_hint">
+        <item quantity="one">%d selected - drag onto a folder</item>
+        <item quantity="other">%d selected - drag onto a folder</item>
     </plurals>
     <!--
         Haven't found some strings? There's more at
