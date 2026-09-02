@@ -92,6 +92,7 @@ import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.helpers.ITEM_TYPE_SHORTCUT
 import org.fossify.home.helpers.ITEM_TYPE_WIDGET
 import org.fossify.home.helpers.IconCache
+import org.fossify.home.helpers.IconContrastHelper
 import org.fossify.home.helpers.NotificationCache
 import org.fossify.home.helpers.REQUEST_ALLOW_BINDING_WIDGET
 import org.fossify.home.helpers.REQUEST_CONFIGURE_WIDGET
@@ -1241,7 +1242,8 @@ class MainActivity : SimpleActivity(), FlingListener {
                 height = max(drawable.intrinsicHeight, 1),
                 config = Bitmap.Config.ARGB_8888
             )
-            val placeholderColor = calculateAverageColor(bitmap)
+            val finalBitmap = IconContrastHelper.drawContrastBackdropIfNeeded(bitmap, getAppDrawerBackgroundColor())
+            val placeholderColor = calculateAverageColor(finalBitmap)
             val customTitle = existingApps[packageName]?.customTitle
             val title = customTitle?.takeIf { it.isNotBlank() } ?: label
             allApps.add(
@@ -1254,7 +1256,7 @@ class MainActivity : SimpleActivity(), FlingListener {
                     thumbnailColor = placeholderColor,
                     pinned = pinnedPackages.contains(packageName),
                     customTitle = customTitle,
-                    drawable = bitmap.toDrawable(resources)
+                    drawable = finalBitmap.toDrawable(resources)
                 )
             )
         }
