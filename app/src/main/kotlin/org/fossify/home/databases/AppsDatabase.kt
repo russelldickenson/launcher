@@ -49,10 +49,14 @@ abstract class AppsDatabase : RoomDatabase() {
 
         private val MIGRATION_7_8 = object : Migration(7, 8) {
             override fun migrate(db: SupportSQLiteDatabase) {
+                // must match the Room-generated schema in app/schemas exactly (no NOT NULL after
+                // AUTOINCREMENT, no DEFAULT on `order`, no DEFAULT on the nullable folder_id ALTER)
+                // - Room validates the real resulting column defaults/nullability against its own
+                // expected schema on next open, not just whether the migration "ran"
                 db.execSQL(
-                    "CREATE TABLE IF NOT EXISTS `drawer_folders` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `order` INTEGER NOT NULL DEFAULT 0)"
+                    "CREATE TABLE IF NOT EXISTS `drawer_folders` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `order` INTEGER NOT NULL)"
                 )
-                db.execSQL("ALTER TABLE apps ADD COLUMN folder_id INTEGER DEFAULT NULL")
+                db.execSQL("ALTER TABLE apps ADD COLUMN folder_id INTEGER")
             }
         }
 
