@@ -1,14 +1,18 @@
 package org.fossify.home.dialogs
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.Window
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.fossify.commons.views.MyGridLayoutManager
 import org.fossify.home.activities.MainActivity
 import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.databinding.DialogFolderContentsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppDrawerBackgroundColor
+import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.handleGridItemPopupMenu
 import org.fossify.home.extensions.setupDrawerBackground
 import org.fossify.home.helpers.ITEM_TYPE_ICON
@@ -23,7 +27,11 @@ import org.fossify.home.models.HomeScreenGridItem
 // main app drawer when a folder is tapped - a small grid of just that folder's apps. Tapping an
 // app launches it and closes both this dialog and the main app drawer; long-pressing one reuses
 // the exact same shared item menu as the main drawer (pin/hide/rename/app info/uninstall), plus a
-// "Remove from folder" entry that only appears here
+// "Remove from folder" entry that only appears here. A plain Dialog rather than
+// MaterialAlertDialogBuilder - the Material dialog's own card chrome (title bar, corner radius,
+// content insets) shows through in a different colour than the drawer background we set on our
+// own content view, so the whole thing reads as two mismatched panels rather than one seamless
+// drawer-like surface. Dismissing is tap-outside only, no separate cancel button needed
 class FolderContentsDialog(
     private val activity: MainActivity,
     folder: DrawerFolder,
@@ -32,23 +40,23 @@ class FolderContentsDialog(
     private val menuListener: ItemMenuListener,
 ) {
     private val binding = DialogFolderContentsBinding.inflate(activity.layoutInflater)
-    private lateinit var dialog: androidx.appcompat.app.AlertDialog
+    private val dialog = Dialog(activity).apply {
+        requestWindowFeature(Window.FEATURE_NO_TITLE)
+        setContentView(binding.root)
+        setCanceledOnTouchOutside(true)
+        // let binding.root's own drawer-coloured background be the only visible background,
+        // rather than the theme's default dialog window background peeking out around it
+        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        window?.setLayout(MATCH_PARENT, WRAP_CONTENT)
+    }
 
     init {
-        binding.root.setupDrawerBackground(activity.getAppDrawerBackgroundColor())
+        val backgroundColor = activity.getAppDrawerBackgroundColor()
+        binding.root.setupDrawerBackground(backgroundColor)
+        binding.folderContentsTitle.text = folder.title
+        binding.folderContentsTitle.setTextColor(activity.getAppDrawerTextColor())
 
-        dialog = MaterialAlertDialogBuilder(activity)
-            .setTitle(folder.title)
-            .setView(binding.root)
-            .setNegativeButton(org.fossify.commons.R.string.cancel, null)
-            .show()
-
-        // MaterialAlertDialogBuilder caps the dialog at a fixed, narrower-than-screen width by
-        // default - that's fine for a few lines of text, but it's what was squashing this grid's
-        // icons/labels, which are sized on the assumption of a full-screen-width drawer column
-        // (see Context.getReferenceIconWidth()). Force it back to full width, same as the real
-        // app drawer, so that sizing math actually holds here too
-        dialog.window?.setLayout(MATCH_PARENT, WRAP_CONTENT)
+        dialog.show()
 
         val layoutManager = binding.folderContentsGrid.layoutManager as MyGridLayoutManager
         layoutManager.spanCount = activity.config.drawerColumnCount
@@ -116,7 +124,7 @@ class FolderContentsDialog(
 // unconditionally before any specific action, so dismissing there covers every case in one place
 private class FolderMenuListenerDelegate(
     private val realListener: ItemMenuListener,
-    private val dialog: androidx.appcompat.app.AlertDialog,
+    private val dialog: Dialog,
 ) : ItemMenuListener by realListener {
     override fun onAnyClick() {
         dialog.dismiss()

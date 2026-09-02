@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingTop="@dimen/medium_margin"
     android:paddingBottom="@dimen/medium_margin">
+
+    <TextView
+        android:id="@+id/folder_contents_title"
+        style="@style/TextAppearance.Material3.TitleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:layout_marginBottom="@dimen/medium_margin"
+        android:textStyle="bold"
+        tools:text="Games" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/folder_contents_grid"
