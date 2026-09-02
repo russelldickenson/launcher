@@ -14,6 +14,14 @@
             android:icon="@drawable/ic_hide_vector"
             android:title="@string/hide" />
         <item
+            android:id="@+id/add_to_folder"
+            android:icon="@drawable/ic_apps_vector"
+            android:title="@string/add_to_folder" />
+        <item
+            android:id="@+id/remove_from_folder"
+            android:icon="@drawable/ic_cross_vector"
+            android:title="@string/remove_from_folder" />
+        <item
             android:id="@+id/resize"
             android:icon="@drawable/ic_resize_vector"
             android:title="@string/resize" />

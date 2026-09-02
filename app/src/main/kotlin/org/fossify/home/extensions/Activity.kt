@@ -173,6 +173,7 @@ fun Activity.handleGridItemPopupMenu(
     gridItem: HomeScreenGridItem,
     isOnAllAppsFragment: Boolean,
     listener: ItemMenuListener,
+    isInFolderOverlay: Boolean = false,
 ): PopupMenu {
     return PopupMenu(this, anchorView, Gravity.TOP or Gravity.END).apply {
         if (isQPlus()) {
@@ -203,6 +204,10 @@ fun Activity.handleGridItemPopupMenu(
             gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment
         menu.findItem(R.id.hide_icon).isVisible =
             gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment
+        menu.findItem(R.id.add_to_folder).isVisible =
+            gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment && !isInFolderOverlay
+        menu.findItem(R.id.remove_from_folder).isVisible =
+            gridItem.type == ITEM_TYPE_ICON && isInFolderOverlay
         menu.findItem(R.id.resize).isVisible = gridItem.type == ITEM_TYPE_WIDGET
         menu.findItem(R.id.app_info).isVisible = gridItem.type == ITEM_TYPE_ICON
         menu.findItem(R.id.uninstall).isVisible = gridItem.type == ITEM_TYPE_ICON
@@ -262,6 +267,8 @@ fun Activity.handleGridItemPopupMenu(
                 R.id.app_info -> listener.appInfo(gridItem)
                 R.id.remove -> listener.remove(gridItem)
                 R.id.uninstall -> listener.uninstall(gridItem)
+                R.id.add_to_folder -> listener.addToFolder(gridItem)
+                R.id.remove_from_folder -> listener.removeFromFolder(gridItem)
             }
             true
         }

@@ -45,6 +45,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.iterator
 import androidx.viewbinding.ViewBinding
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.collections.immutable.toImmutableList
 import org.fossify.commons.extensions.appLaunched
 import org.fossify.commons.extensions.beVisible
@@ -71,8 +72,11 @@ import org.fossify.home.R
 import org.fossify.home.databinding.ActivityMainBinding
 import org.fossify.home.databinding.AllAppsFragmentBinding
 import org.fossify.home.databinding.WidgetsFragmentBinding
+import org.fossify.home.dialogs.AddToFolderDialog
+import org.fossify.home.dialogs.FolderContentsDialog
 import org.fossify.home.dialogs.RenameItemDialog
 import org.fossify.home.extensions.config
+import org.fossify.home.extensions.drawerFoldersDB
 import org.fossify.home.extensions.getAppDrawerBackgroundColor
 import org.fossify.home.extensions.getAppIcon
 import org.fossify.home.extensions.getLabel
@@ -102,6 +106,7 @@ import org.fossify.home.helpers.UNINSTALL_APP_REQUEST_CODE
 import org.fossify.home.interfaces.FlingListener
 import org.fossify.home.interfaces.ItemMenuListener
 import org.fossify.home.models.AppLauncher
+import org.fossify.home.models.DrawerFolder
 import org.fossify.home.models.HiddenIcon
 import org.fossify.home.models.HomeScreenGridItem
 import org.fossify.home.receivers.LockDeviceAdminReceiver
@@ -623,6 +628,7 @@ class MainActivity : SimpleActivity(), FlingListener {
 
     private fun refreshLaunchers() {
         val launchers = getAllAppLaunchers()
+        IconCache.folders = drawerFoldersDB.getFolders()
         binding.allAppsFragment.root.gotLaunchers(launchers)
         binding.widgetsFragment.root.getAppWidgets()
 
@@ -1015,6 +1021,157 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
     }
 
+    private fun addToFolder(gridItem: HomeScreenGridItem) {
+        val launcher = IconCache.launchers.firstOrNull {
+            it.packageName == gridItem.packageName && it.activityName == gridItem.activityName
+        } ?: return
+
+        AddToFolderDialog(
+            activity = this,
+            existingFolders = IconCache.folders,
+            onCreateNewFolder = { title ->
+                ensureBackgroundThread {
+                    val folderId = drawerFoldersDB.insert(DrawerFolder(id = null, title = title))
+                    IconCache.folders = IconCache.folders + DrawerFolder(folderId, title)
+                    assignAppToFolder(launcher, folderId)
+                    runOnUiThread { showAddMoreAppsToFolderDialog(folderId, launcher.packageName) }
+                }
+            },
+            onAddToExistingFolder = { folderId ->
+                ensureBackgroundThread {
+                    assignAppToFolder(launcher, folderId)
+                    runOnUiThread { showAddMoreAppsToFolderDialog(folderId, launcher.packageName) }
+                }
+            }
+        )
+    }
+
+    // must be called on a background thread
+    private fun assignAppToFolder(launcher: AppLauncher, folderId: Long?) {
+        launchersDB.updateFolderId(launcher.packageName, launcher.activityName, folderId)
+        IconCache.launchers = IconCache.launchers.map {
+            if (it.packageName == launcher.packageName && it.activityName == launcher.activityName) {
+                it.copy(folderId = folderId)
+            } else {
+                it
+            }
+        }
+
+        runOnUiThread {
+            binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+        }
+    }
+
+    private fun showAddMoreAppsToFolderDialog(folderId: Long, excludingPackageName: String) {
+        val remaining = IconCache.launchers.filter { it.packageName != excludingPackageName && it.folderId != folderId }
+        if (remaining.isEmpty()) {
+            return
+        }
+
+        val titles = remaining.map { it.title }.toTypedArray()
+        val checked = BooleanArray(remaining.size)
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.add_to_folder)
+            .setMultiChoiceItems(titles, checked) { _, which, isChecked -> checked[which] = isChecked }
+            .setPositiveButton(org.fossify.commons.R.string.ok) { _, _ ->
+                val selected = remaining.filterIndexed { index, _ -> checked[index] }
+                if (selected.isNotEmpty()) {
+                    ensureBackgroundThread {
+                        selected.forEach { launchersDB.updateFolderId(it.packageName, it.activityName, folderId) }
+                        val selectedIdentifiers = selected.map { it.getLauncherIdentifier() }.toSet()
+                        IconCache.launchers = IconCache.launchers.map {
+                            if (selectedIdentifiers.contains(it.getLauncherIdentifier())) it.copy(folderId = folderId) else it
+                        }
+                        runOnUiThread { binding.allAppsFragment.root.gotLaunchers(IconCache.launchers) }
+                    }
+                }
+            }
+            .setNegativeButton(org.fossify.commons.R.string.cancel, null)
+            .show()
+    }
+
+    private fun removeAppFromFolder(gridItem: HomeScreenGridItem) {
+        val launcher = IconCache.launchers.firstOrNull {
+            it.packageName == gridItem.packageName && it.activityName == gridItem.activityName
+        } ?: return
+
+        ensureBackgroundThread {
+            assignAppToFolder(launcher, null)
+        }
+    }
+
+    fun showFolderContents(folder: DrawerFolder, members: List<AppLauncher>) {
+        FolderContentsDialog(
+            activity = this,
+            folder = folder,
+            members = members,
+            itemClick = { launcher ->
+                launchApp(launcher.packageName, launcher.activityName)
+                closeAppDrawer(delayed = false)
+            },
+            menuListener = menuListener
+        )
+    }
+
+    fun showFolderMenu(x: Float, y: Float, folder: DrawerFolder) {
+        binding.homeScreenPopupMenuAnchor.x = x
+        binding.homeScreenPopupMenuAnchor.y = y
+        PopupMenu(this, binding.homeScreenPopupMenuAnchor, Gravity.TOP or Gravity.END).apply {
+            if (isQPlus()) {
+                setForceShowIcon(true)
+            }
+
+            inflate(R.menu.menu_drawer_folder)
+            menu.forEach {
+                val color = MaterialColors.getColor(
+                    this@MainActivity,
+                    com.google.android.material.R.attr.colorOnSurface,
+                    getProperTextColor()
+                )
+                it.iconTintList = ColorStateList.valueOf(color)
+            }
+            setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.rename_folder -> renameFolder(folder)
+                    R.id.delete_folder -> confirmDeleteFolder(folder)
+                }
+                true
+            }
+            show()
+        }
+    }
+
+    private fun renameFolder(folder: DrawerFolder) {
+        RenameItemDialog(this, folder.title, titleRes = R.string.rename_folder) { newTitle, dialog ->
+            ensureBackgroundThread {
+                drawerFoldersDB.renameFolder(folder.id!!, newTitle)
+                IconCache.folders = IconCache.folders.map { if (it.id == folder.id) it.copy(title = newTitle) else it }
+                runOnUiThread {
+                    binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+                    dialog.dismiss()
+                }
+            }
+        }
+    }
+
+    private fun confirmDeleteFolder(folder: DrawerFolder) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.delete_folder)
+            .setMessage(R.string.delete_folder_confirmation)
+            .setPositiveButton(org.fossify.commons.R.string.yes) { _, _ ->
+                ensureBackgroundThread {
+                    drawerFoldersDB.deleteFolder(folder.id!!)
+                    IconCache.folders = IconCache.folders.filter { it.id != folder.id }
+                    IconCache.launchers = IconCache.launchers.map {
+                        if (it.folderId == folder.id) it.copy(folderId = null) else it
+                    }
+                    runOnUiThread { binding.allAppsFragment.root.gotLaunchers(IconCache.launchers) }
+                }
+            }
+            .setNegativeButton(org.fossify.commons.R.string.no, null)
+            .show()
+    }
+
     private fun launchWallpapersIntent() {
         try {
             Intent(Intent.ACTION_SET_WALLPAPER).apply {
@@ -1089,6 +1246,14 @@ class MainActivity : SimpleActivity(), FlingListener {
 
         override fun uninstall(gridItem: HomeScreenGridItem) {
             uninstallApp(gridItem.packageName)
+        }
+
+        override fun addToFolder(gridItem: HomeScreenGridItem) {
+            this@MainActivity.addToFolder(gridItem)
+        }
+
+        override fun removeFromFolder(gridItem: HomeScreenGridItem) {
+            removeAppFromFolder(gridItem)
         }
 
         override fun onDismiss() {
@@ -1256,6 +1421,7 @@ class MainActivity : SimpleActivity(), FlingListener {
                     thumbnailColor = placeholderColor,
                     pinned = pinnedPackages.contains(packageName),
                     customTitle = customTitle,
+                    folderId = existingApps[packageName]?.folderId,
                     drawable = finalBitmap.toDrawable(resources)
                 )
             )

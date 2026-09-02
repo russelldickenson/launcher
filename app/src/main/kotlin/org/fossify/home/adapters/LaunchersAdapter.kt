@@ -25,15 +25,18 @@ import org.fossify.home.activities.SimpleActivity
 import org.fossify.home.databinding.ItemDrawerSectionHeaderBinding
 import org.fossify.home.databinding.ItemFavouritesDividerBinding
 import org.fossify.home.databinding.ItemLauncherLabelBinding
+import org.fossify.home.databinding.ItemDrawerFolderBinding
 import org.fossify.home.extensions.animateScale
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.getReferenceIconWidth
+import org.fossify.home.helpers.FolderIconGenerator
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
 import org.fossify.home.helpers.NotificationCache
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.models.AppLauncher
+import org.fossify.home.models.DrawerFolder
 import org.fossify.home.models.DrawerGridItem
 
 class LaunchersAdapter(
@@ -57,6 +60,7 @@ class LaunchersAdapter(
             is DrawerGridItem.Header -> VIEW_TYPE_HEADER
             is DrawerGridItem.Divider -> VIEW_TYPE_DIVIDER
             is DrawerGridItem.App -> VIEW_TYPE_APP
+            is DrawerGridItem.Folder -> VIEW_TYPE_FOLDER
         }
     }
 
@@ -65,6 +69,7 @@ class LaunchersAdapter(
             is DrawerGridItem.Header -> -2L
             is DrawerGridItem.Divider -> -1L
             is DrawerGridItem.App -> item.launcher.getLauncherIdentifier().hashCode().toLong()
+            is DrawerGridItem.Folder -> "folder:${item.folder.id}".hashCode().toLong()
         }
     }
 
@@ -85,6 +90,10 @@ class LaunchersAdapter(
                 val binding = ItemFavouritesDividerBinding.inflate(inflater, parent, false)
                 DividerViewHolder(binding.root)
             }
+            VIEW_TYPE_FOLDER -> {
+                val binding = ItemDrawerFolderBinding.inflate(inflater, parent, false)
+                FolderViewHolder(binding.root)
+            }
             else -> {
                 val binding = ItemLauncherLabelBinding.inflate(inflater, parent, false)
                 AppViewHolder(binding.root)
@@ -101,6 +110,10 @@ class LaunchersAdapter(
             is AppViewHolder -> {
                 val item = getItem(position) as? DrawerGridItem.App ?: return
                 holder.bindView(item.launcher)
+            }
+            is FolderViewHolder -> {
+                val item = getItem(position) as? DrawerGridItem.Folder ?: return
+                holder.bindView(item.folder, item.members)
             }
         }
     }
@@ -243,6 +256,37 @@ class LaunchersAdapter(
         }
     }
 
+    inner class FolderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        fun bindView(folder: DrawerFolder, members: List<AppLauncher>) {
+            val binding = ItemDrawerFolderBinding.bind(itemView)
+            binding.drawerFolderLabel.text = folder.title
+            binding.drawerFolderLabel.setTextColor(textColor)
+            binding.drawerFolderLabel.maxLines = activity.config.drawerLabelMaxLines
+            binding.drawerFolderLabel.beVisibleIf(activity.config.showDrawerAppLabels)
+            binding.drawerFolderLabel.textSize = activity.config.drawerLabelFontSize.toFloat()
+            binding.drawerFolderIcon.layoutParams = binding.drawerFolderIcon.layoutParams.apply {
+                width = targetIconWidth
+                height = targetIconWidth
+            }
+
+            binding.drawerFolderIcon.setImageDrawable(
+                FolderIconGenerator.generate(activity, members.map { it.drawable }, targetIconWidth)
+            )
+
+            itemView.setOnClickListener { allAppsListener.onFolderClicked(folder) }
+            itemView.setOnLongClickListener {
+                val location = IntArray(2)
+                itemView.getLocationOnScreen(location)
+                allAppsListener.onFolderLongPressed(
+                    x = (location[0] + itemView.width / 2).toFloat(),
+                    y = location[1].toFloat(),
+                    folder = folder
+                )
+                true
+            }
+        }
+    }
+
     override fun onChange(position: Int) =
         (currentList.getOrNull(position) as? DrawerGridItem.App)?.launcher?.getBubbleText() ?: ""
 
@@ -250,6 +294,7 @@ class LaunchersAdapter(
         const val VIEW_TYPE_APP = 0
         const val VIEW_TYPE_DIVIDER = 1
         const val VIEW_TYPE_HEADER = 2
+        const val VIEW_TYPE_FOLDER = 3
 
         private const val LAUNCHER_SCALE_NORMAL = 1f
         private const val LAUNCHER_SCALE_PRESSED = 1.15f
@@ -265,6 +310,8 @@ private class DrawerGridItemDiffCallback : DiffUtil.ItemCallback<DrawerGridItem>
         return if (oldItem is DrawerGridItem.App && newItem is DrawerGridItem.App) {
             oldItem.launcher.getLauncherIdentifier().hashCode().toLong() ==
                     newItem.launcher.getLauncherIdentifier().hashCode().toLong()
+        } else if (oldItem is DrawerGridItem.Folder && newItem is DrawerGridItem.Folder) {
+            oldItem.folder.id == newItem.folder.id
         } else {
             oldItem == newItem
         }
@@ -278,6 +325,15 @@ private class DrawerGridItemDiffCallback : DiffUtil.ItemCallback<DrawerGridItem>
                     oldItem.launcher.pinned == newItem.launcher.pinned &&
                     oldItem.launcher.drawable != null &&
                     newItem.launcher.drawable != null
+        } else if (oldItem is DrawerGridItem.Folder && newItem is DrawerGridItem.Folder) {
+            // AppLauncher.equals() only compares packageName, so relying on the default List
+            // equality here would miss a member's drawable actually changing (e.g. after an icon
+            // shape/pack setting change) - compare titles/membership explicitly instead, and
+            // require every member to already have a drawable so the preview icon isn't drawn
+            // half-built while icons are still loading
+            oldItem.folder.title == newItem.folder.title &&
+                    oldItem.members.map { it.getLauncherIdentifier() } == newItem.members.map { it.getLauncherIdentifier() } &&
+                    newItem.members.all { it.drawable != null }
         } else {
             oldItem == newItem
         }

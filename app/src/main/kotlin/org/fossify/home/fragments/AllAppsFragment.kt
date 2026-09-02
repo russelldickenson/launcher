@@ -27,9 +27,11 @@ import org.fossify.home.extensions.getAppDrawerSearchBorderColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.launchApp
 import org.fossify.home.extensions.setupDrawerBackground
+import org.fossify.home.helpers.IconCache
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.models.AppLauncher
+import org.fossify.home.models.DrawerFolder
 import org.fossify.home.models.DrawerGridItem
 import org.fossify.home.models.HomeScreenGridItem
 
@@ -48,6 +50,7 @@ class AllAppsFragment(
     private var lastShowFavouritesDivider: Boolean? = null
 
     private var launchers = emptyList<AppLauncher>()
+    private var folders = emptyList<DrawerFolder>()
 
     @SuppressLint("ClickableViewAccessibility")
     override fun setupFragment(activity: MainActivity) {
@@ -153,6 +156,7 @@ class AllAppsFragment(
                 .thenBy { it.title.normalizeString().lowercase() }
                 .thenBy { it.packageName }
         )
+        folders = IconCache.folders.sortedBy { it.order }
 
         setupAdapter(launchers)
     }
@@ -337,8 +341,17 @@ class AllAppsFragment(
 
     private fun showNoResultsPlaceholderIfNeeded() {
         val adapter = getAdapter() ?: return
-        val hasApps = adapter.currentList.any { it is DrawerGridItem.App }
-        binding.noResultsPlaceholder.beVisibleIf(!hasApps)
+        val hasResults = adapter.currentList.any { it is DrawerGridItem.App || it is DrawerGridItem.Folder }
+        binding.noResultsPlaceholder.beVisibleIf(!hasResults)
+    }
+
+    override fun onFolderClicked(folder: DrawerFolder) {
+        val members = launchers.filter { it.folderId == folder.id }
+        activity?.showFolderContents(folder, members)
+    }
+
+    override fun onFolderLongPressed(x: Float, y: Float, folder: DrawerFolder) {
+        activity?.showFolderMenu(x, y, folder)
     }
 
     override fun onAppLauncherLongPressed(x: Float, y: Float, appLauncher: AppLauncher) {
@@ -388,10 +401,23 @@ class AllAppsFragment(
             items
         }
 
+        val membersByFolderId = filtered.filter { it.folderId != null }.groupBy { it.folderId }
+        val topLevel = filtered.filter { it.folderId == null }
+
         val drawerItems = mutableListOf<DrawerGridItem>()
+
+        // folders are pinned above everything else, including Favourites - during a search, a
+        // folder with no matching members is left out entirely rather than shown empty
+        folders.forEach { folder ->
+            val members = membersByFolderId[folder.id].orEmpty()
+            if (searchQuery.isEmpty() || members.isNotEmpty()) {
+                drawerItems.add(DrawerGridItem.Folder(folder, members))
+            }
+        }
+
         if (context.config.showFavouritesDivider) {
-            val pinned = filtered.filter { it.pinned }
-            val unpinned = filtered.filter { !it.pinned }
+            val pinned = topLevel.filter { it.pinned }
+            val unpinned = topLevel.filter { !it.pinned }
             if (pinned.isNotEmpty()) {
                 drawerItems.add(DrawerGridItem.Header(R.string.favourites_header))
                 pinned.forEach { drawerItems.add(DrawerGridItem.App(it)) }
@@ -400,10 +426,10 @@ class AllAppsFragment(
                     unpinned.forEach { drawerItems.add(DrawerGridItem.App(it)) }
                 }
             } else {
-                filtered.forEach { drawerItems.add(DrawerGridItem.App(it)) }
+                topLevel.forEach { drawerItems.add(DrawerGridItem.App(it)) }
             }
         } else {
-            filtered.forEach { drawerItems.add(DrawerGridItem.App(it)) }
+            topLevel.forEach { drawerItems.add(DrawerGridItem.App(it)) }
         }
 
         getAdapter()?.submitList(drawerItems) {

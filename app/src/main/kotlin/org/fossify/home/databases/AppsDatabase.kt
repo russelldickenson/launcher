@@ -9,15 +9,17 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import org.fossify.home.helpers.Converters
 import org.fossify.home.interfaces.AppLaunchersDao
+import org.fossify.home.interfaces.DrawerFoldersDao
 import org.fossify.home.interfaces.HiddenIconsDao
 import org.fossify.home.interfaces.HomeScreenGridItemsDao
 import org.fossify.home.models.AppLauncher
+import org.fossify.home.models.DrawerFolder
 import org.fossify.home.models.HiddenIcon
 import org.fossify.home.models.HomeScreenGridItem
 
 @Database(
-    entities = [AppLauncher::class, HomeScreenGridItem::class, HiddenIcon::class],
-    version = 7
+    entities = [AppLauncher::class, HomeScreenGridItem::class, HiddenIcon::class, DrawerFolder::class],
+    version = 8
 )
 @TypeConverters(Converters::class)
 abstract class AppsDatabase : RoomDatabase() {
@@ -27,6 +29,8 @@ abstract class AppsDatabase : RoomDatabase() {
     abstract fun HomeScreenGridItemsDao(): HomeScreenGridItemsDao
 
     abstract fun HiddenIconsDao(): HiddenIconsDao
+
+    abstract fun DrawerFoldersDao(): DrawerFoldersDao
 
     companion object {
         private var db: AppsDatabase? = null
@@ -43,6 +47,15 @@ abstract class AppsDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `drawer_folders` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `order` INTEGER NOT NULL DEFAULT 0)"
+                )
+                db.execSQL("ALTER TABLE apps ADD COLUMN folder_id INTEGER DEFAULT NULL")
+            }
+        }
+
         fun getInstance(context: Context): AppsDatabase {
             if (db == null) {
                 synchronized(AppsDatabase::class) {
@@ -51,7 +64,7 @@ abstract class AppsDatabase : RoomDatabase() {
                             context.applicationContext,
                             AppsDatabase::class.java,
                             "apps.db"
-                        ).addMigrations(MIGRATION_5_6, MIGRATION_6_7).build()
+                        ).addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8).build()
                     }
                 }
             }

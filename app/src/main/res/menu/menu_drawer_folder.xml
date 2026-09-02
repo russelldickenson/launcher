@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/rename_folder"
+        android:icon="@drawable/ic_rename_vector"
+        android:title="@string/rename_folder" />
+    <item
+        android:id="@+id/delete_folder"
+        android:icon="@drawable/ic_delete_vector"
+        android:title="@string/delete_folder" />
+</menu>

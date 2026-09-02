@@ -26,6 +26,7 @@ import org.fossify.home.databases.AppsDatabase
 import org.fossify.home.helpers.Config
 import org.fossify.home.helpers.IconPackHelper
 import org.fossify.home.interfaces.AppLaunchersDao
+import org.fossify.home.interfaces.DrawerFoldersDao
 import org.fossify.home.interfaces.HiddenIconsDao
 import org.fossify.home.interfaces.HomeScreenGridItemsDao
 import org.fossify.home.services.NotificationBadgeListenerService
@@ -44,6 +45,9 @@ val Context.homeScreenGridItemsDB: HomeScreenGridItemsDao
 
 val Context.hiddenIconsDB: HiddenIconsDao
     get() = AppsDatabase.getInstance(applicationContext).HiddenIconsDao()
+
+val Context.drawerFoldersDB: DrawerFoldersDao
+    get() = AppsDatabase.getInstance(applicationContext).DrawerFoldersDao()
 
 @get:RequiresApi(Build.VERSION_CODES.Q)
 val Context.roleManager: RoleManager

@@ -9,6 +9,7 @@ import org.fossify.home.databinding.DialogRenameItemBinding
 class RenameItemDialog(
     val activity: Activity,
     val currentTitle: String,
+    val titleRes: Int = org.fossify.commons.R.string.rename,
     val onConfirm: (newTitle: String, dialog: DialogInterface) -> Unit
 ) {
 
@@ -21,7 +22,7 @@ class RenameItemDialog(
             .setPositiveButton(org.fossify.commons.R.string.ok, null)
             .setNegativeButton(org.fossify.commons.R.string.cancel, null)
             .apply {
-                activity.setupDialogStuff(view, this, org.fossify.commons.R.string.rename) { alertDialog ->
+                activity.setupDialogStuff(view, this, titleRes) { alertDialog ->
                     alertDialog.showKeyboard(binding.renameItemEdittext)
                     alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
                         val newTitle = binding.renameItemEdittext.value
