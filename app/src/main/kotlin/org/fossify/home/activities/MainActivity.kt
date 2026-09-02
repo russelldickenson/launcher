@@ -1021,10 +1021,21 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
     }
 
+    // starts the drawer's checkmark selection mode instead of immediately asking which folder -
+    // lets the user pick several apps at once before choosing/naming a folder
     private fun addToFolder(gridItem: HomeScreenGridItem) {
         val launcher = IconCache.launchers.firstOrNull {
             it.packageName == gridItem.packageName && it.activityName == gridItem.activityName
         } ?: return
+
+        binding.allAppsFragment.root.startSelectionMode(launcher)
+    }
+
+    // called once the user has checked off every app they want and pressed the confirm button
+    fun showAddToFolderDialogForSelection(selected: List<AppLauncher>) {
+        if (selected.isEmpty()) {
+            return
+        }
 
         AddToFolderDialog(
             activity = this,
@@ -1033,61 +1044,28 @@ class MainActivity : SimpleActivity(), FlingListener {
                 ensureBackgroundThread {
                     val folderId = drawerFoldersDB.insert(DrawerFolder(id = null, title = title))
                     IconCache.folders = IconCache.folders + DrawerFolder(folderId, title)
-                    assignAppToFolder(launcher, folderId)
-                    runOnUiThread { showAddMoreAppsToFolderDialog(folderId, launcher.packageName) }
+                    assignAppsToFolder(selected, folderId)
                 }
             },
             onAddToExistingFolder = { folderId ->
                 ensureBackgroundThread {
-                    assignAppToFolder(launcher, folderId)
-                    runOnUiThread { showAddMoreAppsToFolderDialog(folderId, launcher.packageName) }
+                    assignAppsToFolder(selected, folderId)
                 }
             }
         )
     }
 
     // must be called on a background thread
-    private fun assignAppToFolder(launcher: AppLauncher, folderId: Long?) {
-        launchersDB.updateFolderId(launcher.packageName, launcher.activityName, folderId)
+    private fun assignAppsToFolder(selected: List<AppLauncher>, folderId: Long?) {
+        selected.forEach { launchersDB.updateFolderId(it.packageName, it.activityName, folderId) }
+        val identifiers = selected.map { it.getLauncherIdentifier() }.toSet()
         IconCache.launchers = IconCache.launchers.map {
-            if (it.packageName == launcher.packageName && it.activityName == launcher.activityName) {
-                it.copy(folderId = folderId)
-            } else {
-                it
-            }
+            if (identifiers.contains(it.getLauncherIdentifier())) it.copy(folderId = folderId) else it
         }
 
         runOnUiThread {
             binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
         }
-    }
-
-    private fun showAddMoreAppsToFolderDialog(folderId: Long, excludingPackageName: String) {
-        val remaining = IconCache.launchers.filter { it.packageName != excludingPackageName && it.folderId != folderId }
-        if (remaining.isEmpty()) {
-            return
-        }
-
-        val titles = remaining.map { it.title }.toTypedArray()
-        val checked = BooleanArray(remaining.size)
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.add_to_folder)
-            .setMultiChoiceItems(titles, checked) { _, which, isChecked -> checked[which] = isChecked }
-            .setPositiveButton(org.fossify.commons.R.string.ok) { _, _ ->
-                val selected = remaining.filterIndexed { index, _ -> checked[index] }
-                if (selected.isNotEmpty()) {
-                    ensureBackgroundThread {
-                        selected.forEach { launchersDB.updateFolderId(it.packageName, it.activityName, folderId) }
-                        val selectedIdentifiers = selected.map { it.getLauncherIdentifier() }.toSet()
-                        IconCache.launchers = IconCache.launchers.map {
-                            if (selectedIdentifiers.contains(it.getLauncherIdentifier())) it.copy(folderId = folderId) else it
-                        }
-                        runOnUiThread { binding.allAppsFragment.root.gotLaunchers(IconCache.launchers) }
-                    }
-                }
-            }
-            .setNegativeButton(org.fossify.commons.R.string.cancel, null)
-            .show()
     }
 
     private fun removeAppFromFolder(gridItem: HomeScreenGridItem) {
@@ -1096,7 +1074,7 @@ class MainActivity : SimpleActivity(), FlingListener {
         } ?: return
 
         ensureBackgroundThread {
-            assignAppToFolder(launcher, null)
+            assignAppsToFolder(listOf(launcher), null)
         }
     }
 

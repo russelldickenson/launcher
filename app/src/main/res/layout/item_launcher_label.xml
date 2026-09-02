@@ -17,6 +17,18 @@
         android:layout_centerHorizontal="true"
         android:contentDescription="@null" />
 
+    <ImageView
+        android:id="@+id/launcher_selection_checkmark"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignTop="@id/launcher_icon"
+        android:layout_alignEnd="@id/launcher_icon"
+        android:background="@drawable/circle_background"
+        android:contentDescription="@null"
+        android:padding="2dp"
+        android:src="@drawable/ic_check_circle_vector"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/launcher_notification_badge"
         android:layout_width="wrap_content"

@@ -52,6 +52,9 @@ class AllAppsFragment(
     private var launchers = emptyList<AppLauncher>()
     private var folders = emptyList<DrawerFolder>()
 
+    private var isSelectionModeActive = false
+    private val selectedIdentifiers = mutableSetOf<String>()
+
     @SuppressLint("ClickableViewAccessibility")
     override fun setupFragment(activity: MainActivity) {
         this.activity = activity
@@ -64,6 +67,50 @@ class AllAppsFragment(
 
             return@setOnTouchListener false
         }
+
+        binding.selectionCancelButton.setOnClickListener { exitSelectionMode() }
+        binding.selectionConfirmButton.setOnClickListener { confirmSelectionAddToFolder() }
+    }
+
+    // entry point for the long-press "Add to folder..." action - puts the whole drawer into a
+    // checkmark selection mode (the app that was long-pressed starts pre-selected) instead of
+    // immediately asking which folder, so the user can pick several apps at once before choosing
+    fun startSelectionMode(initialLauncher: AppLauncher) {
+        isSelectionModeActive = true
+        selectedIdentifiers.clear()
+        selectedIdentifiers.add(initialLauncher.getLauncherIdentifier())
+        updateSelectionUi()
+    }
+
+    private fun exitSelectionMode() {
+        isSelectionModeActive = false
+        selectedIdentifiers.clear()
+        updateSelectionUi()
+    }
+
+    private fun confirmSelectionAddToFolder() {
+        val selected = launchers.filter { selectedIdentifiers.contains(it.getLauncherIdentifier()) }
+        exitSelectionMode()
+        if (selected.isNotEmpty()) {
+            activity?.showAddToFolderDialogForSelection(selected)
+        }
+    }
+
+    private fun updateSelectionUi() {
+        binding.selectionActionBar.beVisibleIf(isSelectionModeActive)
+        binding.selectionCountLabel.text = context.resources.getQuantityString(
+            R.plurals.folder_apps_count, selectedIdentifiers.size, selectedIdentifiers.size
+        )
+        binding.selectionConfirmButton.isEnabled = selectedIdentifiers.isNotEmpty()
+        getAdapter()?.setSelectionMode(isSelectionModeActive, selectedIdentifiers)
+    }
+
+    override fun onAppLauncherSelectionToggled(appLauncher: AppLauncher) {
+        val identifier = appLauncher.getLauncherIdentifier()
+        if (!selectedIdentifiers.remove(identifier)) {
+            selectedIdentifiers.add(identifier)
+        }
+        updateSelectionUi()
     }
 
     override fun onAttachedToWindow() {
@@ -382,6 +429,11 @@ class AllAppsFragment(
     }
 
     fun onBackPressed(): Boolean {
+        if (isSelectionModeActive) {
+            exitSelectionMode()
+            return true
+        }
+
         if (binding.searchBar.isSearchOpen) {
             binding.searchBar.closeSearch()
             return true

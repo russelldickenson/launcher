@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <org.fossify.home.fragments.AllAppsFragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/all_apps_holder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -63,5 +64,44 @@
         android:text="@string/no_items_found"
         android:textStyle="italic"
         android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/selection_action_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:elevation="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/activity_margin"
+        android:paddingTop="@dimen/normal_margin"
+        android:paddingEnd="@dimen/activity_margin"
+        android:paddingBottom="@dimen/normal_margin"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/selection_count_label"
+            style="@style/TextAppearance.Material3.BodyLarge"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            tools:text="2 selected" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/selection_cancel_button"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:text="@android:string/cancel" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/selection_confirm_button"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_to_folder" />
+
+    </LinearLayout>
 
 </org.fossify.home.fragments.AllAppsFragment>
