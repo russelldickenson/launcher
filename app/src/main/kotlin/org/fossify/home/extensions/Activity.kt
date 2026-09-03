@@ -19,7 +19,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.annotation.StringRes
-import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
@@ -32,13 +31,13 @@ import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.isDynamicTheme
 import org.fossify.commons.extensions.showErrorToast
 import org.fossify.commons.models.RadioItem
-import org.fossify.commons.helpers.isQPlus
 import org.fossify.commons.helpers.isSPlus
 import org.fossify.home.R
 import org.fossify.home.helpers.ITEM_TYPE_FOLDER
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.helpers.ITEM_TYPE_WIDGET
 import org.fossify.home.helpers.IconCache
+import org.fossify.home.helpers.PillPopupMenu
 import org.fossify.home.helpers.UNINSTALL_APP_REQUEST_CODE
 import org.fossify.home.interfaces.ItemMenuListener
 import org.fossify.home.models.HomeScreenGridItem
@@ -174,12 +173,8 @@ fun Activity.handleGridItemPopupMenu(
     isOnAllAppsFragment: Boolean,
     listener: ItemMenuListener,
     isInFolderOverlay: Boolean = false,
-): PopupMenu {
-    return PopupMenu(this, anchorView, Gravity.TOP or Gravity.END).apply {
-        if (isQPlus()) {
-            setForceShowIcon(true)
-        }
-
+): PillPopupMenu {
+    return PillPopupMenu(this, anchorView, Gravity.TOP or Gravity.END).apply {
         inflate(R.menu.menu_app_icon)
 
         val isPinned = IconCache.launchers.any {
@@ -190,13 +185,17 @@ fun Activity.handleGridItemPopupMenu(
             setIcon(if (isPinned) R.drawable.ic_heart_filled_vector else R.drawable.ic_heart_vector)
         }
 
-        menu.forEach {
-            val color = MaterialColors.getColor(
+        val iconTint = ColorStateList.valueOf(
+            MaterialColors.getColor(
                 this@handleGridItemPopupMenu,
                 com.google.android.material.R.attr.colorOnSurface,
                 getProperTextColor()
             )
-            it.iconTintList = ColorStateList.valueOf(color)
+        )
+        menu.forEach {
+            if (it.groupId == R.id.group_main) {
+                it.iconTintList = iconTint
+            }
         }
         menu.findItem(R.id.rename).isVisible =
             gridItem.type == ITEM_TYPE_ICON || (gridItem.type == ITEM_TYPE_FOLDER && !isOnAllAppsFragment)
@@ -233,32 +232,37 @@ fun Activity.handleGridItemPopupMenu(
         val hasShortcuts = !shortcuts.isNullOrEmpty()
         MenuCompat.setGroupDividerEnabled(menu, hasShortcuts)
         menu.setGroupVisible(R.id.group_shortcuts, hasShortcuts)
+        val shortcutIds = HashMap<Int, String>()
         if (hasShortcuts) {
             val iconSize = resources.getDimensionPixelSize(R.dimen.menu_icon_size)
             shortcuts?.forEach { shortcutInfo ->
                 val iconDrawable = launcherApps.getShortcutIconDrawable(
                     shortcutInfo, resources.displayMetrics.densityDpi
                 )
-
-                menu.add(R.id.group_shortcuts, Menu.NONE, Menu.NONE, shortcutInfo.getLabel())
+                val shortcutItemId = View.generateViewId()
+                shortcutIds[shortcutItemId] = shortcutInfo.id
+                menu.add(R.id.group_shortcuts, shortcutItemId, Menu.NONE, shortcutInfo.getLabel())
                     .setIcon(
                         (iconDrawable ?: Color.TRANSPARENT.toDrawable())
                             .toBitmap(width = iconSize, height = iconSize)
                             .toDrawable(resources)
                     )
-                    .setOnMenuItemClickListener { _ ->
-                        listener.onAnyClick()
-                        val id = shortcutInfo.id
-                        val packageName = shortcutInfo.`package`
-                        val userHandle = Process.myUserHandle()
-                        launcherApps.startShortcut(packageName, id, Rect(), null, userHandle)
-                        true
-                    }
             }
         }
 
         setOnMenuItemClickListener { item ->
             listener.onAnyClick()
+            val shortcutId = shortcutIds[item.itemId]
+            if (shortcutId != null) {
+                launcherApps.startShortcut(
+                    gridItem.packageName,
+                    shortcutId,
+                    Rect(),
+                    null,
+                    Process.myUserHandle()
+                )
+                return@setOnMenuItemClickListener true
+            }
             when (item.itemId) {
                 R.id.pin_icon -> listener.pinToggled(gridItem)
                 R.id.hide_icon -> listener.hide(gridItem)

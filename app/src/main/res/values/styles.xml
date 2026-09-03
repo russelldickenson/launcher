@@ -46,6 +46,10 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="TextAppearance.Launcher.PillPopupMenuItem" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">16sp</item>
+    </style>
+
     <!-- overrides Commons' same-named style (app-module resources win over library ones) with a
          bigger, bolder title closer to Material 3's Large Top App Bar treatment -->
     <style name="AppTheme.ActionBar.TitleTextStyle">

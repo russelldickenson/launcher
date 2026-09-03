@@ -1565,11 +1565,6 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             (context.getReferenceIconWidth() * (context.config.homeIconScalePercent / 100f)).toInt()
         val iconPadding = (scaledIconFrameSize * 0.1f).toInt()
         iconSize = scaledIconFrameSize - 2 * iconPadding
-        android.util.Log.e(
-            "IconSizeDebug",
-            "HOME iconSize=$iconSize scale=${context.config.homeIconScalePercent} " +
-                "cellWidth=$cellWidth cellHeight=$cellHeight iconMargin=$iconMargin"
-        )
         pageIndicatorsYPos = (rowCount - 1) * cellHeight + extraYMargin
         for (i in 0 until columnCount) {
             for (j in 0 until rowCount) {

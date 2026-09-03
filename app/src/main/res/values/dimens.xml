@@ -12,6 +12,13 @@
     <dimen name="min_folder_view_height">200dp</dimen>
     <dimen name="max_folder_view_height">500dp</dimen>
     <dimen name="menu_icon_size">24dp</dimen>
+    <!-- Pixel-style disconnected pill popup menu -->
+    <dimen name="pill_menu_item_height">52dp</dimen>
+    <dimen name="pill_menu_item_corner_radius">24dp</dimen>
+    <dimen name="pill_menu_item_padding_horizontal">20dp</dimen>
+    <dimen name="pill_menu_icon_padding">16dp</dimen>
+    <dimen name="pill_menu_min_width">220dp</dimen>
+
     <dimen name="favourites_divider_spacing">12dp</dimen>
     <dimen name="color_picker_swatch_size">40dp</dimen>
     <dimen name="color_picker_swatch_spacing">8dp</dimen>

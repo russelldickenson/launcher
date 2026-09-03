@@ -35,7 +35,6 @@ import android.view.Menu
 import android.view.MotionEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.animation.DecelerateInterpolator
-import androidx.appcompat.widget.PopupMenu
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
@@ -97,6 +96,7 @@ import org.fossify.home.helpers.ITEM_TYPE_WIDGET
 import org.fossify.home.helpers.IconCache
 import org.fossify.home.helpers.IconContrastHelper
 import org.fossify.home.helpers.NotificationCache
+import org.fossify.home.helpers.PillPopupMenu
 import org.fossify.home.helpers.REQUEST_ALLOW_BINDING_WIDGET
 import org.fossify.home.helpers.REQUEST_CONFIGURE_WIDGET
 import org.fossify.home.helpers.REQUEST_CREATE_SHORTCUT
@@ -125,7 +125,7 @@ class MainActivity : SimpleActivity(), FlingListener {
     private var mIgnoreXMoveEvents = false
     private var mIgnoreYMoveEvents = false
     private var mLongPressedIcon: HomeScreenGridItem? = null
-    private var mOpenPopupMenu: PopupMenu? = null
+    private var mOpenPopupMenu: PillPopupMenu? = null
     private var mLastTouchCoords = Pair(-1f, -1f)
     private var mActionOnCanBindWidget: ((granted: Boolean) -> Unit)? = null
     private var mActionOnWidgetConfiguredWidget: ((granted: Boolean) -> Unit)? = null
@@ -875,24 +875,20 @@ class MainActivity : SimpleActivity(), FlingListener {
         binding.homeScreenPopupMenuAnchor.x = x
         binding.homeScreenPopupMenuAnchor.y =
             y - resources.getDimension(R.dimen.long_press_anchor_button_offset_y) * 2
-        PopupMenu(
+        PillPopupMenu(
             this,
             binding.homeScreenPopupMenuAnchor,
             Gravity.TOP or Gravity.END
         ).apply {
-            if (isQPlus()) {
-                setForceShowIcon(true)
-            }
-
             inflate(R.menu.menu_home_screen)
-            menu.forEach {
-                val color = MaterialColors.getColor(
+            val iconTint = ColorStateList.valueOf(
+                MaterialColors.getColor(
                     this@MainActivity,
                     com.google.android.material.R.attr.colorOnSurface,
                     getProperTextColor()
                 )
-                it.iconTintList = ColorStateList.valueOf(color)
-            }
+            )
+            menu.forEach { it.iconTintList = iconTint }
             menu.findItem(R.id.set_as_default).isVisible = !isDefaultLauncher()
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -1097,20 +1093,16 @@ class MainActivity : SimpleActivity(), FlingListener {
     fun showFolderMenu(x: Float, y: Float, folder: DrawerFolder) {
         binding.homeScreenPopupMenuAnchor.x = x
         binding.homeScreenPopupMenuAnchor.y = y
-        PopupMenu(this, binding.homeScreenPopupMenuAnchor, Gravity.TOP or Gravity.END).apply {
-            if (isQPlus()) {
-                setForceShowIcon(true)
-            }
-
+        PillPopupMenu(this, binding.homeScreenPopupMenuAnchor, Gravity.TOP or Gravity.END).apply {
             inflate(R.menu.menu_drawer_folder)
-            menu.forEach {
-                val color = MaterialColors.getColor(
+            val iconTint = ColorStateList.valueOf(
+                MaterialColors.getColor(
                     this@MainActivity,
                     com.google.android.material.R.attr.colorOnSurface,
                     getProperTextColor()
                 )
-                it.iconTintList = ColorStateList.valueOf(color)
-            }
+            )
+            menu.forEach { it.iconTintList = iconTint }
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.rename_folder -> renameFolder(folder)

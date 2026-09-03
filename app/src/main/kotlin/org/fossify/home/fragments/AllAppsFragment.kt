@@ -7,7 +7,6 @@ import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
-import android.widget.PopupMenu
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.forEach
 import androidx.recyclerview.widget.GridLayoutManager
@@ -21,7 +20,6 @@ import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.hideKeyboard
 import org.fossify.commons.extensions.normalizeString
 import org.fossify.commons.extensions.showKeyboard
-import org.fossify.commons.helpers.isQPlus
 import org.fossify.commons.views.MyGridLayoutManager
 import org.fossify.home.R
 import org.fossify.home.activities.MainActivity
@@ -36,6 +34,8 @@ import org.fossify.home.extensions.setupDrawerBackground
 import org.fossify.home.helpers.FolderDragHelper
 import org.fossify.home.helpers.IconCache
 import org.fossify.home.helpers.ITEM_TYPE_ICON
+import org.fossify.home.helpers.NotificationCache
+import org.fossify.home.helpers.PillPopupMenu
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.models.AppLauncher
 import org.fossify.home.models.DrawerFolder
@@ -92,18 +92,14 @@ class AllAppsFragment(
     }
 
     private fun showOverflowMenu() {
-        PopupMenu(context, binding.overflowMenuIcon).apply {
-            if (isQPlus()) {
-                setForceShowIcon(true)
-            }
-
+        PillPopupMenu(context, binding.overflowMenuIcon).apply {
             inflate(R.menu.menu_all_apps)
-            menu.forEach {
-                val color = MaterialColors.getColor(
+            val iconTint = ColorStateList.valueOf(
+                MaterialColors.getColor(
                     context, com.google.android.material.R.attr.colorOnSurface, context.getProperTextColor()
                 )
-                it.iconTintList = ColorStateList.valueOf(color)
-            }
+            )
+            menu.forEach { it.iconTintList = iconTint }
             setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.create_folder) {
                     activity?.createNewFolder()
@@ -251,7 +247,7 @@ class AllAppsFragment(
                 .thenBy { it.title.normalizeString().lowercase() }
                 .thenBy { it.packageName }
         )
-        folders = IconCache.folders.sortedBy { it.order }
+        folders = IconCache.folders.sortedBy { it.title.normalizeString().lowercase() }
 
         setupAdapter(launchers)
     }
@@ -508,12 +504,13 @@ class AllAppsFragment(
 
         val drawerItems = mutableListOf<DrawerGridItem>()
 
-        // folders are pinned above everything else, including Favourites - during a search, a
-        // folder with no matching members is left out entirely rather than shown empty
-        folders.forEach { folder ->
+        // during a search, a folder with no matching members is left out entirely rather than shown empty
+        val folderItems = folders.mapNotNull { folder ->
             val members = membersByFolderId[folder.id].orEmpty()
             if (searchQuery.isEmpty() || members.isNotEmpty()) {
-                drawerItems.add(DrawerGridItem.Folder(folder, members))
+                DrawerGridItem.Folder(folder, members)
+            } else {
+                null
             }
         }
 
@@ -523,14 +520,17 @@ class AllAppsFragment(
             if (pinned.isNotEmpty()) {
                 drawerItems.add(DrawerGridItem.Header(R.string.favourites_header))
                 pinned.forEach { drawerItems.add(DrawerGridItem.App(it)) }
-                if (unpinned.isNotEmpty()) {
+                if (folderItems.isNotEmpty() || unpinned.isNotEmpty()) {
                     drawerItems.add(DrawerGridItem.Divider)
+                    drawerItems.addAll(folderItems)
                     unpinned.forEach { drawerItems.add(DrawerGridItem.App(it)) }
                 }
             } else {
+                drawerItems.addAll(folderItems)
                 topLevel.forEach { drawerItems.add(DrawerGridItem.App(it)) }
             }
         } else {
+            drawerItems.addAll(folderItems)
             topLevel.forEach { drawerItems.add(DrawerGridItem.App(it)) }
         }
 

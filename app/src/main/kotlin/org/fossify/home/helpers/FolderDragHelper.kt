@@ -1,5 +1,6 @@
 package org.fossify.home.helpers
 
+import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
@@ -7,10 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
 import org.fossify.commons.extensions.beVisibleIf
+import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.home.adapters.LaunchersAdapter
-import org.fossify.home.extensions.animateScale
 import org.fossify.home.models.AppLauncher
 import org.fossify.home.models.DrawerGridItem
 
@@ -32,6 +34,7 @@ class FolderDragHelper(
     private var isDragging = false
     private var pendingLauncher: AppLauncher? = null
     private var hoveredFolderView: View? = null
+    private var hoveredFolderOriginalAlpha = 1f
 
     private val autoScrollHandler = Handler(Looper.getMainLooper())
     private var autoScrollDirection = 0
@@ -137,9 +140,31 @@ class FolderDragHelper(
             return
         }
 
-        hoveredFolderView?.animateScale(from = HOVER_SCALE, to = 1f, duration = HOVER_ANIMATION_DURATION)
+        hoveredFolderView?.let { setFolderHighlighted(it, false) }
         hoveredFolderView = folderView
-        folderView?.animateScale(from = 1f, to = HOVER_SCALE, duration = HOVER_ANIMATION_DURATION)
+        folderView?.let { setFolderHighlighted(it, true) }
+    }
+
+    private fun setFolderHighlighted(folderView: View, highlighted: Boolean) {
+        if (highlighted) {
+            hoveredFolderOriginalAlpha = folderView.alpha
+            folderView.alpha = 1f
+            folderView.background = buildDropTargetBackground(folderView)
+        } else {
+            folderView.alpha = hoveredFolderOriginalAlpha
+            folderView.background = null
+        }
+    }
+
+    private fun buildDropTargetBackground(view: View): GradientDrawable {
+        val density = view.resources.displayMetrics.density
+        val highlightColor = view.context.getProperPrimaryColor()
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = DROP_TARGET_CORNER_RADIUS_DP * density
+            setStroke((DROP_TARGET_STROKE_DP * density).toInt(), highlightColor)
+            setColor(ColorUtils.setAlphaComponent(highlightColor, DROP_TARGET_FILL_ALPHA))
+        }
     }
 
     private fun folderViewUnder(x: Float, y: Float): View? {
@@ -188,7 +213,7 @@ class FolderDragHelper(
     private fun cancelDrag() {
         autoScrollHandler.removeCallbacksAndMessages(null)
         autoScrollDirection = 0
-        hoveredFolderView?.animateScale(from = HOVER_SCALE, to = 1f, duration = HOVER_ANIMATION_DURATION)
+        hoveredFolderView?.let { setFolderHighlighted(it, false) }
         hoveredFolderView = null
         dragShadowContainer.visibility = View.GONE
         isArmed = false
@@ -200,7 +225,8 @@ class FolderDragHelper(
         private const val AUTO_SCROLL_EDGE_DP = 48
         private const val AUTO_SCROLL_STEP_PX = 12
         private const val AUTO_SCROLL_INTERVAL_MS = 16L
-        private const val HOVER_SCALE = 1.12f
-        private const val HOVER_ANIMATION_DURATION = 150L
+        private const val DROP_TARGET_CORNER_RADIUS_DP = 16f
+        private const val DROP_TARGET_STROKE_DP = 2f
+        private const val DROP_TARGET_FILL_ALPHA = 60
     }
 }
