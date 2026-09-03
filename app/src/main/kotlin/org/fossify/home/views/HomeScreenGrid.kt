@@ -1856,6 +1856,58 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     private fun getMaxPage() =
         gridItems.filter { !it.docked && !it.outOfBounds() }.maxOfOrNull { it.page } ?: 0
 
+    // finds the first free cell in reading order (existing pages first, a new page only if every
+    // existing one is full) and places a plain app icon there. Used by the drawer's "Add to home
+    // screen" menu action, which - unlike a normal interactive drag - has no drop coordinate to
+    // work from; the occupancy check mirrors the one addAppIconOrShortcut() runs against a single
+    // candidate cell, just repeated over every cell until an empty one turns up
+    fun addAppToFirstAvailableCell(packageName: String, activityName: String, title: String, drawable: Drawable?) {
+        val itemsByPage = gridItems.filter { !it.docked }.groupBy { it.page }
+
+        for (page in 0..getMaxPage() + 1) {
+            val itemsOnPage = itemsByPage[page].orEmpty()
+            for (row in 0 until rowCount) {
+                for (column in 0 until columnCount) {
+                    val isOccupied = itemsOnPage.any { item ->
+                        column in item.left..item.right &&
+                            row in item.getDockAdjustedTop(rowCount)..item.getDockAdjustedBottom(rowCount)
+                    }
+
+                    if (!isOccupied) {
+                        val newItem = HomeScreenGridItem(
+                            id = null,
+                            left = column,
+                            top = row,
+                            right = column,
+                            bottom = row,
+                            page = page,
+                            packageName = packageName,
+                            activityName = activityName,
+                            title = title,
+                            type = ITEM_TYPE_ICON,
+                            className = "",
+                            widgetId = -1,
+                            shortcutId = "",
+                            icon = null,
+                            docked = false,
+                            parentId = null,
+                            drawable = drawable
+                        )
+                        ensureBackgroundThread {
+                            val newId = context.homeScreenGridItemsDB.insert(newItem)
+                            newItem.id = newId
+                            (context as? MainActivity)?.runOnUiThread {
+                                gridItems.add(newItem)
+                                redrawGrid()
+                            }
+                        }
+                        return
+                    }
+                }
+            }
+        }
+    }
+
     fun nextPage(redraw: Boolean = false): Boolean {
         return pager.nextPage(redraw)
     }

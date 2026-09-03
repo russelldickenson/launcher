@@ -19,8 +19,6 @@
     <dimen name="pill_menu_icon_padding">16dp</dimen>
     <dimen name="pill_menu_min_width">220dp</dimen>
 
-    <dimen name="selection_bubble_corner_radius">28dp</dimen>
-
     <dimen name="favourites_divider_spacing">12dp</dimen>
     <dimen name="color_picker_swatch_size">40dp</dimen>
     <dimen name="color_picker_swatch_spacing">8dp</dimen>

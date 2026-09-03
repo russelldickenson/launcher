@@ -78,11 +78,6 @@ class FolderContentsDialog(
                     showMemberMenu(x, y, appLauncher)
                 }
 
-                // selection mode (for adding apps to a folder) is never entered from within this
-                // dialog - you're already inside a folder's contents
-                override fun onAppLauncherSelectionToggled(appLauncher: AppLauncher) = Unit
-                override fun onSelectionDragRequested(appLauncher: AppLauncher) = Unit
-
                 // this dialog's own grid only ever holds plain apps, never nested folders
                 override fun onFolderClicked(folder: DrawerFolder) = Unit
                 override fun onFolderLongPressed(x: Float, y: Float, folder: DrawerFolder) = Unit

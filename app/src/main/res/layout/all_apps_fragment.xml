@@ -76,38 +76,6 @@
         android:textStyle="italic"
         android:visibility="gone" />
 
-    <LinearLayout
-        android:id="@+id/selection_action_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/activity_margin"
-        android:elevation="8dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="@dimen/activity_margin"
-        android:paddingTop="@dimen/normal_margin"
-        android:paddingEnd="@dimen/small_margin"
-        android:paddingBottom="@dimen/normal_margin"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/selection_count_label"
-            style="@style/TextAppearance.Material3.BodyLarge"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            tools:text="2 selected" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/selection_cancel_button"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@android:string/cancel" />
-
-    </LinearLayout>
-
     <FrameLayout
         android:id="@+id/drag_shadow_container"
         android:layout_width="wrap_content"
@@ -120,23 +88,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@null" />
-
-        <TextView
-            android:id="@+id/drag_shadow_count_badge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|end"
-            android:background="@drawable/notification_badge_dot"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:minWidth="20dp"
-            android:minHeight="20dp"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:textColor="@android:color/white"
-            android:textSize="11sp"
-            android:visibility="gone"
-            tools:text="3" />
 
     </FrameLayout>
 

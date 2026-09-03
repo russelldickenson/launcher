@@ -7,34 +7,34 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
-import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.models.AppLauncher
 import org.fossify.home.models.DrawerGridItem
 
-// drives dragging a batch of already-checked (selection mode) app icons onto a folder cell to
-// add them to it. The app drawer has no other drag-and-drop, so this is built directly on
-// RecyclerView.OnItemTouchListener rather than reusing anything from the home screen's own
-// (structurally different, canvas-drawn, paged-grid) drag system
+// drives long-press-dragging a single app icon in the app drawer onto another icon (creates a
+// folder containing both) or an existing folder (adds it) - mirrors the home screen's own
+// drag-to-fold gesture, but built directly on RecyclerView.OnItemTouchListener since the app
+// drawer is a scrolling list rather than the home screen's fixed, canvas-drawn, paged grid, and
+// has no drag-and-drop of its own to build on
 class FolderDragHelper(
     private val recyclerView: RecyclerView,
     private val dragShadowContainer: View,
     private val dragShadowIcon: ImageView,
-    private val dragShadowCountBadge: TextView,
-    private val getCurrentSelectionSize: () -> Int,
-    private val onDrop: (folderId: Long) -> Unit,
+    private val onDragStarted: () -> Unit,
+    private val onDragEnded: () -> Unit,
+    private val onDropOnFolder: (draggedLauncher: AppLauncher, folderId: Long) -> Unit,
+    private val onDropOnApp: (draggedLauncher: AppLauncher, targetLauncher: AppLauncher) -> Unit,
     private val onCancel: () -> Unit,
 ) : RecyclerView.OnItemTouchListener {
 
     private var isArmed = false
     private var isDragging = false
     private var pendingLauncher: AppLauncher? = null
-    private var hoveredFolderView: View? = null
-    private var hoveredFolderOriginalAlpha = 1f
+    private var hoveredView: View? = null
+    private var hoveredViewOriginalAlpha = 1f
 
     private val autoScrollHandler = Handler(Looper.getMainLooper())
     private var autoScrollDirection = 0
@@ -51,14 +51,9 @@ class FolderDragHelper(
         recyclerView.addOnItemTouchListener(this)
     }
 
-    fun detach() {
-        recyclerView.removeOnItemTouchListener(this)
-        cancelDrag()
-    }
-
-    // called from the long-click listener on an already-checked icon - arms the drag, but the
-    // actual drag only starts once the still-ongoing touch sequence produces a MOVE past this
-    // point, since a long-click callback has no MotionEvent of its own to seed a position from
+    // called from the long-click listener on any icon - arms the drag, but the actual drag only
+    // starts once the still-ongoing touch sequence produces a MOVE past this point, since a
+    // long-click callback has no MotionEvent of its own to seed a position from
     fun armDrag(launcher: AppLauncher) {
         isArmed = true
         pendingLauncher = launcher
@@ -104,6 +99,7 @@ class FolderDragHelper(
     private fun startDragging(e: MotionEvent) {
         val launcher = pendingLauncher ?: return
         isDragging = true
+        onDragStarted()
 
         val iconSize = (recyclerView.adapter as? LaunchersAdapter)?.getIconSizePx() ?: dragShadowContainer.width
         dragShadowContainer.layoutParams = dragShadowContainer.layoutParams.apply {
@@ -111,10 +107,6 @@ class FolderDragHelper(
             height = iconSize
         }
         dragShadowIcon.setImageDrawable(launcher.drawable)
-
-        val selectionSize = getCurrentSelectionSize()
-        dragShadowCountBadge.text = selectionSize.toString()
-        dragShadowCountBadge.beVisibleIf(selectionSize > 1)
 
         dragShadowContainer.visibility = View.VISIBLE
         moveShadowTo(e.rawX, e.rawY)
@@ -135,24 +127,24 @@ class FolderDragHelper(
     }
 
     private fun updateHoverTarget(x: Float, y: Float) {
-        val folderView = folderViewUnder(x, y)
-        if (folderView == hoveredFolderView) {
+        val targetView = dropTargetViewUnder(x, y)
+        if (targetView == hoveredView) {
             return
         }
 
-        hoveredFolderView?.let { setFolderHighlighted(it, false) }
-        hoveredFolderView = folderView
-        folderView?.let { setFolderHighlighted(it, true) }
+        hoveredView?.let { setHighlighted(it, false) }
+        hoveredView = targetView
+        targetView?.let { setHighlighted(it, true) }
     }
 
-    private fun setFolderHighlighted(folderView: View, highlighted: Boolean) {
+    private fun setHighlighted(view: View, highlighted: Boolean) {
         if (highlighted) {
-            hoveredFolderOriginalAlpha = folderView.alpha
-            folderView.alpha = 1f
-            folderView.background = buildDropTargetBackground(folderView)
+            hoveredViewOriginalAlpha = view.alpha
+            view.alpha = 1f
+            view.background = buildDropTargetBackground(view)
         } else {
-            folderView.alpha = hoveredFolderOriginalAlpha
-            folderView.background = null
+            view.alpha = hoveredViewOriginalAlpha
+            view.background = null
         }
     }
 
@@ -167,11 +159,17 @@ class FolderDragHelper(
         }
     }
 
-    private fun folderViewUnder(x: Float, y: Float): View? {
+    // a valid drop target is either an existing folder, or any app other than the one being
+    // dragged (dropping an icon on another icon is what creates a new folder)
+    private fun dropTargetViewUnder(x: Float, y: Float): View? {
         val child = recyclerView.findChildViewUnder(x, y) ?: return null
         val position = recyclerView.getChildAdapterPosition(child)
         val item = (recyclerView.adapter as? LaunchersAdapter)?.currentList?.getOrNull(position)
-        return if (item is DrawerGridItem.Folder) child else null
+        return when {
+            item is DrawerGridItem.Folder -> child
+            item is DrawerGridItem.App && item.launcher.getLauncherIdentifier() != pendingLauncher?.getLauncherIdentifier() -> child
+            else -> null
+        }
     }
 
     private fun updateAutoScroll(y: Float) {
@@ -194,31 +192,39 @@ class FolderDragHelper(
     }
 
     private fun finishDrag(e: MotionEvent) {
-        val folderView = folderViewUnder(e.x, e.y)
-        val position = folderView?.let { recyclerView.getChildAdapterPosition(it) } ?: RecyclerView.NO_POSITION
-        val folder = ((recyclerView.adapter as? LaunchersAdapter)?.currentList?.getOrNull(position) as? DrawerGridItem.Folder)?.folder
+        val draggedLauncher = pendingLauncher
+        val targetView = dropTargetViewUnder(e.x, e.y)
+        val position = targetView?.let { recyclerView.getChildAdapterPosition(it) } ?: RecyclerView.NO_POSITION
+        val targetItem = (recyclerView.adapter as? LaunchersAdapter)?.currentList?.getOrNull(position)
 
         cancelDrag()
 
-        val folderId = folder?.id
-        if (folderId != null) {
-            onDrop(folderId)
-        } else {
-            onCancel()
+        if (draggedLauncher == null) {
+            return
+        }
+
+        when (targetItem) {
+            is DrawerGridItem.Folder -> onDropOnFolder(draggedLauncher, targetItem.folder.id ?: return)
+            is DrawerGridItem.App -> onDropOnApp(draggedLauncher, targetItem.launcher)
+            else -> onCancel()
         }
     }
 
-    // stops any in-progress drag visuals/state without reporting a drop or a cancel callback -
-    // used when detaching the helper entirely (e.g. leaving selection mode by another route)
+    // stops any in-progress drag visuals/state - only called once a real drag (not just an armed,
+    // never-moved long-press) is ending, so onDragEnded() here is the one reliable place to reset
+    // whatever the caller set up for the drag's duration (see AllAppsFragment.ignoreTouches: since
+    // this class claims the touch stream for the whole gesture, MainActivity.onTouchEvent()'s own
+    // ACTION_UP cleanup never runs for a drawer-originated drag)
     private fun cancelDrag() {
         autoScrollHandler.removeCallbacksAndMessages(null)
         autoScrollDirection = 0
-        hoveredFolderView?.let { setFolderHighlighted(it, false) }
-        hoveredFolderView = null
+        hoveredView?.let { setHighlighted(it, false) }
+        hoveredView = null
         dragShadowContainer.visibility = View.GONE
         isArmed = false
         isDragging = false
         pendingLauncher = null
+        onDragEnded()
     }
 
     companion object {

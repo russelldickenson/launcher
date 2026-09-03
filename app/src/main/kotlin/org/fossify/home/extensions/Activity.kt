@@ -203,7 +203,7 @@ fun Activity.handleGridItemPopupMenu(
             gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment
         menu.findItem(R.id.hide_icon).isVisible =
             gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment
-        menu.findItem(R.id.add_to_folder).isVisible =
+        menu.findItem(R.id.add_to_home_screen).isVisible =
             gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment && !isInFolderOverlay
         menu.findItem(R.id.remove_from_folder).isVisible =
             gridItem.type == ITEM_TYPE_ICON && isInFolderOverlay
@@ -271,7 +271,7 @@ fun Activity.handleGridItemPopupMenu(
                 R.id.app_info -> listener.appInfo(gridItem)
                 R.id.remove -> listener.remove(gridItem)
                 R.id.uninstall -> listener.uninstall(gridItem)
-                R.id.add_to_folder -> listener.addToFolder(gridItem)
+                R.id.add_to_home_screen -> listener.addToHomeScreen(gridItem)
                 R.id.remove_from_folder -> listener.removeFromFolder(gridItem)
             }
             true

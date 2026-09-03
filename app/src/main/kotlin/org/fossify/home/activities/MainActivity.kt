@@ -1016,18 +1016,24 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
     }
 
-    // starts the drawer's checkmark selection mode instead of immediately asking which folder -
-    // lets the user pick several apps at once before choosing/naming a folder
-    private fun addToFolder(gridItem: HomeScreenGridItem) {
+    // places the drawer app in the first free home screen cell (existing pages first, a new page
+    // only if every existing one is full) - the direct-drag gesture on this same icon is now
+    // dedicated entirely to in-drawer folder creation, so this menu action is the only way left
+    // to get a drawer app onto the home screen
+    private fun addToHomeScreen(gridItem: HomeScreenGridItem) {
         val launcher = IconCache.launchers.firstOrNull {
             it.packageName == gridItem.packageName && it.activityName == gridItem.activityName
         } ?: return
 
-        binding.allAppsFragment.root.startSelectionMode(launcher)
+        binding.homeScreenGrid.root.addAppToFirstAvailableCell(
+            packageName = launcher.packageName,
+            activityName = launcher.activityName,
+            title = launcher.title,
+            drawable = launcher.drawable
+        )
     }
 
     // prompts for a name and creates a brand-new, empty folder - independent of any app
-    // selection, unlike the old "Add to folder" flow this replaces
     fun createNewFolder() {
         RenameItemDialog(this, "", titleRes = R.string.new_folder) { title, dialog ->
             ensureBackgroundThread {
@@ -1041,9 +1047,7 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
     }
 
-    // called once the drawer's drag-to-folder gesture drops a selection onto an existing folder -
-    // assignAppsToFolder() itself must run on a background thread, same contract as
-    // removeAppFromFolder()'s own ensureBackgroundThread wrapping below
+    // called once the drawer's drag-to-folder gesture drops a dragged app onto an existing folder
     fun assignSelectedAppsToFolder(selected: List<AppLauncher>, folderId: Long) {
         if (selected.isEmpty()) {
             return
@@ -1052,6 +1056,27 @@ class MainActivity : SimpleActivity(), FlingListener {
         ensureBackgroundThread {
             assignAppsToFolder(selected, folderId)
         }
+    }
+
+    // called once the drawer's drag-to-folder gesture drops a dragged app onto another (plain)
+    // app - creates a brand-new folder containing both, then immediately prompts for a name so it
+    // isn't left with a meaningless default title
+    fun createFolderFromApps(draggedLauncher: AppLauncher, targetLauncher: AppLauncher) {
+        RenameItemDialog(this, "", titleRes = R.string.new_folder) { title, dialog ->
+            ensureBackgroundThread {
+                val folderId = drawerFoldersDB.insert(DrawerFolder(id = null, title = title))
+                IconCache.folders = IconCache.folders + DrawerFolder(folderId, title)
+                assignAppsToFolder(listOf(draggedLauncher, targetLauncher), folderId)
+                runOnUiThread { dialog.dismiss() }
+            }
+        }
+    }
+
+    // FolderDragHelper calls this once a drag actually starts, so the long-press popup menu that
+    // was already showing for the same icon doesn't linger on screen through the drag
+    fun dismissOpenPopupMenu() {
+        mOpenPopupMenu?.dismiss()
+        mOpenPopupMenu = null
     }
 
     // must be called on a background thread
@@ -1221,8 +1246,8 @@ class MainActivity : SimpleActivity(), FlingListener {
             uninstallApp(gridItem.packageName)
         }
 
-        override fun addToFolder(gridItem: HomeScreenGridItem) {
-            this@MainActivity.addToFolder(gridItem)
+        override fun addToHomeScreen(gridItem: HomeScreenGridItem) {
+            this@MainActivity.addToHomeScreen(gridItem)
         }
 
         override fun removeFromFolder(gridItem: HomeScreenGridItem) {

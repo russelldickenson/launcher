@@ -59,17 +59,22 @@ class AllAppsFragment(
     private var launchers = emptyList<AppLauncher>()
     private var folders = emptyList<DrawerFolder>()
 
-    private var isSelectionModeActive = false
-    private val selectedIdentifiers = mutableSetOf<String>()
-
     private val folderDragHelper by lazy {
         FolderDragHelper(
             recyclerView = binding.allAppsGrid,
             dragShadowContainer = binding.dragShadowContainer,
             dragShadowIcon = binding.dragShadowIcon,
-            dragShadowCountBadge = binding.dragShadowCountBadge,
-            getCurrentSelectionSize = { selectedIdentifiers.size },
-            onDrop = { folderId -> onSelectionDroppedOnFolder(folderId) },
+            onDragStarted = { activity?.dismissOpenPopupMenu() },
+            onDragEnded = {
+                ignoreTouches = false
+                touchDownY = -1
+            },
+            onDropOnFolder = { draggedLauncher, folderId ->
+                activity?.assignSelectedAppsToFolder(listOf(draggedLauncher), folderId)
+            },
+            onDropOnApp = { draggedLauncher, targetLauncher ->
+                activity?.createFolderFromApps(draggedLauncher, targetLauncher)
+            },
             onCancel = {}
         )
     }
@@ -87,7 +92,7 @@ class AllAppsFragment(
             return@setOnTouchListener false
         }
 
-        binding.selectionCancelButton.setOnClickListener { exitSelectionMode() }
+        folderDragHelper.attach()
         binding.overflowMenuIcon.setOnClickListener { showOverflowMenu() }
     }
 
@@ -108,71 +113,6 @@ class AllAppsFragment(
             }
             show()
         }
-    }
-
-    // entry point for the long-press "Add to folder..." action - puts the whole drawer into a
-    // checkmark selection mode (the app that was long-pressed starts pre-selected) instead of
-    // immediately asking which folder, so the user can pick several apps at once before choosing
-    fun startSelectionMode(initialLauncher: AppLauncher) {
-        isSelectionModeActive = true
-        selectedIdentifiers.clear()
-        selectedIdentifiers.add(initialLauncher.getLauncherIdentifier())
-        folderDragHelper.attach()
-        updateSelectionUi()
-    }
-
-    private fun exitSelectionMode() {
-        isSelectionModeActive = false
-        selectedIdentifiers.clear()
-        folderDragHelper.detach()
-        updateSelectionUi()
-    }
-
-    // called by FolderDragHelper once the current selection is dropped on a folder cell - the
-    // actual assignment lives on MainActivity, same place the old confirm-button flow called into
-    private fun onSelectionDroppedOnFolder(folderId: Long) {
-        val selected = launchers.filter { selectedIdentifiers.contains(it.getLauncherIdentifier()) }
-        exitSelectionMode()
-        activity?.assignSelectedAppsToFolder(selected, folderId)
-    }
-
-    private fun updateSelectionUi() {
-        binding.selectionActionBar.beVisibleIf(isSelectionModeActive)
-        binding.overflowMenuIcon.beVisibleIf(!isSelectionModeActive && !binding.searchBar.isSearchOpen)
-        binding.selectionCountLabel.text = context.resources.getQuantityString(
-            R.plurals.drag_to_folder_hint, selectedIdentifiers.size, selectedIdentifiers.size
-        )
-        styleSelectionBubble()
-        getAdapter()?.setSelectionMode(isSelectionModeActive, selectedIdentifiers)
-    }
-
-    // the drawer's own background/text colours are already guaranteed to be a contrasting pair
-    // (forced dark-on-light or light-on-dark independent of the system theme) - swapping which
-    // one is the bubble and which is the text gives a solid, always-legible bubble that flips
-    // correctly with light/dark mode, instead of floating text directly over the grid behind it
-    private fun styleSelectionBubble() {
-        val bubbleColor = context.getAppDrawerTextColor()
-        val bubbleTextColor = context.getAppDrawerBackgroundColor()
-
-        binding.selectionActionBar.background = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = resources.getDimension(R.dimen.selection_bubble_corner_radius)
-            setColor(bubbleColor)
-        }
-        binding.selectionCountLabel.setTextColor(bubbleTextColor)
-        binding.selectionCancelButton.setTextColor(bubbleTextColor)
-    }
-
-    override fun onAppLauncherSelectionToggled(appLauncher: AppLauncher) {
-        val identifier = appLauncher.getLauncherIdentifier()
-        if (!selectedIdentifiers.remove(identifier)) {
-            selectedIdentifiers.add(identifier)
-        }
-        updateSelectionUi()
-    }
-
-    override fun onSelectionDragRequested(appLauncher: AppLauncher) {
-        folderDragHelper.armDrag(appLauncher)
     }
 
     override fun onAttachedToWindow() {
@@ -231,10 +171,14 @@ class AllAppsFragment(
 
             MotionEvent.ACTION_MOVE -> {
                 if (ignoreTouches) {
-                    // some devices ACTION_MOVE keeps triggering for the whole long press duration, but we are interested in real moves only, when coords change
+                    // some devices ACTION_MOVE keeps triggering for the whole long press duration, but we
+                    // are interested in real moves only, when coords change. This branch's only remaining
+                    // job is to suppress the pull-to-dismiss gesture below during a long-press interaction -
+                    // it deliberately does NOT intercept (no `return true`) so the move still reaches the
+                    // RecyclerView, where FolderDragHelper's own OnItemTouchListener decides whether to
+                    // claim it as a folder-creation drag
                     if (lastTouchCoords.first != event.x || lastTouchCoords.second != event.y) {
                         touchDownY = -1
-                        return true
                     }
                 }
 
@@ -415,7 +359,7 @@ class AllAppsFragment(
 
     private fun updateSearchBarExpanded(expanded: Boolean) {
         binding.searchIconCollapsed.beVisibleIf(!expanded)
-        binding.overflowMenuIcon.beVisibleIf(!expanded && !isSelectionModeActive)
+        binding.overflowMenuIcon.beVisibleIf(!expanded)
         binding.searchBar.beVisibleIf(expanded)
     }
 
@@ -488,16 +432,12 @@ class AllAppsFragment(
 
         activity?.showHomeIconMenu(x, y, gridItem, true)
         ignoreTouches = true
+        folderDragHelper.armDrag(appLauncher)
 
         binding.searchBar.closeSearch()
     }
 
     fun onBackPressed(): Boolean {
-        if (isSelectionModeActive) {
-            exitSelectionMode()
-            return true
-        }
-
         if (binding.searchBar.isSearchOpen) {
             binding.searchBar.closeSearch()
             return true

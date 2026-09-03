@@ -50,8 +50,6 @@ class LaunchersAdapter(
     private var textColor = activity.getAppDrawerTextColor()
     private var iconPadding = 0
     private var targetIconWidth = 0
-    private var isSelectionModeActive = false
-    private var selectedIdentifiers: Set<String> = emptySet()
 
     init {
         setHasStableIds(true)
@@ -152,13 +150,6 @@ class LaunchersAdapter(
         notifyDataSetChanged()
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun setSelectionMode(active: Boolean, selected: Set<String>) {
-        isSelectionModeActive = active
-        selectedIdentifiers = selected
-        notifyDataSetChanged()
-    }
-
     inner class HeaderViewHolder(private val binding: ItemDrawerSectionHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(titleRes: Int) {
             binding.sectionHeaderLabel.setText(titleRes)
@@ -207,13 +198,6 @@ class LaunchersAdapter(
                     marginEnd = iconPadding
                 }
 
-                val isSelected = isSelectionModeActive && selectedIdentifiers.contains(launcher.getLauncherIdentifier())
-                binding.launcherSelectionCheckmark.beVisibleIf(isSelectionModeActive)
-                binding.launcherSelectionCheckmark.setImageResource(
-                    if (isSelected) org.fossify.commons.R.drawable.ic_check_circle_vector else 0
-                )
-                binding.launcherIcon.alpha = if (isSelectionModeActive && !isSelected) LAUNCHER_ALPHA_DESELECTED else 1f
-
                 if (launcher.drawable != null && binding.launcherIcon.tag == true) {
                     binding.launcherIcon.setImageDrawable(launcher.drawable)
                 } else {
@@ -236,24 +220,8 @@ class LaunchersAdapter(
                         })
                 }
 
-                setOnClickListener {
-                    if (isSelectionModeActive) {
-                        allAppsListener.onAppLauncherSelectionToggled(launcher)
-                    } else {
-                        itemClick(launcher)
-                    }
-                }
+                setOnClickListener { itemClick(launcher) }
                 setOnLongClickListener {
-                    if (isSelectionModeActive) {
-                        // long-pressing an already-checked icon arms a drag of the whole
-                        // selection; long-pressing an unchecked one does nothing special here
-                        if (selectedIdentifiers.contains(launcher.getLauncherIdentifier())) {
-                            allAppsListener.onSelectionDragRequested(launcher)
-                            return@setOnLongClickListener true
-                        }
-                        return@setOnLongClickListener false
-                    }
-
                     val location = IntArray(2)
                     getLocationOnScreen(location)
                     allAppsListener.onAppLauncherLongPressed(
@@ -318,19 +286,8 @@ class LaunchersAdapter(
                 )
             )
 
-            // folders can't be selected into another folder, so they're just dimmed and inert
-            // while picking apps to add
-            itemView.alpha = if (isSelectionModeActive) LAUNCHER_ALPHA_DESELECTED else 1f
-            itemView.setOnClickListener {
-                if (!isSelectionModeActive) {
-                    allAppsListener.onFolderClicked(folder)
-                }
-            }
+            itemView.setOnClickListener { allAppsListener.onFolderClicked(folder) }
             itemView.setOnLongClickListener {
-                if (isSelectionModeActive) {
-                    return@setOnLongClickListener false
-                }
-
                 val location = IntArray(2)
                 itemView.getLocationOnScreen(location)
                 allAppsListener.onFolderLongPressed(
@@ -358,10 +315,6 @@ class LaunchersAdapter(
         private const val LAUNCHER_SCALE_DOWN_DURATION = 50L
         private const val LAUNCHER_ALPHA_NORMAL = 255
         private const val LAUNCHER_ALPHA_PRESSED = 220
-
-        // View.alpha (0f-1f), unlike the Drawable.alpha (0-255) constants above - used to dim
-        // items that aren't selected/selectable while a folder selection is in progress
-        private const val LAUNCHER_ALPHA_DESELECTED = 0.4f
     }
 }
 
