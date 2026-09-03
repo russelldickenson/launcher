@@ -25,6 +25,10 @@ object FolderIconGenerator {
     // generic theme colour that can end up barely different from the drawer background it sits on
     private const val BACKGROUND_TINT_ALPHA = 0.32f
 
+    // only ever preview the first 4 members - a folder with more than that still just shows a
+    // 2x2 sample of it, the same convention most launchers use, rather than cramming every icon in
+    private const val MAX_PREVIEW_ICONS = 4
+
     fun generate(
         context: Context,
         memberIcons: List<Drawable?>,
@@ -35,6 +39,8 @@ object FolderIconGenerator {
         if (iconSize <= 0 || memberIcons.isEmpty()) {
             return null
         }
+
+        val previewIcons = memberIcons.take(MAX_PREVIEW_ICONS)
 
         val backgroundColor = ColorUtils.setAlphaComponent(
             drawerBackgroundColor.getContrastColor(), (BACKGROUND_TINT_ALPHA * 255).toInt()
@@ -52,7 +58,7 @@ object FolderIconGenerator {
         canvas.clipPath(shapePath)
         canvas.drawPaint(backgroundPaint)
 
-        val itemCount = memberIcons.size
+        val itemCount = previewIcons.size
         val columnCount = ceil(sqrt(itemCount.toDouble())).roundToInt()
         val rowCount = ceil(itemCount.toFloat() / columnCount).roundToInt()
         val scaledCellSize = iconSize.toFloat() / columnCount
@@ -60,7 +66,7 @@ object FolderIconGenerator {
         val scaledIconSize = (iconSize - (columnCount + 1) * scaledGap) / columnCount
         val extraYMargin = if (rowCount < columnCount) (scaledIconSize + scaledGap) / 2 else 0f
 
-        memberIcons.forEachIndexed { index, drawable ->
+        previewIcons.forEachIndexed { index, drawable ->
             val row = index / columnCount
             val column = index % columnCount
             val drawableX = (scaledGap + column * scaledIconSize + column * scaledGap).toInt()
