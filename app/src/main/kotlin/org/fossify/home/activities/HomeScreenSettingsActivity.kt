@@ -1,9 +1,13 @@
 package org.fossify.home.activities
 
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
+import android.content.Intent
 import android.os.Bundle
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.models.RadioItem
+import org.fossify.home.R
 import org.fossify.home.databinding.ActivityHomeScreenSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.showRadioGroupDialog
@@ -15,6 +19,7 @@ import org.fossify.home.helpers.MAX_DRAWER_LABEL_MAX_LINES
 import org.fossify.home.helpers.MIN_DRAWER_COLUMN_COUNT
 import org.fossify.home.helpers.MIN_DRAWER_ICON_SCALE_PERCENT
 import org.fossify.home.helpers.MIN_DRAWER_LABEL_MAX_LINES
+import org.fossify.home.receivers.LockDeviceAdminReceiver
 
 class HomeScreenSettingsActivity : SimpleActivity() {
 
@@ -36,6 +41,7 @@ class HomeScreenSettingsActivity : SimpleActivity() {
         setupHomeIconScale()
         setupShowHomeAppLabels()
         setupHomeLabelMaxLines()
+        setupDoubleTapToLock()
     }
 
     private fun setupHomeColumnCount() {
@@ -122,6 +128,38 @@ class HomeScreenSettingsActivity : SimpleActivity() {
                     config.homeLabelMaxLines = newMaxLines
                     setupHomeLabelMaxLines()
                 }
+            }
+        }
+    }
+
+    // moved here from the main Settings screen - double-tap-to-lock is a home screen gesture
+    // (tapping empty space on the home screen), so it belongs alongside the home screen's other
+    // settings rather than sitting uncategorised at the top of the main Settings list
+    private fun setupDoubleTapToLock() {
+        val devicePolicyManager = getSystemService(DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        binding.settingsDoubleTapToLock.isChecked = devicePolicyManager.isAdminActive(
+            ComponentName(this, LockDeviceAdminReceiver::class.java)
+        )
+
+        binding.settingsDoubleTapToLockHolder.setOnClickListener {
+            val isLockDeviceAdminActive = devicePolicyManager.isAdminActive(
+                ComponentName(this, LockDeviceAdminReceiver::class.java)
+            )
+            if (isLockDeviceAdminActive) {
+                devicePolicyManager.removeActiveAdmin(
+                    ComponentName(this, LockDeviceAdminReceiver::class.java)
+                )
+            } else {
+                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
+                intent.putExtra(
+                    DevicePolicyManager.EXTRA_DEVICE_ADMIN,
+                    ComponentName(this, LockDeviceAdminReceiver::class.java)
+                )
+                intent.putExtra(
+                    DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                    getString(R.string.lock_device_admin_hint)
+                )
+                startActivity(intent)
             }
         }
     }
