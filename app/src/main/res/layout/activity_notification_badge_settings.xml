@@ -73,7 +73,7 @@
                 android:id="@+id/settings_show_notification_badges_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/ripple_background"
                 android:minHeight="48dp">
 
@@ -87,6 +87,10 @@
 
             </RelativeLayout>
 
+            <include
+                layout="@layout/divider_inset"
+                android:layout_marginBottom="16dp" />
+
             <TextView
                 style="@style/SettingsSubHeadingStyle"
                 android:layout_width="wrap_content"
@@ -98,7 +102,7 @@
                 android:id="@+id/settings_show_notification_count_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/ripple_background"
                 android:minHeight="48dp">
 
@@ -111,6 +115,10 @@
 
             </RelativeLayout>
 
+            <include
+                layout="@layout/divider_inset"
+                android:layout_marginBottom="16dp" />
+
             <TextView
                 style="@style/SettingsSubHeadingStyle"
                 android:layout_width="wrap_content"
@@ -122,7 +130,7 @@
                 android:id="@+id/settings_notification_badge_color_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/ripple_background"
                 android:minHeight="48dp">
 
@@ -134,6 +142,10 @@
                     android:background="@drawable/notification_badge_dot" />
 
             </RelativeLayout>
+
+            <include
+                layout="@layout/divider_inset"
+                android:layout_marginBottom="16dp" />
 
             <TextView
                 style="@style/SettingsSubHeadingStyle"
