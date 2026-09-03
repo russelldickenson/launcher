@@ -272,7 +272,8 @@ object IconPackHelper {
         )
     }
 
-    private fun getShapePath(shape: Int, size: Float): Path {
+    // also used by FolderIconGenerator, so drawer folders can match the user's chosen icon shape
+    fun getShapePath(shape: Int, size: Float): Path {
         val path = Path()
         when (shape) {
             ICON_SHAPE_SQUARE -> path.addRect(0f, 0f, size, size, Path.Direction.CW)

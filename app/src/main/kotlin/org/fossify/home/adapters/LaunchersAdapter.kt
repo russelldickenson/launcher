@@ -313,7 +313,8 @@ class LaunchersAdapter(
                     context = activity,
                     memberIcons = members.map { it.drawable },
                     iconSize = targetIconWidth,
-                    drawerBackgroundColor = activity.getAppDrawerBackgroundColor()
+                    drawerBackgroundColor = activity.getAppDrawerBackgroundColor(),
+                    iconShape = activity.config.iconShape
                 )
             )
 

@@ -3,7 +3,6 @@ package org.fossify.home.helpers
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.graphics.Path
 import android.graphics.drawable.Drawable
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.createBitmap
@@ -24,9 +23,15 @@ object FolderIconGenerator {
     // a soft tint of whichever of black/white contrasts with the drawer's own background colour
     // (the same getContrastColor() already used for notification badge text), rather than a
     // generic theme colour that can end up barely different from the drawer background it sits on
-    private const val BACKGROUND_TINT_ALPHA = 0.16f
+    private const val BACKGROUND_TINT_ALPHA = 0.32f
 
-    fun generate(context: Context, memberIcons: List<Drawable?>, iconSize: Int, drawerBackgroundColor: Int): Drawable? {
+    fun generate(
+        context: Context,
+        memberIcons: List<Drawable?>,
+        iconSize: Int,
+        drawerBackgroundColor: Int,
+        iconShape: Int,
+    ): Drawable? {
         if (iconSize <= 0 || memberIcons.isEmpty()) {
             return null
         }
@@ -41,10 +46,10 @@ object FolderIconGenerator {
 
         val bitmap = createBitmap(iconSize, iconSize)
         val canvas = Canvas(bitmap)
-        val circlePath = Path().apply {
-            addCircle((iconSize / 2).toFloat(), (iconSize / 2).toFloat(), (iconSize / 2).toFloat(), Path.Direction.CCW)
-        }
-        canvas.clipPath(circlePath)
+        // same shape path IconPackHelper uses to reshape real app icons, so a folder's backdrop
+        // matches whatever icon shape the user has chosen instead of always being a circle
+        val shapePath = IconPackHelper.getShapePath(iconShape, iconSize.toFloat())
+        canvas.clipPath(shapePath)
         canvas.drawPaint(backgroundPaint)
 
         val itemCount = memberIcons.size
