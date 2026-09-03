@@ -5,11 +5,10 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.drawable.Drawable
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
-import com.google.android.material.color.MaterialColors
-import org.fossify.commons.extensions.adjustAlpha
-import org.fossify.commons.extensions.getProperBackgroundColor
+import org.fossify.commons.extensions.getContrastColor
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
@@ -22,16 +21,19 @@ import kotlin.math.sqrt
 // have no such position and just tile members in list order instead
 object FolderIconGenerator {
 
-    fun generate(context: Context, memberIcons: List<Drawable?>, iconSize: Int): Drawable? {
+    // a soft tint of whichever of black/white contrasts with the drawer's own background colour
+    // (the same getContrastColor() already used for notification badge text), rather than a
+    // generic theme colour that can end up barely different from the drawer background it sits on
+    private const val BACKGROUND_TINT_ALPHA = 0.16f
+
+    fun generate(context: Context, memberIcons: List<Drawable?>, iconSize: Int, drawerBackgroundColor: Int): Drawable? {
         if (iconSize <= 0 || memberIcons.isEmpty()) {
             return null
         }
 
-        val backgroundColor = MaterialColors.getColor(
-            context,
-            com.google.android.material.R.attr.colorSurfaceContainer,
-            context.getProperBackgroundColor()
-        ).adjustAlpha(0.9f)
+        val backgroundColor = ColorUtils.setAlphaComponent(
+            drawerBackgroundColor.getContrastColor(), (BACKGROUND_TINT_ALPHA * 255).toInt()
+        )
         val backgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = backgroundColor
             style = Paint.Style.FILL

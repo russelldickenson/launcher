@@ -28,6 +28,7 @@ import org.fossify.home.databinding.ItemLauncherLabelBinding
 import org.fossify.home.databinding.ItemDrawerFolderBinding
 import org.fossify.home.extensions.animateScale
 import org.fossify.home.extensions.config
+import org.fossify.home.extensions.getAppDrawerBackgroundColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.getReferenceIconWidth
 import org.fossify.home.helpers.FolderIconGenerator
@@ -305,8 +306,15 @@ class LaunchersAdapter(
                 height = targetIconWidth
             }
 
+            binding.drawerFolderIcon.setPadding(iconPadding, iconPadding, iconPadding, 0)
+
             binding.drawerFolderIcon.setImageDrawable(
-                FolderIconGenerator.generate(activity, members.map { it.drawable }, targetIconWidth)
+                FolderIconGenerator.generate(
+                    context = activity,
+                    memberIcons = members.map { it.drawable },
+                    iconSize = targetIconWidth,
+                    drawerBackgroundColor = activity.getAppDrawerBackgroundColor()
+                )
             )
 
             // folders can't be selected into another folder, so they're just dimmed and inert
