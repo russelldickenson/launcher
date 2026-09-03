@@ -142,7 +142,25 @@ class AllAppsFragment(
         binding.selectionCountLabel.text = context.resources.getQuantityString(
             R.plurals.drag_to_folder_hint, selectedIdentifiers.size, selectedIdentifiers.size
         )
+        styleSelectionBubble()
         getAdapter()?.setSelectionMode(isSelectionModeActive, selectedIdentifiers)
+    }
+
+    // the drawer's own background/text colours are already guaranteed to be a contrasting pair
+    // (forced dark-on-light or light-on-dark independent of the system theme) - swapping which
+    // one is the bubble and which is the text gives a solid, always-legible bubble that flips
+    // correctly with light/dark mode, instead of floating text directly over the grid behind it
+    private fun styleSelectionBubble() {
+        val bubbleColor = context.getAppDrawerTextColor()
+        val bubbleTextColor = context.getAppDrawerBackgroundColor()
+
+        binding.selectionActionBar.background = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = resources.getDimension(R.dimen.selection_bubble_corner_radius)
+            setColor(bubbleColor)
+        }
+        binding.selectionCountLabel.setTextColor(bubbleTextColor)
+        binding.selectionCancelButton.setTextColor(bubbleTextColor)
     }
 
     override fun onAppLauncherSelectionToggled(appLauncher: AppLauncher) {
