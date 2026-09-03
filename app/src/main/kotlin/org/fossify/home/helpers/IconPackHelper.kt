@@ -167,11 +167,18 @@ object IconPackHelper {
             originalIcon.toBitmap(width = iconSize, height = iconSize, config = Bitmap.Config.ARGB_8888)
         }
 
-        // fill the gap between the icon and the shape with a color sampled from the icon's own
-        // edge pixels, so it reads as a natural bleed instead of an unrelated colored halo
-        val themedFallback = ColorUtils.blendARGB(context.getProperBackgroundColor(), context.getProperPrimaryColor(), 0.18f)
-        val backgroundColor = getEdgeColor(iconBitmap) ?: themedFallback
-        canvas.drawPath(path, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = backgroundColor })
+        // an icon whose own silhouette already matches the chosen shape is rendered full-bleed
+        // above with no zoom applied, so any transparent margin baked into its own artwork sits
+        // right at the shape's edge - filling a backdrop behind it would show through as a
+        // mismatched ring around an icon that's already the right shape, so skip it entirely and
+        // let it sit on the shape outline with no fill, same as an adaptive icon needs none
+        if (normalized == null || !normalized.matchesShape) {
+            // fill the gap between the icon and the shape with a color sampled from the icon's own
+            // edge pixels, so it reads as a natural bleed instead of an unrelated colored halo
+            val themedFallback = ColorUtils.blendARGB(context.getProperBackgroundColor(), context.getProperPrimaryColor(), 0.18f)
+            val backgroundColor = getEdgeColor(iconBitmap) ?: themedFallback
+            canvas.drawPath(path, Paint(Paint.ANTI_ALIAS_FLAG).apply { color = backgroundColor })
+        }
 
         canvas.save()
         canvas.clipPath(path)
