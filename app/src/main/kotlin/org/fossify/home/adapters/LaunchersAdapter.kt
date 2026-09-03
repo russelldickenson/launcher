@@ -1,11 +1,14 @@
 package org.fossify.home.adapters
 
 import android.annotation.SuppressLint
+import android.graphics.Outline
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -32,6 +35,7 @@ import org.fossify.home.extensions.getAppDrawerBackgroundColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.getReferenceIconWidth
 import org.fossify.home.helpers.FolderIconGenerator
+import org.fossify.home.helpers.IconPackHelper
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
 import org.fossify.home.helpers.NotificationCache
@@ -50,6 +54,10 @@ class LaunchersAdapter(
     private var textColor = activity.getAppDrawerTextColor()
     private var iconPadding = 0
     private var targetIconWidth = 0
+
+    // a subtle elevation, not a heavy skeuomorphic drop shadow - just enough to lift an icon off
+    // a busy wallpaper without looking dated
+    private val iconShadowElevationPx = ICON_SHADOW_ELEVATION_DP * activity.resources.displayMetrics.density
 
     init {
         setHasStableIds(true)
@@ -136,6 +144,34 @@ class LaunchersAdapter(
     // duplicating the calculateIconWidth() formula elsewhere
     fun getIconSizePx() = targetIconWidth
 
+    // approximates the icon's own inset content bounds as a square (ignores the uneven
+    // setPadding(..., bottom = 0) used elsewhere, which only matters for spacing against the
+    // label below, not for where the icon's visible silhouette actually sits) and reuses the
+    // exact same shape path as the reshape/folder-icon pipeline so the shadow hugs whatever
+    // shape the user has chosen instead of a generic rounded square
+    private fun applyIconShadow(iconView: ImageView) {
+        if (!activity.config.showIconShadow) {
+            iconView.elevation = 0f
+            return
+        }
+
+        val contentSize = (targetIconWidth - iconPadding * 2).toFloat()
+        if (contentSize <= 0f) {
+            iconView.elevation = 0f
+            return
+        }
+
+        val shapePath = IconPackHelper.getShapePath(activity.config.iconShape, contentSize).apply {
+            offset(iconPadding.toFloat(), iconPadding.toFloat())
+        }
+        iconView.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                outline.setConvexPath(shapePath)
+            }
+        }
+        iconView.elevation = iconShadowElevationPx
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun updateTextColor(newTextColor: Int) {
         if (newTextColor != textColor) {
@@ -173,6 +209,7 @@ class LaunchersAdapter(
                     width = targetIconWidth
                     height = targetIconWidth
                 }
+                applyIconShadow(binding.launcherIcon)
 
                 val notificationCount = NotificationCache.notificationCounts[launcher.packageName] ?: 0
                 val hasNotification = activity.config.showNotificationBadges && notificationCount > 0
@@ -275,6 +312,7 @@ class LaunchersAdapter(
             }
 
             binding.drawerFolderIcon.setPadding(iconPadding, iconPadding, iconPadding, 0)
+            applyIconShadow(binding.drawerFolderIcon)
 
             binding.drawerFolderIcon.setImageDrawable(
                 FolderIconGenerator.generate(
@@ -308,6 +346,8 @@ class LaunchersAdapter(
         const val VIEW_TYPE_DIVIDER = 1
         const val VIEW_TYPE_HEADER = 2
         const val VIEW_TYPE_FOLDER = 3
+
+        private const val ICON_SHADOW_ELEVATION_DP = 3f
 
         private const val LAUNCHER_SCALE_NORMAL = 1f
         private const val LAUNCHER_SCALE_PRESSED = 1.15f

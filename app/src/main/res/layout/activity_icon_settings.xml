@@ -183,6 +183,28 @@
 
             </com.google.android.material.chip.ChipGroup>
 
+            <include
+                layout="@layout/divider_inset"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp" />
+
+            <RelativeLayout
+                android:id="@+id/settings_icon_shadow_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background"
+                android:minHeight="48dp">
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/settings_icon_shadow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:focusable="false"
+                    android:text="@string/icon_shadow" />
+
+            </RelativeLayout>
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

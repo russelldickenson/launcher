@@ -1,6 +1,9 @@
 package org.fossify.home.activities
 
+import android.graphics.Outline
 import android.os.Bundle
+import android.view.View
+import android.view.ViewOutlineProvider
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
@@ -30,6 +33,9 @@ class IconSettingsActivity : SimpleActivity() {
     // restart is owed and do it once the user actually leaves this screen
     private var iconSettingsChanged = false
 
+    // matches LaunchersAdapter.ICON_SHADOW_ELEVATION_DP so the preview looks like the real thing
+    private val iconShadowPreviewElevationDp = 3f
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -55,6 +61,7 @@ class IconSettingsActivity : SimpleActivity() {
         setupIconPack()
         setupReshapeAllIcons()
         setupIconShape()
+        setupIconShadow()
         updateIconPreview()
         updateIconPreviewLabel()
     }
@@ -137,6 +144,41 @@ class IconSettingsActivity : SimpleActivity() {
         }
     }
 
+    // unlike icon pack/shape, the shadow is applied at bind-time in LaunchersAdapter rather than
+    // baked into a cached bitmap, so it needs no cache clear or restart - just a redraw, which
+    // happens on its own when the drawer next resumes
+    private fun setupIconShadow() {
+        binding.settingsIconShadow.isChecked = config.showIconShadow
+        binding.settingsIconShadowHolder.setOnClickListener {
+            binding.settingsIconShadow.toggle()
+            config.showIconShadow = binding.settingsIconShadow.isChecked
+            updateIconShadowPreview()
+        }
+        updateIconShadowPreview()
+    }
+
+    private fun updateIconShadowPreview() {
+        val previewView = binding.settingsIconPreview
+        if (!config.showIconShadow) {
+            previewView.elevation = 0f
+            return
+        }
+
+        val size = previewView.layoutParams.width.toFloat()
+        if (size <= 0f) {
+            previewView.elevation = 0f
+            return
+        }
+
+        val shapePath = IconPackHelper.getShapePath(config.iconShape, size)
+        previewView.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                outline.setConvexPath(shapePath)
+            }
+        }
+        previewView.elevation = iconShadowPreviewElevationDp * resources.displayMetrics.density
+    }
+
     // shows this launcher's own icon run through the same icon pack/shape/scale pipeline real app
     // icons go through, as a live preview of these settings - it's fetched on a background thread
     // since getShapedIcon()'s pixel analysis can take a moment on a cache miss
@@ -161,6 +203,7 @@ class IconSettingsActivity : SimpleActivity() {
         params.width = scaledSize
         params.height = scaledSize
         binding.settingsIconPreview.layoutParams = params
+        updateIconShadowPreview()
     }
 
     private fun updateIconPreviewLabel() {

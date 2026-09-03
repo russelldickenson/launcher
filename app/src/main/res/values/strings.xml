@@ -34,6 +34,7 @@
     <string name="icon_preview_label">Launcher</string>
     <string name="reshape_all_icons">Reshape all icons</string>
     <string name="icon_shape">Icon shape</string>
+    <string name="icon_shadow">Icon shadow</string>
     <string name="icon_shape_circle">Circle</string>
     <string name="icon_shape_squircle">Squircle</string>
     <string name="icon_shape_square">Square</string>

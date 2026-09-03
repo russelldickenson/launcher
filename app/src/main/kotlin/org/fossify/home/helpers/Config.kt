@@ -110,6 +110,10 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getInt(ICON_SHAPE, ICON_SHAPE_CIRCLE)
         set(iconShape) = prefs.edit().putInt(ICON_SHAPE, iconShape).apply()
 
+    var showIconShadow: Boolean
+        get() = prefs.getBoolean(SHOW_ICON_SHADOW, false)
+        set(showIconShadow) = prefs.edit().putBoolean(SHOW_ICON_SHADOW, showIconShadow).apply()
+
     var showNotificationBadges: Boolean
         get() = prefs.getBoolean(SHOW_NOTIFICATION_BADGES, true)
         set(showNotificationBadges) = prefs.edit().putBoolean(SHOW_NOTIFICATION_BADGES, showNotificationBadges).apply()
