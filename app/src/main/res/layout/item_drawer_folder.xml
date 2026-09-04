@@ -6,7 +6,7 @@
     android:clickable="true"
     android:focusable="true"
     android:paddingStart="@dimen/small_margin"
-    android:paddingTop="@dimen/medium_margin"
+    android:paddingTop="5dp"
     android:paddingEnd="@dimen/small_margin"
     android:paddingBottom="@dimen/small_margin">
 
