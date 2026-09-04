@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.graphics.ColorUtils
@@ -36,6 +37,10 @@ class FolderDragHelper(
     private var hoveredView: View? = null
     private var hoveredViewOriginalAlpha = 1f
 
+    private var downX = 0f
+    private var downY = 0f
+    private val touchSlop = ViewConfiguration.get(recyclerView.context).scaledTouchSlop
+
     private val autoScrollHandler = Handler(Looper.getMainLooper())
     private var autoScrollDirection = 0
     private val autoScrollRunnable = object : Runnable {
@@ -60,14 +65,31 @@ class FolderDragHelper(
     }
 
     override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+        // tracked unconditionally (not just while armed) since armDrag() is only called from the
+        // long-click callback, which fires well after the ACTION_DOWN that actually started this
+        // gesture - by the time we're armed, that down position already happened
+        if (e.actionMasked == MotionEvent.ACTION_DOWN) {
+            downX = e.x
+            downY = e.y
+        }
+
         if (!isArmed && !isDragging) {
             return false
         }
 
         when (e.actionMasked) {
             MotionEvent.ACTION_MOVE -> {
+                // a real touchscreen's long-press always carries a little natural finger jitter,
+                // which without a slop check would start a drag (and dismiss the just-shown popup
+                // menu, see onDragStarted below) on every single long-press - a mouse-driven
+                // long-press in the emulator has no such jitter, which is why this only ever
+                // showed up on a real device
                 if (isArmed && !isDragging) {
-                    startDragging(e)
+                    val dx = e.x - downX
+                    val dy = e.y - downY
+                    if (dx * dx + dy * dy > touchSlop * touchSlop) {
+                        startDragging(e)
+                    }
                 }
             }
 
