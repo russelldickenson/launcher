@@ -299,8 +299,8 @@ class AllAppsFragment(
         setupDrawerBackground(context.getAppDrawerBackgroundColor())
         getAdapter()?.updateTextColor(context.getAppDrawerTextColor())
 
-        binding.searchIconCollapsed.beVisibleIf(context.config.showSearchBar)
-        binding.searchIconCollapsed.setOnClickListener { expandSearchBar() }
+        binding.searchIcon.beVisibleIf(context.config.showSearchBar)
+        binding.searchBar.beVisibleIf(context.config.showSearchBar)
         binding.searchBar.requireToolbar().beGone()
         binding.searchBar.updateColors()
         binding.searchBar.setupMenu()
@@ -308,10 +308,6 @@ class AllAppsFragment(
 
         binding.searchBar.onSearchTextChangedListener = {
             submitList(launchers)
-        }
-
-        binding.searchBar.onSearchClosedListener = {
-            updateSearchBarExpanded(false)
         }
 
         binding.searchBar.binding.topToolbarSearch.setOnEditorActionListener { _, actionId, _ ->
@@ -325,18 +321,12 @@ class AllAppsFragment(
         }
     }
 
-    // expands the collapsed search icon into the full field and focuses it - shared by tapping
-    // the icon and by MainActivity's auto-show-keyboard-on-drawer-open path
-    fun expandSearchBar() {
-        updateSearchBarExpanded(true)
+    // the field itself is always visible now (no more separate collapsed-icon state to expand
+    // from) - this just focuses it and raises the keyboard, for MainActivity's
+    // auto-show-keyboard-on-drawer-open path
+    fun focusSearchBar() {
         binding.searchBar.focusView()
         activity?.showKeyboard(binding.searchBar.binding.topToolbarSearch)
-    }
-
-    private fun updateSearchBarExpanded(expanded: Boolean) {
-        binding.searchIconCollapsed.beVisibleIf(!expanded)
-        binding.searchIconExpanded.beVisibleIf(expanded)
-        binding.searchBar.beVisibleIf(expanded)
     }
 
     // MySearchMenu's own updateColors() fills the search field from the theme's primary color,
@@ -365,14 +355,12 @@ class AllAppsFragment(
         }
 
         // the field's own built-in search icon sits inside the pill; we show a separate one
-        // outside it instead (search_icon_expanded, toggled in updateSearchBarExpanded()), so hide
-        // this one rather than showing it twice
+        // outside it instead (search_icon), so hide this one rather than showing it twice
         searchBinding.topToolbarSearchIcon.beGone()
 
         searchBinding.topToolbarSearch.setTextColor(textColor)
         searchBinding.topToolbarSearch.setHintTextColor(ColorUtils.setAlphaComponent(textColor, 150))
-        binding.searchIconCollapsed.setColorFilter(textColor)
-        binding.searchIconExpanded.setColorFilter(textColor)
+        binding.searchIcon.setColorFilter(textColor)
     }
 
     private fun showNoResultsPlaceholderIfNeeded() {

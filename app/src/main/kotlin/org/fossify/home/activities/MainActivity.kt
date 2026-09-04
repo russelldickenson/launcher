@@ -687,7 +687,7 @@ class MainActivity : SimpleActivity(), FlingListener {
             && config.autoShowKeyboardInAppDrawer
         ) {
             fragment.root.post {
-                fragment.root.expandSearchBar()
+                fragment.root.focusSearchBar()
             }
         }
 
