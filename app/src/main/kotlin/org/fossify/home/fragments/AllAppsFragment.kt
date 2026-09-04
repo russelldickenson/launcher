@@ -2,21 +2,17 @@ package org.fossify.home.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import androidx.core.graphics.ColorUtils
-import androidx.core.view.forEach
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
-import com.google.android.material.color.MaterialColors
 import org.fossify.commons.extensions.beGone
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperPrimaryColor
-import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.hideKeyboard
 import org.fossify.commons.extensions.normalizeString
 import org.fossify.commons.extensions.showKeyboard
@@ -28,6 +24,7 @@ import org.fossify.home.databinding.AllAppsFragmentBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppDrawerBackgroundColor
 import org.fossify.home.extensions.getAppDrawerSearchBorderColor
+import org.fossify.home.extensions.getAppDrawerSearchFillColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.launchApp
 import org.fossify.home.extensions.setupDrawerBackground
@@ -35,7 +32,6 @@ import org.fossify.home.helpers.FolderDragHelper
 import org.fossify.home.helpers.IconCache
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.helpers.NotificationCache
-import org.fossify.home.helpers.PillPopupMenu
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.models.AppLauncher
 import org.fossify.home.models.DrawerFolder
@@ -93,26 +89,6 @@ class AllAppsFragment(
         }
 
         folderDragHelper.attach()
-        binding.overflowMenuIcon.setOnClickListener { showOverflowMenu() }
-    }
-
-    private fun showOverflowMenu() {
-        PillPopupMenu(context, binding.overflowMenuIcon).apply {
-            inflate(R.menu.menu_all_apps)
-            val iconTint = ColorStateList.valueOf(
-                MaterialColors.getColor(
-                    context, com.google.android.material.R.attr.colorOnSurface, context.getProperTextColor()
-                )
-            )
-            menu.forEach { it.iconTintList = iconTint }
-            setOnMenuItemClickListener { item ->
-                if (item.itemId == R.id.create_folder) {
-                    activity?.createNewFolder()
-                }
-                true
-            }
-            show()
-        }
     }
 
     override fun onAttachedToWindow() {
@@ -359,23 +335,24 @@ class AllAppsFragment(
 
     private fun updateSearchBarExpanded(expanded: Boolean) {
         binding.searchIconCollapsed.beVisibleIf(!expanded)
-        binding.overflowMenuIcon.beVisibleIf(!expanded)
+        binding.searchIconExpanded.beVisibleIf(expanded)
         binding.searchBar.beVisibleIf(expanded)
     }
 
     // MySearchMenu's own updateColors() fills the search field from the theme's primary color,
     // which stays light in system light mode even though the drawer around it is forced dark -
-    // restyle it to match the drawer instead: dark fill, a lighter border so it still reads as a
-    // distinct control, and the same text color used for app labels
+    // restyle it to match the drawer instead: a fill that's a subtly different shade from the
+    // drawer background (rather than an identical flat fill), plus a slightly stronger border, so
+    // the field reads as its own distinct control instead of blending into the page
     private fun setupSearchBarColors() {
-        val backgroundColor = context.getAppDrawerBackgroundColor()
+        val fillColor = context.getAppDrawerSearchFillColor()
         val borderColor = context.getAppDrawerSearchBorderColor()
         val textColor = context.getAppDrawerTextColor()
 
         // MySearchMenu itself (an AppBarLayout) carries its own default surface-color background
         // behind the search field's padding, independent of toolbarContainer's - match it to the
-        // drawer too so no light strip shows around the field
-        binding.searchBar.setBackgroundColor(backgroundColor)
+        // drawer so no light strip shows around the field
+        binding.searchBar.setBackgroundColor(context.getAppDrawerBackgroundColor())
 
         val searchBinding = binding.searchBar.binding
         val cornerRadius = resources.getDimension(org.fossify.commons.R.dimen.material_dialog_corner_radius)
@@ -383,15 +360,19 @@ class AllAppsFragment(
         searchBinding.toolbarContainer.background = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             this.cornerRadius = cornerRadius
-            setColor(backgroundColor)
+            setColor(fillColor)
             setStroke(borderWidth, borderColor)
         }
 
+        // the field's own built-in search icon sits inside the pill; we show a separate one
+        // outside it instead (search_icon_expanded, toggled in updateSearchBarExpanded()), so hide
+        // this one rather than showing it twice
+        searchBinding.topToolbarSearchIcon.beGone()
+
         searchBinding.topToolbarSearch.setTextColor(textColor)
         searchBinding.topToolbarSearch.setHintTextColor(ColorUtils.setAlphaComponent(textColor, 150))
-        searchBinding.topToolbarSearchIcon.setColorFilter(textColor)
         binding.searchIconCollapsed.setColorFilter(textColor)
-        binding.overflowMenuIcon.setColorFilter(textColor)
+        binding.searchIconExpanded.setColorFilter(textColor)
     }
 
     private fun showNoResultsPlaceholderIfNeeded() {

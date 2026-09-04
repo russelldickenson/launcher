@@ -1033,20 +1033,6 @@ class MainActivity : SimpleActivity(), FlingListener {
         )
     }
 
-    // prompts for a name and creates a brand-new, empty folder - independent of any app
-    fun createNewFolder() {
-        RenameItemDialog(this, "", titleRes = R.string.new_folder) { title, dialog ->
-            ensureBackgroundThread {
-                val folderId = drawerFoldersDB.insert(DrawerFolder(id = null, title = title))
-                IconCache.folders = IconCache.folders + DrawerFolder(folderId, title)
-                runOnUiThread {
-                    binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
-                    dialog.dismiss()
-                }
-            }
-        }
-    }
-
     // called once the drawer's drag-to-folder gesture drops a dragged app onto an existing folder
     fun assignSelectedAppsToFolder(selected: List<AppLauncher>, folderId: Long) {
         if (selected.isEmpty()) {

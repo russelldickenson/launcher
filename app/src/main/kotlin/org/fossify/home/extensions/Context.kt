@@ -169,6 +169,14 @@ fun Context.getAppDrawerSearchBorderColor(): Int {
     return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), blendTarget, 0.15f)
 }
 
+// a fill color for the app drawer's search field - a lighter blend than the border above, so the
+// field itself reads as a subtly distinct surface rather than blending flat into the drawer
+// background, without the field competing with the border for visual weight
+fun Context.getAppDrawerSearchFillColor(): Int {
+    val blendTarget = if (isSystemInLightMode()) Color.BLACK else Color.WHITE
+    return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), blendTarget, 0.06f)
+}
+
 // what an unscaled (100%) icon should measure, in px, shared by the app drawer and the home
 // screen so both render icons at the same physical size at 100% - based on the screen width at
 // the default column count, independent of whatever column/row count is actually in use, so icon
