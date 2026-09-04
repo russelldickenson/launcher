@@ -25,6 +25,7 @@
         android:layout_below="@+id/drawer_folder_icon"
         android:ellipsize="end"
         android:gravity="center_horizontal|top"
-        android:maxLines="2" />
+        android:maxLines="2"
+        android:textStyle="bold" />
 
 </RelativeLayout>
