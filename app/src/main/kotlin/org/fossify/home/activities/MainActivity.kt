@@ -245,7 +245,7 @@ class MainActivity : SimpleActivity(), FlingListener {
             closeWidgetsFragment()
         }
 
-        binding.allAppsFragment.searchBar.closeSearch()
+        binding.allAppsFragment.root.closeSearch()
 
         // scroll to first page when home button is pressed
         val alreadyOnHome = intent.flags and FLAG_ACTIVITY_BROUGHT_TO_FRONT == 0

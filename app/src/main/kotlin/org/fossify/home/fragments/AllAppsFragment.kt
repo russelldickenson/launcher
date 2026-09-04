@@ -2,15 +2,14 @@ package org.fossify.home.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
 import androidx.core.graphics.ColorUtils
+import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
-import org.fossify.commons.extensions.beGone
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.hideKeyboard
@@ -301,17 +300,14 @@ class AllAppsFragment(
 
         binding.searchIcon.beVisibleIf(context.config.showSearchBar)
         binding.searchBar.beVisibleIf(context.config.showSearchBar)
-        binding.searchBar.requireToolbar().beGone()
-        binding.searchBar.updateColors()
-        binding.searchBar.setupMenu()
         setupSearchBarColors()
 
-        binding.searchBar.onSearchTextChangedListener = {
+        binding.searchEditText.doAfterTextChanged {
             submitList(launchers)
         }
 
-        binding.searchBar.binding.topToolbarSearch.setOnEditorActionListener { _, actionId, _ ->
-            if (binding.searchBar.getCurrentQuery().isEmpty()) return@setOnEditorActionListener false
+        binding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (binding.searchEditText.text.isNullOrEmpty()) return@setOnEditorActionListener false
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE,
                 EditorInfo.IME_ACTION_SEARCH,
@@ -321,45 +317,30 @@ class AllAppsFragment(
         }
     }
 
-    // the field itself is always visible now (no more separate collapsed-icon state to expand
-    // from) - this just focuses it and raises the keyboard, for MainActivity's
-    // auto-show-keyboard-on-drawer-open path
+    // the field is always visible - this just focuses it and raises the keyboard, for
+    // MainActivity's auto-show-keyboard-on-drawer-open path
     fun focusSearchBar() {
-        binding.searchBar.focusView()
-        activity?.showKeyboard(binding.searchBar.binding.topToolbarSearch)
+        binding.searchEditText.requestFocus()
+        activity?.showKeyboard(binding.searchEditText)
     }
 
-    // MySearchMenu's own updateColors() fills the search field from the theme's primary color,
-    // which stays light in system light mode even though the drawer around it is forced dark -
-    // restyle it to match the drawer instead: a fill that's a subtly different shade from the
-    // drawer background (rather than an identical flat fill), plus a slightly stronger border, so
-    // the field reads as its own distinct control instead of blending into the page
+    // a real Material3 TextInputLayout themes itself from the app's own M3 attrs already, unlike
+    // MySearchMenu (which pulled from the theme's primary color and needed hand-drawn overrides
+    // to match the drawer) - only the fill/border/text colors still need setting explicitly, since
+    // those come from the drawer's own (possibly custom) background rather than the app theme
     private fun setupSearchBarColors() {
         val fillColor = context.getAppDrawerSearchFillColor()
         val borderColor = context.getAppDrawerSearchBorderColor()
         val textColor = context.getAppDrawerTextColor()
 
-        // MySearchMenu itself (an AppBarLayout) carries its own default surface-color background
-        // behind the search field's padding, independent of toolbarContainer's - match it to the
-        // drawer so no light strip shows around the field
+        // the TextInputLayout's own background sits behind its box padding, independent of the
+        // box fill itself - match it to the drawer so no light strip shows around the field
         binding.searchBar.setBackgroundColor(context.getAppDrawerBackgroundColor())
+        binding.searchBar.setBoxBackgroundColor(fillColor)
+        binding.searchBar.setBoxStrokeColor(borderColor)
 
-        val searchBinding = binding.searchBar.binding
-        val cornerRadius = resources.getDimension(org.fossify.commons.R.dimen.material_dialog_corner_radius)
-        val borderWidth = resources.getDimensionPixelSize(org.fossify.commons.R.dimen.one_dp)
-        searchBinding.toolbarContainer.background = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            this.cornerRadius = cornerRadius
-            setColor(fillColor)
-            setStroke(borderWidth, borderColor)
-        }
-
-        // the field's own built-in search icon sits inside the pill; we show a separate one
-        // outside it instead (search_icon), so hide this one rather than showing it twice
-        searchBinding.topToolbarSearchIcon.beGone()
-
-        searchBinding.topToolbarSearch.setTextColor(textColor)
-        searchBinding.topToolbarSearch.setHintTextColor(ColorUtils.setAlphaComponent(textColor, 150))
+        binding.searchEditText.setTextColor(textColor)
+        binding.searchEditText.setHintTextColor(ColorUtils.setAlphaComponent(textColor, 150))
         binding.searchIcon.setColorFilter(textColor)
     }
 
@@ -403,12 +384,19 @@ class AllAppsFragment(
         ignoreTouches = true
         folderDragHelper.armDrag(appLauncher)
 
-        binding.searchBar.closeSearch()
+        closeSearch()
+    }
+
+    fun closeSearch() {
+        binding.searchEditText.text = null
+        binding.searchEditText.clearFocus()
+        activity?.hideKeyboard()
     }
 
     fun onBackPressed(): Boolean {
-        if (binding.searchBar.isSearchOpen) {
-            binding.searchBar.closeSearch()
+        val query = binding.searchEditText.text
+        if (!query.isNullOrEmpty() || binding.searchEditText.hasFocus()) {
+            closeSearch()
             return true
         }
 
@@ -416,7 +404,7 @@ class AllAppsFragment(
     }
 
     private fun submitList(items: List<AppLauncher>) {
-        val searchQuery = binding.searchBar.getCurrentQuery()
+        val searchQuery = binding.searchEditText.text?.toString().orEmpty()
         val filtered = if (searchQuery.isNotEmpty()) {
             items.filter {
                 it.title.normalizeString()

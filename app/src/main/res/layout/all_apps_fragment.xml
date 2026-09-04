@@ -20,12 +20,26 @@
             android:contentDescription="@string/search"
             android:src="@drawable/ic_search_vector" />
 
-        <org.fossify.commons.views.MySearchMenu
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/search_bar"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/search_icon_gutter_width"
-            app:applyWindowInsets="false" />
+            android:layout_marginEnd="@dimen/activity_margin"
+            app:hintEnabled="false">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/search_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/search"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
     </FrameLayout>
 
