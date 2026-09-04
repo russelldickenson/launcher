@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
+import android.view.ViewTreeObserver
 import android.view.Window
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
@@ -90,6 +91,32 @@ class FolderContentsDialog(
         )
         binding.folderContentsGrid.adapter = adapter
         adapter.submitList(members.map { DrawerGridItem.App(it) }.toMutableList())
+
+        capHeightIfNeeded(expectedItemCount = members.size)
+    }
+
+    // the grid has no height cap of its own (wrap_content, in a WRAP_CONTENT dialog window), so a
+    // folder with enough apps would otherwise grow the dialog past the screen edge with no way to
+    // scroll to the rest. Waits for the adapter's item count to actually reach the full member
+    // list before measuring - ListAdapter.submitList() diffs asynchronously, so the very first
+    // layout pass right after it would still show an empty (or stale) grid, not the real height
+    private fun capHeightIfNeeded(expectedItemCount: Int) {
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                if ((binding.folderContentsGrid.adapter?.itemCount ?: 0) < expectedItemCount) {
+                    return
+                }
+                binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+
+                val maxDialogHeight = (activity.resources.displayMetrics.heightPixels * MAX_DIALOG_HEIGHT_FRACTION).toInt()
+                if (binding.root.height > maxDialogHeight) {
+                    val chromeHeight = binding.root.height - binding.folderContentsGrid.height
+                    binding.folderContentsGrid.layoutParams = binding.folderContentsGrid.layoutParams.apply {
+                        height = (maxDialogHeight - chromeHeight).coerceAtLeast(0)
+                    }
+                }
+            }
+        })
     }
 
     private fun showMemberMenu(x: Float, y: Float, launcher: AppLauncher) {
@@ -122,6 +149,10 @@ class FolderContentsDialog(
             listener = FolderMenuListenerDelegate(menuListener, dialog),
             isInFolderOverlay = true,
         )
+    }
+
+    companion object {
+        private const val MAX_DIALOG_HEIGHT_FRACTION = 0.75f
     }
 }
 

@@ -33,6 +33,7 @@
             android:layout_marginStart="@dimen/smaller_margin"
             android:layout_marginEnd="@dimen/smaller_margin"
             android:clipToPadding="false"
+            android:scrollbars="vertical"
             app:layoutManager="org.fossify.commons.views.MyGridLayoutManager"
             app:spanCount="4" />
 
