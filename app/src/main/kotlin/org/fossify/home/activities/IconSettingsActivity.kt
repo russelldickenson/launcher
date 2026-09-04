@@ -61,7 +61,6 @@ class IconSettingsActivity : SimpleActivity() {
         setupIconPack()
         setupReshapeAllIcons()
         setupIconShape()
-        setupIconShadow()
         updateIconPreview()
         updateIconPreviewLabel()
     }
@@ -144,19 +143,10 @@ class IconSettingsActivity : SimpleActivity() {
         }
     }
 
-    // unlike icon pack/shape, the shadow is applied at bind-time in LaunchersAdapter rather than
-    // baked into a cached bitmap, so it needs no cache clear or restart - just a redraw, which
-    // happens on its own when the drawer next resumes
-    private fun setupIconShadow() {
-        binding.settingsIconShadow.isChecked = config.showIconShadow
-        binding.settingsIconShadowHolder.setOnClickListener {
-            binding.settingsIconShadow.toggle()
-            config.showIconShadow = binding.settingsIconShadow.isChecked
-            updateIconShadowPreview()
-        }
-        updateIconShadowPreview()
-    }
-
+    // the shadow toggle itself lives in Drawer Settings now (it's a drawer-icon-only effect), but
+    // the preview here still reflects its current value, same as it already does for icon
+    // pack/shape/scale - otherwise this preview would quietly stop matching what the drawer
+    // actually shows
     private fun updateIconShadowPreview() {
         val previewView = binding.settingsIconPreview
         if (!config.showIconShadow) {

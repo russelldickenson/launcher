@@ -164,6 +164,24 @@
             <include layout="@layout/divider_inset" />
 
             <RelativeLayout
+                android:id="@+id/settings_icon_shadow_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/settings_icon_shadow"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/icon_shadow" />
+
+            </RelativeLayout>
+
+            <include layout="@layout/divider_inset" />
+
+            <RelativeLayout
                 android:id="@+id/settings_drawer_labels_holder"
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"

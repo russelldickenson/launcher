@@ -37,6 +37,7 @@ class DrawerSettingsActivity : SimpleActivity() {
         setupCloseAppDrawerOnOtherAppOpen()
         setupColumnCount()
         setupDrawerIconScale()
+        setupIconShadow()
         setupDrawerLabels()
         setupManageHiddenIcons()
     }
@@ -120,6 +121,14 @@ class DrawerSettingsActivity : SimpleActivity() {
                     setupDrawerIconScale()
                 }
             }
+        }
+    }
+
+    private fun setupIconShadow() {
+        binding.settingsIconShadow.isChecked = config.showIconShadow
+        binding.settingsIconShadowHolder.setOnClickListener {
+            binding.settingsIconShadow.toggle()
+            config.showIconShadow = binding.settingsIconShadow.isChecked
         }
     }
 
