@@ -213,7 +213,9 @@
 
             </RelativeLayout>
 
-            <include layout="@layout/divider_inset" />
+            <include
+                android:id="@+id/settings_use_english_divider"
+                layout="@layout/divider_inset" />
 
             <RelativeLayout
                 android:id="@+id/settings_use_english_holder"

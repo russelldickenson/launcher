@@ -37,10 +37,12 @@ class SettingsActivity : SimpleActivity() {
     }
 
     private fun setupUseEnglish() {
-        binding.settingsUseEnglishHolder.beVisibleIf(
-            beVisible = (config.wasUseEnglishToggled || Locale.getDefault().language != "en")
-                    && !isTiramisuPlus()
-        )
+        val showUseEnglish = (config.wasUseEnglishToggled || Locale.getDefault().language != "en")
+                && !isTiramisuPlus()
+        binding.settingsUseEnglishHolder.beVisibleIf(showUseEnglish)
+        // this row's own divider would otherwise stay put and stack on top of the next visible
+        // row's divider, rendering as one noticeably thicker line
+        binding.settingsUseEnglishDivider.root.beVisibleIf(showUseEnglish)
 
         binding.settingsUseEnglish.isChecked = config.useEnglish
         binding.settingsUseEnglishHolder.setOnClickListener {
