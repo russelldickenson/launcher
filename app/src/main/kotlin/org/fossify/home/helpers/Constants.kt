@@ -54,8 +54,8 @@ const val MAX_DRAWER_COLUMN_COUNT = 6
 // icon scale, in percent, shared by the app drawer and the home screen - "100%" is what used to
 // be labelled "120%" before the rescale
 const val MIN_DRAWER_ICON_SCALE_PERCENT = 80
-const val MAX_DRAWER_ICON_SCALE_PERCENT = 120
-const val DRAWER_ICON_SCALE_PERCENT_STEP = 10
+const val MAX_DRAWER_ICON_SCALE_PERCENT = 110
+const val DRAWER_ICON_SCALE_PERCENT_STEP = 5
 const val DEFAULT_DRAWER_ICON_SCALE_PERCENT = 100
 
 // drawer label font size, in sp
