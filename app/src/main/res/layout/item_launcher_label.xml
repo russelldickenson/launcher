@@ -5,9 +5,7 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:paddingStart="@dimen/small_margin"
     android:paddingTop="5dp"
-    android:paddingEnd="@dimen/small_margin"
     android:paddingBottom="@dimen/small_margin">
 
     <ImageView
@@ -39,6 +37,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/launcher_icon"
+        android:layout_marginStart="@dimen/small_margin"
+        android:layout_marginEnd="@dimen/small_margin"
         android:ellipsize="end"
         android:gravity="center_horizontal|top"
         android:maxLines="2" />
