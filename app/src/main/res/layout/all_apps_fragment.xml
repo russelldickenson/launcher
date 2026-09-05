@@ -27,6 +27,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/search_icon_gutter_width"
             android:layout_marginEnd="@dimen/activity_margin"
+            app:boxCornerRadiusBottomEnd="24dp"
+            app:boxCornerRadiusBottomStart="24dp"
+            app:boxCornerRadiusTopEnd="24dp"
+            app:boxCornerRadiusTopStart="24dp"
             app:hintEnabled="false">
 
             <com.google.android.material.textfield.TextInputEditText
