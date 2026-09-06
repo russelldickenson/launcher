@@ -62,6 +62,7 @@ import org.fossify.home.extensions.getAppIcon
 import org.fossify.home.extensions.getReferenceIconWidth
 import org.fossify.home.extensions.getThemeAwareTextColor
 import org.fossify.home.extensions.homeScreenGridItemsDB
+import org.fossify.home.helpers.IconCache
 import org.fossify.home.helpers.ITEM_TYPE_FOLDER
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.helpers.ITEM_TYPE_SHORTCUT
@@ -263,7 +264,17 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             gridItems = context.homeScreenGridItemsDB.getAllItems() as ArrayList<HomeScreenGridItem>
             gridItems.toImmutableList().forEach { item ->
                 if (item.type == ITEM_TYPE_ICON) {
-                    item.drawable = context.getAppIcon(item.packageName, item.activityName)
+                    // reuse the exact same drawable the app drawer shows for this app, rather
+                    // than independently re-fetching/re-shaping it here - two separate fetches
+                    // of "the same" icon can drift out of sync (e.g. one reflecting a stale
+                    // reshape/icon-pack state, or missing the drawer's low-contrast backdrop
+                    // treatment), which shows up as the same app's icon looking a different size
+                    // or shape depending on whether it's viewed on the home screen or in the
+                    // drawer. Falls back to a fresh fetch if the app isn't in the cache yet (e.g.
+                    // very first launch, before the drawer's own scan has populated it)
+                    item.drawable = IconCache.launchers.firstOrNull {
+                        it.packageName == item.packageName && it.activityName == item.activityName
+                    }?.drawable ?: context.getAppIcon(item.packageName, item.activityName)
                 } else if (item.type == ITEM_TYPE_FOLDER) {
                     item.drawable = item.toFolder().generateDrawable()
                 } else if (item.type == ITEM_TYPE_SHORTCUT) {
