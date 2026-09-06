@@ -76,7 +76,7 @@ import org.fossify.home.dialogs.RenameItemDialog
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.drawerFoldersDB
 import org.fossify.home.extensions.getAppDrawerBackgroundColor
-import org.fossify.home.extensions.getAppIcon
+import org.fossify.home.extensions.getAppIconBitmapWithContrastBackdrop
 import org.fossify.home.extensions.getLabel
 import org.fossify.home.extensions.handleGridItemPopupMenu
 import org.fossify.home.extensions.hiddenIconsDB
@@ -94,7 +94,6 @@ import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.helpers.ITEM_TYPE_SHORTCUT
 import org.fossify.home.helpers.ITEM_TYPE_WIDGET
 import org.fossify.home.helpers.IconCache
-import org.fossify.home.helpers.IconContrastHelper
 import org.fossify.home.helpers.NotificationCache
 import org.fossify.home.helpers.PillPopupMenu
 import org.fossify.home.helpers.REQUEST_ALLOW_BINDING_WIDGET
@@ -1383,15 +1382,8 @@ class MainActivity : SimpleActivity(), FlingListener {
             }
 
             val label = info.loadLabel(packageManager).toString()
-            val drawable = getAppIcon(packageName, activityName) { info.loadIcon(packageManager) }
+            val finalBitmap = getAppIconBitmapWithContrastBackdrop(packageName, activityName) { info.loadIcon(packageManager) }
                 ?: continue
-
-            val bitmap = drawable.toBitmap(
-                width = max(drawable.intrinsicWidth, 1),
-                height = max(drawable.intrinsicHeight, 1),
-                config = Bitmap.Config.ARGB_8888
-            )
-            val finalBitmap = IconContrastHelper.drawContrastBackdropIfNeeded(bitmap, getAppDrawerBackgroundColor())
             val placeholderColor = calculateAverageColor(finalBitmap)
             val customTitle = existingApps[packageName]?.customTitle
             val title = customTitle?.takeIf { it.isNotBlank() } ?: label

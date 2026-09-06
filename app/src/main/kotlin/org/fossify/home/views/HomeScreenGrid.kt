@@ -59,6 +59,7 @@ import org.fossify.home.activities.MainActivity
 import org.fossify.home.databinding.HomeScreenGridBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppIcon
+import org.fossify.home.extensions.getAppIconBitmapWithContrastBackdrop
 import org.fossify.home.extensions.getReferenceIconWidth
 import org.fossify.home.extensions.getThemeAwareTextColor
 import org.fossify.home.extensions.homeScreenGridItemsDB
@@ -274,7 +275,8 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                     // very first launch, before the drawer's own scan has populated it)
                     item.drawable = IconCache.launchers.firstOrNull {
                         it.packageName == item.packageName && it.activityName == item.activityName
-                    }?.drawable ?: context.getAppIcon(item.packageName, item.activityName)
+                    }?.drawable ?: context.getAppIconBitmapWithContrastBackdrop(item.packageName, item.activityName)
+                        ?.toDrawable(context.resources)
                 } else if (item.type == ITEM_TYPE_FOLDER) {
                     item.drawable = item.toFolder().generateDrawable()
                 } else if (item.type == ITEM_TYPE_SHORTCUT) {

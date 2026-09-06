@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.LauncherApps
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -16,6 +17,7 @@ import android.provider.Settings
 import android.util.Size
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.drawable.toBitmap
 import org.fossify.commons.extensions.getProperBackgroundColor
 import org.fossify.commons.extensions.getProperTextColor
 import org.fossify.commons.extensions.realScreenSize
@@ -24,6 +26,7 @@ import org.fossify.commons.helpers.isSPlus
 import org.fossify.home.R
 import org.fossify.home.databases.AppsDatabase
 import org.fossify.home.helpers.Config
+import org.fossify.home.helpers.IconContrastHelper
 import org.fossify.home.helpers.IconPackHelper
 import org.fossify.home.interfaces.AppLaunchersDao
 import org.fossify.home.interfaces.DrawerFoldersDao
@@ -88,6 +91,24 @@ fun Context.getAppIcon(packageName: String, activityName: String, systemDrawable
     } else {
         icon
     }
+}
+
+// getAppIcon() plus the same low-contrast backdrop treatment the drawer's own app scan applies -
+// shared so any other caller that independently fetches an icon (rather than reusing the
+// drawer's already-processed IconCache.launchers entry) still gets a consistent result instead of
+// a version that's readable in the drawer but not wherever this was called from
+fun Context.getAppIconBitmapWithContrastBackdrop(
+    packageName: String,
+    activityName: String,
+    systemDrawable: () -> Drawable? = { null }
+): Bitmap? {
+    val drawable = getAppIcon(packageName, activityName, systemDrawable) ?: return null
+    val bitmap = drawable.toBitmap(
+        width = max(drawable.intrinsicWidth, 1),
+        height = max(drawable.intrinsicHeight, 1),
+        config = Bitmap.Config.ARGB_8888
+    )
+    return IconContrastHelper.drawContrastBackdropIfNeeded(bitmap, getAppDrawerBackgroundColor())
 }
 
 fun Context.getInitialCellSize(
