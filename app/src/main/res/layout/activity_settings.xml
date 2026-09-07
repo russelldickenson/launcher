@@ -259,6 +259,16 @@
 
             </RelativeLayout>
 
+            <TextView
+                android:id="@+id/settings_version"
+                style="@style/TextAppearance.Material3.BodySmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/bigger_margin"
+                android:alpha="0.6"
+                android:gravity="center"
+                tools:text="Version 1.0.0" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

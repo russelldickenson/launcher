@@ -7,6 +7,8 @@ import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.viewBinding
 import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.commons.helpers.isTiramisuPlus
+import org.fossify.home.BuildConfig
+import org.fossify.home.R
 import org.fossify.home.databinding.ActivitySettingsBinding
 import org.fossify.home.extensions.config
 import java.util.Locale
@@ -34,6 +36,11 @@ class SettingsActivity : SimpleActivity() {
         setupHomeScreenSettings()
         setupUseEnglish()
         setupLanguage()
+        setupVersion()
+    }
+
+    private fun setupVersion() {
+        binding.settingsVersion.text = getString(R.string.settings_version, BuildConfig.VERSION_NAME)
     }
 
     private fun setupUseEnglish() {
