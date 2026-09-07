@@ -66,6 +66,7 @@ import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.helpers.isOreoMr1Plus
 import org.fossify.commons.helpers.isQPlus
 import org.fossify.commons.helpers.isSPlus
+import org.fossify.commons.models.RadioItem
 import org.fossify.home.BuildConfig
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivityMainBinding
@@ -86,6 +87,7 @@ import org.fossify.home.extensions.launchApp
 import org.fossify.home.extensions.launchAppInfo
 import org.fossify.home.extensions.launchersDB
 import org.fossify.home.extensions.roleManager
+import org.fossify.home.extensions.showRadioGroupDialog
 import org.fossify.home.extensions.supportsDarkText
 import org.fossify.home.extensions.uninstallApp
 import org.fossify.home.fragments.MyFragment
@@ -1047,12 +1049,44 @@ class MainActivity : SimpleActivity(), FlingListener {
     // app - creates a brand-new folder containing both, then immediately prompts for a name so it
     // isn't left with a meaningless default title
     fun createFolderFromApps(draggedLauncher: AppLauncher, targetLauncher: AppLauncher) {
+        createFolderWithApps(listOf(draggedLauncher, targetLauncher))
+    }
+
+    // shared by the drag-to-folder gesture (two apps) and the "Move to folder" -> "New folder"
+    // menu path (one app) - prompts for a name, creates the folder, and assigns every given app
+    // to it
+    private fun createFolderWithApps(apps: List<AppLauncher>) {
         RenameItemDialog(this, "", titleRes = R.string.new_folder) { title, dialog ->
             ensureBackgroundThread {
                 val folderId = drawerFoldersDB.insert(DrawerFolder(id = null, title = title))
                 IconCache.folders = IconCache.folders + DrawerFolder(folderId, title)
-                assignAppsToFolder(listOf(draggedLauncher, targetLauncher), folderId)
+                assignAppsToFolder(apps, folderId)
                 runOnUiThread { dialog.dismiss() }
+            }
+        }
+    }
+
+    // non-drag alternative to the drag-to-folder gesture - long-press a drawer app and pick an
+    // existing folder (or create a new one) from a dialog, rather than having to drag it there,
+    // which is clunky when the app and the target folder are far apart in a long drawer
+    private fun moveToFolder(gridItem: HomeScreenGridItem) {
+        val launcher = IconCache.launchers.firstOrNull {
+            it.packageName == gridItem.packageName && it.activityName == gridItem.activityName
+        } ?: return
+
+        val folders = IconCache.folders.sortedBy { it.title.normalizeString().lowercase() }
+        val items = ArrayList<RadioItem>()
+        folders.forEachIndexed { index, folder ->
+            items.add(RadioItem(index, folder.title))
+        }
+        val newFolderId = folders.size
+        items.add(RadioItem(newFolderId, getString(R.string.new_folder)))
+
+        showRadioGroupDialog(items = items, checkedItemId = null) { selectedIndex ->
+            if (selectedIndex == newFolderId) {
+                createFolderWithApps(listOf(launcher))
+            } else {
+                assignSelectedAppsToFolder(listOf(launcher), folders[selectedIndex as Int].id ?: return@showRadioGroupDialog)
             }
         }
     }
@@ -1233,6 +1267,10 @@ class MainActivity : SimpleActivity(), FlingListener {
 
         override fun addToHomeScreen(gridItem: HomeScreenGridItem) {
             this@MainActivity.addToHomeScreen(gridItem)
+        }
+
+        override fun moveToFolder(gridItem: HomeScreenGridItem) {
+            this@MainActivity.moveToFolder(gridItem)
         }
 
         override fun removeFromFolder(gridItem: HomeScreenGridItem) {

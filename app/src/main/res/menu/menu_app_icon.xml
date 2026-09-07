@@ -18,6 +18,10 @@
             android:icon="@drawable/ic_home_vector"
             android:title="@string/add_to_home_screen" />
         <item
+            android:id="@+id/move_to_folder"
+            android:icon="@drawable/ic_folder_vector"
+            android:title="@string/move_to_folder" />
+        <item
             android:id="@+id/remove_from_folder"
             android:icon="@drawable/ic_cross_vector"
             android:title="@string/remove_from_folder" />
