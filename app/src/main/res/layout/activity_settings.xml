@@ -261,7 +261,7 @@
 
             <TextView
                 android:id="@+id/settings_version"
-                style="@style/TextAppearance.Material3.BodySmall"
+                style="@style/TextAppearance.Material3.BodyLarge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/bigger_margin"
