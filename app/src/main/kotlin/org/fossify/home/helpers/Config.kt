@@ -70,12 +70,10 @@ class Config(context: Context) : BaseConfig(context) {
             .coerceIn(MIN_DRAWER_ICON_SCALE_PERCENT, MAX_DRAWER_ICON_SCALE_PERCENT)
         set(drawerIconScalePercent) = prefs.edit().putInt(DRAWER_ICON_SCALE_PERCENT, drawerIconScalePercent).apply()
 
-    // home screen shares the app drawer's own icon scale setting - see showHomeAppLabels
     var homeIconScalePercent: Int
-        get() = drawerIconScalePercent
-        set(value) {
-            drawerIconScalePercent = value
-        }
+        get() = prefs.getInt(HOME_ICON_SCALE_PERCENT, DEFAULT_DRAWER_ICON_SCALE_PERCENT)
+            .coerceIn(MIN_DRAWER_ICON_SCALE_PERCENT, MAX_DRAWER_ICON_SCALE_PERCENT)
+        set(homeIconScalePercent) = prefs.edit().putInt(HOME_ICON_SCALE_PERCENT, homeIconScalePercent).apply()
 
     var drawerLabelFontSize: Int
         get() = prefs.getInt(DRAWER_LABEL_FONT_SIZE, DEFAULT_DRAWER_LABEL_FONT_SIZE)

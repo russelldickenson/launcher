@@ -70,9 +70,9 @@ class HomeScreenSettingsActivity : SimpleActivity() {
         }
     }
 
-    // this and the two settings below it (show/max-lines) edit the same underlying setting as
-    // their app drawer counterparts - config.homeIconScalePercent etc. are aliases, not separate
-    // stored values, so a change here shows up on the App drawer settings page too
+    // unlike the show/max-lines settings below it (which are aliases of their app drawer
+    // counterparts, see showHomeAppLabels), icon scale is its own independent stored value - the
+    // two are meant to be set differently, e.g. a denser drawer grid than home screen
     private fun setupHomeIconScale() {
         val currentScale = config.homeIconScalePercent
         binding.settingsHomeIconScale.text = "$currentScale%"
