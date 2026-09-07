@@ -137,20 +137,14 @@ class IconSettingsActivity : SimpleActivity() {
         }
     }
 
-    // the shadow toggle itself lives in Drawer Settings now (it's a drawer-icon-only effect), but
-    // this preview still shows it baked in, same as it already reflects icon pack/shape/scale -
-    // shows this launcher's own icon run through the same pipeline real app icons go through, on
-    // a background thread since getShapedIcon()'s pixel analysis can take a moment on a cache miss
+    // shows this launcher's own icon run through the same icon pack/shape/scale pipeline real app
+    // icons go through, as a live preview of these settings - it's fetched on a background thread
+    // since getShapedIcon()'s pixel analysis can take a moment on a cache miss
     private fun updateIconPreview() {
         ensureBackgroundThread {
             val drawable = getAppIcon(packageName, "") { getDrawableForPackageName(packageName) }
-            val previewDrawable = if (drawable != null && config.showIconShadow) {
-                IconPackHelper.applyShadow(this, drawable, config.iconShape)
-            } else {
-                drawable
-            }
             runOnUiThread {
-                binding.settingsIconPreview.setImageDrawable(previewDrawable)
+                binding.settingsIconPreview.setImageDrawable(drawable)
                 updateIconPreviewScale()
             }
         }

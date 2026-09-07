@@ -32,7 +32,6 @@ import org.fossify.home.extensions.getAppDrawerBackgroundColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.getReferenceIconWidth
 import org.fossify.home.helpers.FolderIconGenerator
-import org.fossify.home.helpers.IconPackHelper
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
 import org.fossify.home.helpers.NotificationCache
@@ -137,31 +136,6 @@ class LaunchersAdapter(
     // duplicating the calculateIconWidth() formula elsewhere
     fun getIconSizePx() = targetIconWidth
 
-    // View elevation was tried here first, but its shadow direction comes from the system's own
-    // (OEM-configurable) virtual light source, which isn't necessarily biased downward - it can
-    // just as easily read as coming from the top-right. Baking an offset, blurred shadow directly
-    // into the icon bitmap instead gives exact control over which side it falls on, independent
-    // of device/theme
-    private fun shadowedAppIcon(launcher: AppLauncher): Drawable? {
-        val icon = launcher.drawable ?: return null
-        return if (activity.config.showIconShadow) {
-            IconPackHelper.getShadowedIcon(activity, launcher.getLauncherIdentifier(), icon, activity.config.iconShape)
-        } else {
-            icon
-        }
-    }
-
-    // unlike shadowedAppIcon(), not cached by a stable key - a folder's own icon is recomposed
-    // from its current members on every bind, so caching it under the folder's id would keep
-    // showing a stale shadowed image after apps are added to or removed from the folder
-    private fun shadowedFolderIcon(folderIcon: Drawable): Drawable {
-        return if (activity.config.showIconShadow) {
-            IconPackHelper.applyShadow(activity, folderIcon, activity.config.iconShape)
-        } else {
-            folderIcon
-        }
-    }
-
     @SuppressLint("NotifyDataSetChanged")
     fun updateTextColor(newTextColor: Int) {
         if (newTextColor != textColor) {
@@ -224,16 +198,15 @@ class LaunchersAdapter(
                     marginEnd = iconPadding
                 }
 
-                val displayIcon = shadowedAppIcon(launcher)
-                if (displayIcon != null && binding.launcherIcon.tag == true) {
-                    binding.launcherIcon.setImageDrawable(displayIcon)
+                if (launcher.drawable != null && binding.launcherIcon.tag == true) {
+                    binding.launcherIcon.setImageDrawable(launcher.drawable)
                 } else {
                     val placeholderDrawable = activity.resources.getColoredDrawableWithColor(
                         drawableId = R.drawable.placeholder_drawable,
                         color = launcher.thumbnailColor
                     )
                     Glide.with(activity)
-                        .load(displayIcon)
+                        .load(launcher.drawable)
                         .placeholder(placeholderDrawable)
                         .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                         .into(object : DrawableImageViewTarget(binding.launcherIcon) {
@@ -303,14 +276,15 @@ class LaunchersAdapter(
 
             binding.drawerFolderIcon.setPadding(iconPadding, iconPadding, iconPadding, 0)
 
-            val folderIcon = FolderIconGenerator.generate(
-                context = activity,
-                memberIcons = members.map { it.drawable },
-                iconSize = targetIconWidth,
-                drawerBackgroundColor = activity.getAppDrawerBackgroundColor(),
-                iconShape = activity.config.iconShape
+            binding.drawerFolderIcon.setImageDrawable(
+                FolderIconGenerator.generate(
+                    context = activity,
+                    memberIcons = members.map { it.drawable },
+                    iconSize = targetIconWidth,
+                    drawerBackgroundColor = activity.getAppDrawerBackgroundColor(),
+                    iconShape = activity.config.iconShape
+                )
             )
-            binding.drawerFolderIcon.setImageDrawable(folderIcon?.let { shadowedFolderIcon(it) })
 
             itemView.setOnClickListener { allAppsListener.onFolderClicked(folder) }
             itemView.setOnLongClickListener {

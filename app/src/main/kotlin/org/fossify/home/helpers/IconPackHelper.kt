@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BlurMaskFilter
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -63,18 +62,6 @@ object IconPackHelper {
     // "packageName/activityName:shape" -> the shaped icon built for it, so the pixel-level
     // normalization/edge-color analysis in getShapedIcon() isn't redone on every app-list refresh
     private val shapedIconCache = HashMap<String, Drawable>()
-
-    // "packageName/activityName:shape" -> the same icon with a drop shadow baked in
-    private val shadowedIconCache = HashMap<String, Drawable>()
-
-    // offset and blur are fractions of the canonical SHAPED_ICON_SIZE canvas, not device density,
-    // since this bitmap is composed once and then scaled to whatever size it's actually displayed
-    // at (same approach as buildShapedIcon). Blur is kept smaller than the offset so its bleed
-    // stays within the region the shadow is already offset into - see buildShadowedIcon for why
-    // that specifically keeps the shadow from ever peeking out on the icon's top/left side
-    private const val SHADOW_OFFSET_FRACTION = 0.035f
-    private const val SHADOW_BLUR_FRACTION = 0.028f
-    private const val SHADOW_ALPHA = 110
 
     fun getInstalledIconPacks(context: Context): List<IconPack> {
         val packageManager = context.packageManager
@@ -144,53 +131,6 @@ object IconPackHelper {
         return shapedIcon
     }
 
-    // bakes a soft drop shadow behind an already-finished icon, offset toward the bottom-right so
-    // it reads as light falling from the upper-left rather than a generic even glow. Cached by
-    // component + shape like getShapedIcon() above, since it's the same kind of icon (stable,
-    // rebuilt only on an actual icon-pack/shape change) - use applyShadow() instead for an icon
-    // that's regenerated on every bind (e.g. a folder preview), which a component-keyed cache
-    // would otherwise go stale against
-    fun getShadowedIcon(context: Context, componentKey: String, icon: Drawable, shape: Int): Drawable {
-        val cacheKey = "$componentKey:$shape"
-        shadowedIconCache[cacheKey]?.let { return it }
-
-        val shadowedIcon = buildShadowedIcon(context, icon, shape)
-        shadowedIconCache[cacheKey] = shadowedIcon
-        return shadowedIcon
-    }
-
-    fun applyShadow(context: Context, icon: Drawable, shape: Int): Drawable = buildShadowedIcon(context, icon, shape)
-
-    private fun buildShadowedIcon(context: Context, icon: Drawable, shape: Int): Drawable {
-        val size = SHAPED_ICON_SIZE.toFloat()
-        val offset = SHADOW_OFFSET_FRACTION * size
-        val blur = SHADOW_BLUR_FRACTION * size
-        // margin reserved on every side so the icon stays centered - only the bottom-right
-        // actually needs it, but shrinking symmetrically avoids an off-center icon
-        val margin = offset + blur
-        val glyphSize = (size - margin * 2).coerceAtLeast(1f)
-
-        val result = Bitmap.createBitmap(SHAPED_ICON_SIZE, SHAPED_ICON_SIZE, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(result)
-
-        // the icon itself is drawn on top afterwards at [margin, margin + glyphSize] on both
-        // axes; shifting this same-sized shape by (offset, offset) means the only part of it
-        // peeking out from under the icon is a bottom-right sliver `offset` wide/tall - keeping
-        // `blur` <= offset (see the constants above) keeps its softened edge inside that sliver
-        // too, instead of bleeding back around to the top/left
-        val shadowPath = getShapePath(shape, glyphSize)
-        shadowPath.offset(margin + offset, margin + offset)
-        canvas.drawPath(shadowPath, Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.BLACK
-            alpha = SHADOW_ALPHA
-            maskFilter = BlurMaskFilter(blur, BlurMaskFilter.Blur.NORMAL)
-        })
-
-        val iconBitmap = icon.toBitmap(width = glyphSize.toInt(), height = glyphSize.toInt(), config = Bitmap.Config.ARGB_8888)
-        canvas.drawBitmap(iconBitmap, margin, margin, null)
-
-        return BitmapDrawable(context.resources, result)
-    }
 
     private fun buildShapedIcon(context: Context, originalIcon: Drawable, shape: Int): Drawable {
         val size = SHAPED_ICON_SIZE
@@ -357,7 +297,6 @@ object IconPackHelper {
     fun clearCache() {
         appFilterCache.clear()
         shapedIconCache.clear()
-        shadowedIconCache.clear()
     }
 
     private fun getParsedAppFilter(context: Context, iconPackPackageName: String): ParsedAppFilter {
