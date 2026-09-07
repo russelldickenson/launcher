@@ -198,6 +198,14 @@ fun Context.getAppDrawerSearchFillColor(): Int {
     return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), blendTarget, 0.06f)
 }
 
+// an open folder's own background - a shade darker than the drawer's background in light mode, a
+// shade lighter in dark mode (same "blend toward black/white" trick as the search field colors
+// above), so it still reads as its own surface instead of blending flush into the drawer behind it
+fun Context.getAppDrawerFolderBackgroundColor(): Int {
+    val blendTarget = if (isSystemInLightMode()) Color.BLACK else Color.WHITE
+    return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), blendTarget, 0.08f)
+}
+
 // what an unscaled (100%) icon should measure, in px, shared by the app drawer and the home
 // screen so both render icons at the same physical size at 100% - based on the screen width at
 // the default column count, independent of whatever column/row count is actually in use, so icon
