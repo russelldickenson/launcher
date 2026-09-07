@@ -28,6 +28,8 @@ class PillPopupMenu(
     private val context: Context,
     private val anchorView: View,
     gravity: Int = Gravity.TOP or Gravity.END,
+    private val backgroundColor: Int? = null,
+    private val textColor: Int? = null,
 ) {
     private val menuHost = PopupMenu(context, anchorView, gravity)
     private var popupWindow: PopupWindow? = null
@@ -62,6 +64,10 @@ class PillPopupMenu(
         }
         if (visibleItems.isEmpty()) {
             return
+        }
+
+        if (backgroundColor != null) {
+            binding.pillMenuCard.setCardBackgroundColor(backgroundColor)
         }
 
         val dividerColor = MaterialColors.getColor(
@@ -117,6 +123,9 @@ class PillPopupMenu(
 
     private fun bindItem(binding: ItemPillMenuBinding, item: MenuItem) {
         binding.pillMenuLabel.text = item.title
+        if (textColor != null) {
+            binding.pillMenuLabel.setTextColor(textColor)
+        }
         val icon = item.icon
         if (icon != null) {
             binding.pillMenuIcon.setImageDrawable(icon.mutate())

@@ -77,6 +77,8 @@ import org.fossify.home.dialogs.RenameItemDialog
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.drawerFoldersDB
 import org.fossify.home.extensions.getAppDrawerBackgroundColor
+import org.fossify.home.extensions.getAppDrawerOverlaySurfaceColor
+import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.getAppIconBitmapWithContrastBackdrop
 import org.fossify.home.extensions.getLabel
 import org.fossify.home.extensions.handleGridItemPopupMenu
@@ -1164,15 +1166,15 @@ class MainActivity : SimpleActivity(), FlingListener {
     fun showFolderMenu(x: Float, y: Float, folder: DrawerFolder) {
         binding.homeScreenPopupMenuAnchor.x = x
         binding.homeScreenPopupMenuAnchor.y = y
-        PillPopupMenu(this, binding.homeScreenPopupMenuAnchor, Gravity.TOP or Gravity.END).apply {
+        PillPopupMenu(
+            this,
+            binding.homeScreenPopupMenuAnchor,
+            Gravity.TOP or Gravity.END,
+            backgroundColor = getAppDrawerOverlaySurfaceColor(),
+            textColor = getAppDrawerTextColor(),
+        ).apply {
             inflate(R.menu.menu_drawer_folder)
-            val iconTint = ColorStateList.valueOf(
-                MaterialColors.getColor(
-                    this@MainActivity,
-                    com.google.android.material.R.attr.colorOnSurface,
-                    getProperTextColor()
-                )
-            )
+            val iconTint = ColorStateList.valueOf(getAppDrawerTextColor())
             menu.forEach { it.iconTintList = iconTint }
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {

@@ -13,7 +13,7 @@ import org.fossify.home.activities.MainActivity
 import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.databinding.DialogFolderContentsBinding
 import org.fossify.home.extensions.config
-import org.fossify.home.extensions.getAppDrawerFolderBackgroundColor
+import org.fossify.home.extensions.getAppDrawerOverlaySurfaceColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.handleGridItemPopupMenu
 import org.fossify.home.helpers.ITEM_TYPE_ICON
@@ -57,7 +57,7 @@ class FolderContentsDialog(
     }
 
     init {
-        val backgroundColor = activity.getAppDrawerFolderBackgroundColor()
+        val backgroundColor = activity.getAppDrawerOverlaySurfaceColor()
         val cornerRadius = activity.resources.getDimension(org.fossify.commons.R.dimen.material_dialog_corner_radius)
         binding.folderContentsCard.background = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE

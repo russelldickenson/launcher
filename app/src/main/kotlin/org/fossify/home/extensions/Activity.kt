@@ -174,7 +174,13 @@ fun Activity.handleGridItemPopupMenu(
     listener: ItemMenuListener,
     isInFolderOverlay: Boolean = false,
 ): PillPopupMenu {
-    return PillPopupMenu(this, anchorView, Gravity.TOP or Gravity.END).apply {
+    return PillPopupMenu(
+        this,
+        anchorView,
+        Gravity.TOP or Gravity.END,
+        backgroundColor = if (isOnAllAppsFragment) getAppDrawerOverlaySurfaceColor() else null,
+        textColor = if (isOnAllAppsFragment) getAppDrawerTextColor() else null,
+    ).apply {
         inflate(R.menu.menu_app_icon)
 
         val isPinned = IconCache.launchers.any {
@@ -186,11 +192,15 @@ fun Activity.handleGridItemPopupMenu(
         }
 
         val iconTint = ColorStateList.valueOf(
-            MaterialColors.getColor(
-                this@handleGridItemPopupMenu,
-                com.google.android.material.R.attr.colorOnSurface,
-                getProperTextColor()
-            )
+            if (isOnAllAppsFragment) {
+                getAppDrawerTextColor()
+            } else {
+                MaterialColors.getColor(
+                    this@handleGridItemPopupMenu,
+                    com.google.android.material.R.attr.colorOnSurface,
+                    getProperTextColor()
+                )
+            }
         )
         menu.forEach {
             if (it.groupId == R.id.group_main) {

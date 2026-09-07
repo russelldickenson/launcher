@@ -198,10 +198,11 @@ fun Context.getAppDrawerSearchFillColor(): Int {
     return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), blendTarget, 0.06f)
 }
 
-// an open folder's own background - a shade darker than the drawer's background in light mode, a
-// shade lighter in dark mode (same "blend toward black/white" trick as the search field colors
-// above), so it still reads as its own surface instead of blending flush into the drawer behind it
-fun Context.getAppDrawerFolderBackgroundColor(): Int {
+// a surface meant to sit on top of the drawer - an open folder's background, a popup menu's card,
+// etc: a shade darker than the drawer's background in light mode, a shade lighter in dark mode
+// (same "blend toward black/white" trick as the search field colors above), so it still reads as
+// its own surface instead of blending flush into the drawer behind it
+fun Context.getAppDrawerOverlaySurfaceColor(): Int {
     val blendTarget = if (isSystemInLightMode()) Color.BLACK else Color.WHITE
     return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), blendTarget, 0.08f)
 }
