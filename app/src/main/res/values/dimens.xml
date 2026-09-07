@@ -23,7 +23,6 @@
     <dimen name="color_picker_swatch_size">40dp</dimen>
     <dimen name="color_picker_swatch_spacing">8dp</dimen>
     <dimen name="settings_nav_icon_size">28dp</dimen>
-    <dimen name="search_icon_gutter_width">48dp</dimen>
     <dimen name="settings_page_padding">20dp</dimen>
     <dimen name="settings_chip_spacing">8dp</dimen>
     <dimen name="settings_stepper_gap">16dp</dimen>

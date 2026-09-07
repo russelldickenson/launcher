@@ -183,16 +183,8 @@ fun Context.getAppDrawerTextColor(): Int {
     }
 }
 
-// a border color for the app drawer's search field, contrasting slightly with the drawer's own
-// background so the field still reads as a distinct control against it
-fun Context.getAppDrawerSearchBorderColor(): Int {
-    val blendTarget = if (isSystemInLightMode()) Color.BLACK else Color.WHITE
-    return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), blendTarget, 0.15f)
-}
-
-// a fill color for the app drawer's search field - a lighter blend than the border above, so the
-// field itself reads as a subtly distinct surface rather than blending flat into the drawer
-// background, without the field competing with the border for visual weight
+// a fill color for the app drawer's search field, so the field itself reads as a subtly distinct
+// surface rather than blending flat into the drawer background behind it
 fun Context.getAppDrawerSearchFillColor(): Int {
     val blendTarget = if (isSystemInLightMode()) Color.BLACK else Color.WHITE
     return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), blendTarget, 0.06f)

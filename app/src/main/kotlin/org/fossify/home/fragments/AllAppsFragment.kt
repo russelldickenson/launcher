@@ -2,6 +2,7 @@ package org.fossify.home.fragments
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
@@ -22,7 +23,6 @@ import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.databinding.AllAppsFragmentBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppDrawerBackgroundColor
-import org.fossify.home.extensions.getAppDrawerSearchBorderColor
 import org.fossify.home.extensions.getAppDrawerSearchFillColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.launchApp
@@ -298,7 +298,6 @@ class AllAppsFragment(
         setupDrawerBackground(context.getAppDrawerBackgroundColor())
         getAdapter()?.updateTextColor(context.getAppDrawerTextColor())
 
-        binding.searchIcon.beVisibleIf(context.config.showSearchBar)
         binding.searchBar.beVisibleIf(context.config.showSearchBar)
         setupSearchBarColors()
 
@@ -326,22 +325,22 @@ class AllAppsFragment(
 
     // a real Material3 TextInputLayout themes itself from the app's own M3 attrs already, unlike
     // MySearchMenu (which pulled from the theme's primary color and needed hand-drawn overrides
-    // to match the drawer) - only the fill/border/text colors still need setting explicitly, since
-    // those come from the drawer's own (possibly custom) background rather than the app theme
+    // to match the drawer) - only the fill/text colors still need setting explicitly, since those
+    // come from the drawer's own (possibly custom) background rather than the app theme. No border
+    // is drawn (boxStrokeWidth is 0 in the layout) - the fill color alone separates the field from
+    // the drawer background behind it
     private fun setupSearchBarColors() {
         val fillColor = context.getAppDrawerSearchFillColor()
-        val borderColor = context.getAppDrawerSearchBorderColor()
         val textColor = context.getAppDrawerTextColor()
 
         // the TextInputLayout's own background sits behind its box padding, independent of the
         // box fill itself - match it to the drawer so no light strip shows around the field
         binding.searchBar.setBackgroundColor(context.getAppDrawerBackgroundColor())
         binding.searchBar.setBoxBackgroundColor(fillColor)
-        binding.searchBar.setBoxStrokeColor(borderColor)
+        binding.searchBar.setStartIconTintList(ColorStateList.valueOf(textColor))
 
         binding.searchEditText.setTextColor(textColor)
         binding.searchEditText.setHintTextColor(ColorUtils.setAlphaComponent(textColor, 150))
-        binding.searchIcon.setColorFilter(textColor)
     }
 
     private fun showNoResultsPlaceholderIfNeeded() {
