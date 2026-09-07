@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/add_apps_to_folder"
+        android:icon="@drawable/ic_folder_vector"
+        android:title="@string/add" />
+    <item
         android:id="@+id/rename_folder"
         android:icon="@drawable/ic_rename_vector"
         android:title="@string/rename_folder" />

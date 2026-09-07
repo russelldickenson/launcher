@@ -13,7 +13,6 @@ interface ItemMenuListener {
     fun remove(gridItem: HomeScreenGridItem)
     fun uninstall(gridItem: HomeScreenGridItem)
     fun addToHomeScreen(gridItem: HomeScreenGridItem)
-    fun moveToFolder(gridItem: HomeScreenGridItem)
     fun removeFromFolder(gridItem: HomeScreenGridItem)
     fun onDismiss()
     fun beforeShow(menu: Menu)
@@ -28,7 +27,6 @@ abstract class ItemMenuListenerAdapter : ItemMenuListener {
     override fun appInfo(gridItem: HomeScreenGridItem) = Unit
     override fun remove(gridItem: HomeScreenGridItem) = Unit
     override fun addToHomeScreen(gridItem: HomeScreenGridItem) = Unit
-    override fun moveToFolder(gridItem: HomeScreenGridItem) = Unit
     override fun removeFromFolder(gridItem: HomeScreenGridItem) = Unit
     override fun uninstall(gridItem: HomeScreenGridItem) = Unit
     override fun onDismiss() = Unit

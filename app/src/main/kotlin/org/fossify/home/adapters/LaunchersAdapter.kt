@@ -1,6 +1,7 @@
 package org.fossify.home.adapters
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -19,6 +20,7 @@ import org.fossify.commons.extensions.adjustForContrast
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.getColoredDrawableWithColor
 import org.fossify.commons.extensions.getContrastColor
+import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.realScreenSize
 import org.fossify.home.R
 import org.fossify.home.activities.SimpleActivity
@@ -50,6 +52,11 @@ class LaunchersAdapter(
     private var textColor = activity.getAppDrawerTextColor()
     private var iconPadding = 0
     private var targetIconWidth = 0
+
+    // driven by AllAppsFragment's folder "Add" flow - while active, app taps toggle selection
+    // instead of launching, and AppViewHolder shows a checkmark overlay for selected identifiers
+    private var isSelectionMode = false
+    private var selectedIdentifiers: Set<String> = emptySet()
 
     init {
         setHasStableIds(true)
@@ -150,6 +157,24 @@ class LaunchersAdapter(
         notifyDataSetChanged()
     }
 
+    // mode toggles are rare (once per "Add" flow), so a full redraw here is fine - individual
+    // taps use notifySelectionChanged() below to stay cheap
+    @SuppressLint("NotifyDataSetChanged")
+    fun setSelectionState(active: Boolean, selected: Set<String>) {
+        isSelectionMode = active
+        selectedIdentifiers = selected
+        notifyDataSetChanged()
+    }
+
+    fun notifySelectionChanged(identifier: String) {
+        val position = currentList.indexOfFirst {
+            it is DrawerGridItem.App && it.launcher.getLauncherIdentifier() == identifier
+        }
+        if (position != -1) {
+            notifyItemChanged(position)
+        }
+    }
+
     inner class HeaderViewHolder(private val binding: ItemDrawerSectionHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(titleRes: Int) {
             binding.sectionHeaderLabel.setText(titleRes)
@@ -198,6 +223,11 @@ class LaunchersAdapter(
                     marginEnd = iconPadding
                 }
 
+                binding.launcherSelectedOverlay.imageTintList = ColorStateList.valueOf(activity.getProperPrimaryColor())
+                binding.launcherSelectedOverlay.beVisibleIf(
+                    isSelectionMode && selectedIdentifiers.contains(launcher.getLauncherIdentifier())
+                )
+
                 if (launcher.drawable != null && binding.launcherIcon.tag == true) {
                     binding.launcherIcon.setImageDrawable(launcher.drawable)
                 } else {
@@ -220,8 +250,18 @@ class LaunchersAdapter(
                         })
                 }
 
-                setOnClickListener { itemClick(launcher) }
+                setOnClickListener {
+                    if (isSelectionMode) {
+                        allAppsListener.onAppSelectionToggled(launcher)
+                    } else {
+                        itemClick(launcher)
+                    }
+                }
                 setOnLongClickListener {
+                    if (isSelectionMode) {
+                        return@setOnLongClickListener true
+                    }
+
                     val location = IntArray(2)
                     getLocationOnScreen(location)
                     allAppsListener.onAppLauncherLongPressed(
@@ -285,6 +325,17 @@ class LaunchersAdapter(
                     iconShape = activity.config.iconShape
                 )
             )
+
+            binding.drawerFolderKebab.imageTintList = ColorStateList.valueOf(textColor)
+            binding.drawerFolderKebab.setOnClickListener {
+                val location = IntArray(2)
+                binding.drawerFolderKebab.getLocationOnScreen(location)
+                allAppsListener.onFolderLongPressed(
+                    x = (location[0] + binding.drawerFolderKebab.width / 2).toFloat(),
+                    y = location[1].toFloat(),
+                    folder = folder
+                )
+            }
 
             itemView.setOnClickListener { allAppsListener.onFolderClicked(folder) }
             itemView.setOnLongClickListener {

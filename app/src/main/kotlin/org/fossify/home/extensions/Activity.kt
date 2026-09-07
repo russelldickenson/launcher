@@ -215,8 +215,6 @@ fun Activity.handleGridItemPopupMenu(
             gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment
         menu.findItem(R.id.add_to_home_screen).isVisible =
             gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment && !isInFolderOverlay
-        menu.findItem(R.id.move_to_folder).isVisible =
-            gridItem.type == ITEM_TYPE_ICON && isOnAllAppsFragment && !isInFolderOverlay
         menu.findItem(R.id.remove_from_folder).isVisible =
             gridItem.type == ITEM_TYPE_ICON && isInFolderOverlay
         menu.findItem(R.id.resize).isVisible = gridItem.type == ITEM_TYPE_WIDGET
@@ -284,7 +282,6 @@ fun Activity.handleGridItemPopupMenu(
                 R.id.remove -> listener.remove(gridItem)
                 R.id.uninstall -> listener.uninstall(gridItem)
                 R.id.add_to_home_screen -> listener.addToHomeScreen(gridItem)
-                R.id.move_to_folder -> listener.moveToFolder(gridItem)
                 R.id.remove_from_folder -> listener.removeFromFolder(gridItem)
             }
             true

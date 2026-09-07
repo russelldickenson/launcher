@@ -31,6 +31,16 @@
         android:textSize="9sp"
         android:visibility="gone" />
 
+    <ImageView
+        android:id="@+id/launcher_selected_overlay"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@id/launcher_icon"
+        android:layout_alignEnd="@id/launcher_icon"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_check_circle_vector"
+        android:visibility="gone" />
+
     <TextView
         android:id="@+id/launcher_label"
         style="@style/LauncherLabelStyle"

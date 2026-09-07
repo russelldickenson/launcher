@@ -54,6 +54,11 @@ class AllAppsFragment(
     private var launchers = emptyList<AppLauncher>()
     private var folders = emptyList<DrawerFolder>()
 
+    // set while the folder "Add" flow (from the folder's ellipsis/long-press menu) is active -
+    // see startFolderSelectionMode()/exitFolderSelectionMode()
+    private var selectionTargetFolder: DrawerFolder? = null
+    private var selectedForFolder: MutableSet<String> = mutableSetOf()
+
     private val folderDragHelper by lazy {
         FolderDragHelper(
             recyclerView = binding.allAppsGrid,
@@ -301,6 +306,9 @@ class AllAppsFragment(
         binding.searchBar.beVisibleIf(context.config.showSearchBar)
         setupSearchBarColors()
 
+        binding.selectionCloseButton.setOnClickListener { exitFolderSelectionMode(commit = false) }
+        binding.selectionConfirmButton.setOnClickListener { exitFolderSelectionMode(commit = true) }
+
         binding.searchEditText.doAfterTextChanged {
             submitList(launchers)
         }
@@ -358,6 +366,59 @@ class AllAppsFragment(
         activity?.showFolderMenu(x, y, folder)
     }
 
+    override fun onAppSelectionToggled(appLauncher: AppLauncher) {
+        val identifier = appLauncher.getLauncherIdentifier()
+        if (!selectedForFolder.remove(identifier)) {
+            selectedForFolder.add(identifier)
+        }
+        getAdapter()?.setSelectionState(active = true, selected = selectedForFolder)
+        getAdapter()?.notifySelectionChanged(identifier)
+        updateSelectionCountLabel()
+    }
+
+    // entry point for the folder menu's "Add" action - switches the drawer grid into a
+    // multi-select mode where tapping an app toggles it instead of launching it, and folder
+    // tiles are hidden (nothing meaningful to do with one while picking apps to add to another)
+    fun startFolderSelectionMode(folder: DrawerFolder) {
+        selectionTargetFolder = folder
+        selectedForFolder = mutableSetOf()
+        closeSearch()
+        setupSelectionModeBarColors()
+        binding.searchBar.beVisibleIf(false)
+        binding.selectionModeBar.beVisibleIf(true)
+        updateSelectionCountLabel()
+        getAdapter()?.setSelectionState(active = true, selected = selectedForFolder)
+        submitList(launchers)
+    }
+
+    private fun exitFolderSelectionMode(commit: Boolean) {
+        val folderId = selectionTargetFolder?.id
+        val selected = selectedForFolder.toSet()
+        if (commit && folderId != null && selected.isNotEmpty()) {
+            val selectedLaunchers = launchers.filter { it.getLauncherIdentifier() in selected }
+            activity?.assignSelectedAppsToFolder(selectedLaunchers, folderId)
+        }
+
+        selectionTargetFolder = null
+        selectedForFolder = mutableSetOf()
+        binding.selectionModeBar.beVisibleIf(false)
+        binding.searchBar.beVisibleIf(context.config.showSearchBar)
+        getAdapter()?.setSelectionState(active = false, selected = emptySet())
+        submitList(launchers)
+    }
+
+    private fun updateSelectionCountLabel() {
+        binding.selectionCountLabel.text = resources.getString(R.string.n_apps_selected, selectedForFolder.size)
+    }
+
+    private fun setupSelectionModeBarColors() {
+        val textColor = context.getAppDrawerTextColor()
+        binding.selectionModeBar.setCardBackgroundColor(context.getAppDrawerSearchFillColor())
+        binding.selectionCountLabel.setTextColor(textColor)
+        binding.selectionCloseButton.setColorFilter(textColor)
+        binding.selectionConfirmButton.setColorFilter(textColor)
+    }
+
     override fun onAppLauncherLongPressed(x: Float, y: Float, appLauncher: AppLauncher) {
         val gridItem = HomeScreenGridItem(
             id = null,
@@ -381,7 +442,9 @@ class AllAppsFragment(
 
         activity?.showHomeIconMenu(x, y, gridItem, true)
         ignoreTouches = true
-        folderDragHelper.armDrag(appLauncher)
+        if (selectionTargetFolder == null) {
+            folderDragHelper.armDrag(appLauncher)
+        }
 
         closeSearch()
     }
@@ -393,6 +456,11 @@ class AllAppsFragment(
     }
 
     fun onBackPressed(): Boolean {
+        if (selectionTargetFolder != null) {
+            exitFolderSelectionMode(commit = false)
+            return true
+        }
+
         val query = binding.searchEditText.text
         if (!query.isNullOrEmpty() || binding.searchEditText.hasFocus()) {
             closeSearch()
@@ -418,13 +486,21 @@ class AllAppsFragment(
 
         val drawerItems = mutableListOf<DrawerGridItem>()
 
-        // during a search, a folder with no matching members is left out entirely rather than shown empty
-        val folderItems = folders.mapNotNull { folder ->
-            val members = membersByFolderId[folder.id].orEmpty()
-            if (searchQuery.isEmpty() || members.isNotEmpty()) {
-                DrawerGridItem.Folder(folder, members)
-            } else {
-                null
+        // during a search, a folder with no matching members is left out entirely rather than
+        // shown empty; during the folder "Add" selection mode, folder tiles are hidden entirely -
+        // there's nothing to do with one while picking apps for another folder, and topLevel
+        // above already excludes every folder's members (including the target folder's own),
+        // which is exactly the set of apps that should be pickable
+        val folderItems = if (selectionTargetFolder != null) {
+            emptyList()
+        } else {
+            folders.mapNotNull { folder ->
+                val members = membersByFolderId[folder.id].orEmpty()
+                if (searchQuery.isEmpty() || members.isNotEmpty()) {
+                    DrawerGridItem.Folder(folder, members)
+                } else {
+                    null
+                }
             }
         }
 

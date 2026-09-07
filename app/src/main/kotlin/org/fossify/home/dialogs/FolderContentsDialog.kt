@@ -79,9 +79,11 @@ class FolderContentsDialog(
                     showMemberMenu(x, y, appLauncher)
                 }
 
-                // this dialog's own grid only ever holds plain apps, never nested folders
+                // this dialog's own grid only ever holds plain apps, never nested folders, and
+                // never enters the folder "Add" selection mode (that's driven by the main drawer)
                 override fun onFolderClicked(folder: DrawerFolder) = Unit
                 override fun onFolderLongPressed(x: Float, y: Float, folder: DrawerFolder) = Unit
+                override fun onAppSelectionToggled(appLauncher: AppLauncher) = Unit
             },
             itemClick = {
                 val launcher = it as AppLauncher
