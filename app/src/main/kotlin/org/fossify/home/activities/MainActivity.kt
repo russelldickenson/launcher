@@ -956,6 +956,11 @@ class MainActivity : SimpleActivity(), FlingListener {
     private fun renameItem(homeScreenGridItem: HomeScreenGridItem) {
         RenameItemDialog(this, homeScreenGridItem.title) { newTitle, dialog ->
             ensureBackgroundThread {
+                if (homeScreenGridItem.type == ITEM_TYPE_FOLDER && isHomeFolderNameTaken(newTitle, excludeItemId = homeScreenGridItem.id)) {
+                    runOnUiThread { toast(org.fossify.commons.R.string.rename_folder_exists) }
+                    return@ensureBackgroundThread
+                }
+
                 val result = homeScreenGridItemsDB.updateItemTitle(newTitle, homeScreenGridItem.id!!)
                 if (result != 1) {
                     runOnUiThread { toast(org.fossify.commons.R.string.unknown_error_occurred) }
@@ -1057,12 +1062,34 @@ class MainActivity : SimpleActivity(), FlingListener {
     // to it
     private fun createFolderWithApps(apps: List<AppLauncher>) {
         RenameItemDialog(this, "", titleRes = R.string.new_folder) { title, dialog ->
+            if (isDrawerFolderNameTaken(title)) {
+                toast(org.fossify.commons.R.string.rename_folder_exists)
+                return@RenameItemDialog
+            }
+
             ensureBackgroundThread {
                 val folderId = drawerFoldersDB.insert(DrawerFolder(id = null, title = title))
                 IconCache.folders = IconCache.folders + DrawerFolder(folderId, title)
                 assignAppsToFolder(apps, folderId)
                 runOnUiThread { dialog.dismiss() }
             }
+        }
+    }
+
+    // case-insensitive, trims incidental whitespace so "Games" and " games " are still treated as
+    // the same name - excludeFolderId lets a rename check against every OTHER drawer folder
+    // without flagging a folder against its own current name
+    private fun isDrawerFolderNameTaken(name: String, excludeFolderId: Long? = null): Boolean {
+        return IconCache.folders.any { it.id != excludeFolderId && it.title.trim().equals(name.trim(), ignoreCase = true) }
+    }
+
+    // home screen folders are a completely separate data model from drawer folders (a
+    // HomeScreenGridItem with type ITEM_TYPE_FOLDER, not a DrawerFolder row), so they get their
+    // own independent name-collision check rather than sharing the drawer's - must be called on a
+    // background thread, since it queries the DB directly rather than an in-memory cache
+    private fun isHomeFolderNameTaken(name: String, excludeItemId: Long?): Boolean {
+        return homeScreenGridItemsDB.getAllItems().any {
+            it.type == ITEM_TYPE_FOLDER && it.id != excludeItemId && it.title.trim().equals(name.trim(), ignoreCase = true)
         }
     }
 
@@ -1160,6 +1187,11 @@ class MainActivity : SimpleActivity(), FlingListener {
 
     private fun renameFolder(folder: DrawerFolder) {
         RenameItemDialog(this, folder.title, titleRes = R.string.rename_folder) { newTitle, dialog ->
+            if (isDrawerFolderNameTaken(newTitle, excludeFolderId = folder.id)) {
+                toast(org.fossify.commons.R.string.rename_folder_exists)
+                return@RenameItemDialog
+            }
+
             ensureBackgroundThread {
                 drawerFoldersDB.renameFolder(folder.id!!, newTitle)
                 IconCache.folders = IconCache.folders.map { if (it.id == folder.id) it.copy(title = newTitle) else it }
