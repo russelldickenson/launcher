@@ -362,10 +362,6 @@ class AllAppsFragment(
         activity?.showFolderContents(folder, members)
     }
 
-    override fun onFolderLongPressed(x: Float, y: Float, folder: DrawerFolder) {
-        activity?.showFolderMenu(x, y, folder)
-    }
-
     override fun onAppSelectionToggled(appLauncher: AppLauncher) {
         val identifier = appLauncher.getLauncherIdentifier()
         if (!selectedForFolder.remove(identifier)) {

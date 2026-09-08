@@ -326,28 +326,9 @@ class LaunchersAdapter(
                 )
             )
 
-            binding.drawerFolderKebab.imageTintList = ColorStateList.valueOf(textColor)
-            binding.drawerFolderKebab.setOnClickListener {
-                val location = IntArray(2)
-                binding.drawerFolderKebab.getLocationOnScreen(location)
-                allAppsListener.onFolderLongPressed(
-                    x = (location[0] + binding.drawerFolderKebab.width / 2).toFloat(),
-                    y = location[1].toFloat(),
-                    folder = folder
-                )
-            }
-
+            // the folder's own menu (Add/Rename/Delete) is only reachable once the folder is
+            // open (FolderContentsDialog) - the closed tile is tap-to-open only
             itemView.setOnClickListener { allAppsListener.onFolderClicked(folder) }
-            itemView.setOnLongClickListener {
-                val location = IntArray(2)
-                itemView.getLocationOnScreen(location)
-                allAppsListener.onFolderLongPressed(
-                    x = (location[0] + itemView.width / 2).toFloat(),
-                    y = location[1].toFloat(),
-                    folder = folder
-                )
-                true
-            }
         }
     }
 

@@ -33,6 +33,7 @@ import android.view.GestureDetector
 import android.view.Gravity
 import android.view.Menu
 import android.view.MotionEvent
+import android.view.View
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.animation.DecelerateInterpolator
 import androidx.core.graphics.drawable.toBitmap
@@ -1136,12 +1137,28 @@ class MainActivity : SimpleActivity(), FlingListener {
         )
     }
 
-    fun showFolderMenu(x: Float, y: Float, folder: DrawerFolder) {
-        binding.homeScreenPopupMenuAnchor.x = x
-        binding.homeScreenPopupMenuAnchor.y = y
+    // anchorView defaults to the home-screen-level anchor, but FolderContentsDialog passes its
+    // own in-dialog anchor so the popup renders as part of that dialog's window instead of the
+    // (possibly obscured) activity window - opening the menu never closes whatever's showing
+    // behind it; onAddSelected/onFolderDeleted let a caller like FolderContentsDialog close
+    // itself only for the actions that actually need to leave the open-folder view (Add
+    // transitions into the main drawer's selection mode; Delete removes the folder entirely) -
+    // Rename intentionally has no such callback here since it keeps the folder open, only asking
+    // for the new title via onFolderRenamed
+    fun showFolderMenu(
+        x: Float,
+        y: Float,
+        folder: DrawerFolder,
+        anchorView: View = binding.homeScreenPopupMenuAnchor,
+        onFolderRenamed: ((newTitle: String) -> Unit)? = null,
+        onFolderDeleted: (() -> Unit)? = null,
+        onAddSelected: (() -> Unit)? = null,
+    ) {
+        anchorView.x = x
+        anchorView.y = y
         PillPopupMenu(
             this,
-            binding.homeScreenPopupMenuAnchor,
+            anchorView,
             Gravity.TOP or Gravity.END,
             backgroundColor = getAppDrawerOverlaySurfaceColor(),
             textColor = getAppDrawerTextColor(),
@@ -1151,9 +1168,13 @@ class MainActivity : SimpleActivity(), FlingListener {
             menu.forEach { it.iconTintList = iconTint }
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
-                    R.id.add_apps_to_folder -> binding.allAppsFragment.root.startFolderSelectionMode(folder)
-                    R.id.rename_folder -> renameFolder(folder)
-                    R.id.delete_folder -> confirmDeleteFolder(folder)
+                    R.id.add_apps_to_folder -> {
+                        onAddSelected?.invoke()
+                        binding.allAppsFragment.root.startFolderSelectionMode(folder)
+                    }
+
+                    R.id.rename_folder -> renameFolder(folder, onFolderRenamed)
+                    R.id.delete_folder -> confirmDeleteFolder(folder, onFolderDeleted)
                 }
                 true
             }
@@ -1161,7 +1182,7 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
     }
 
-    private fun renameFolder(folder: DrawerFolder) {
+    private fun renameFolder(folder: DrawerFolder, onRenamed: ((String) -> Unit)? = null) {
         RenameItemDialog(this, folder.title, titleRes = R.string.rename_folder) { newTitle, dialog ->
             if (isDrawerFolderNameTaken(newTitle, excludeFolderId = folder.id)) {
                 toast(org.fossify.commons.R.string.rename_folder_exists)
@@ -1173,13 +1194,14 @@ class MainActivity : SimpleActivity(), FlingListener {
                 IconCache.folders = IconCache.folders.map { if (it.id == folder.id) it.copy(title = newTitle) else it }
                 runOnUiThread {
                     binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+                    onRenamed?.invoke(newTitle)
                     dialog.dismiss()
                 }
             }
         }
     }
 
-    private fun confirmDeleteFolder(folder: DrawerFolder) {
+    private fun confirmDeleteFolder(folder: DrawerFolder, onDeleted: (() -> Unit)? = null) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_folder)
             .setMessage(R.string.delete_folder_confirmation)
@@ -1190,7 +1212,10 @@ class MainActivity : SimpleActivity(), FlingListener {
                     IconCache.launchers = IconCache.launchers.map {
                         if (it.folderId == folder.id) it.copy(folderId = null) else it
                     }
-                    runOnUiThread { binding.allAppsFragment.root.gotLaunchers(IconCache.launchers) }
+                    runOnUiThread {
+                        binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+                        onDeleted?.invoke()
+                    }
                 }
             }
             .setNegativeButton(org.fossify.commons.R.string.no, null)

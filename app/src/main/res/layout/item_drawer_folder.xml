@@ -15,18 +15,6 @@
         android:layout_centerHorizontal="true"
         android:contentDescription="@null" />
 
-    <ImageView
-        android:id="@+id/drawer_folder_kebab"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_alignTop="@id/drawer_folder_icon"
-        android:layout_alignEnd="@id/drawer_folder_icon"
-        android:clickable="true"
-        android:focusable="true"
-        android:padding="3dp"
-        android:contentDescription="@null"
-        android:src="@drawable/ic_three_dots_vector" />
-
     <TextView
         android:id="@+id/drawer_folder_label"
         style="@style/LauncherLabelStyle"

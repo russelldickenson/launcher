@@ -1,6 +1,7 @@
 package org.fossify.home.dialogs
 
 import android.app.Dialog
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
@@ -67,6 +68,28 @@ class FolderContentsDialog(
         binding.folderContentsTitle.text = folder.title
         binding.folderContentsTitle.setTextColor(activity.getAppDrawerTextColor())
 
+        // the folder's own menu (Add/Rename/Delete) only lives here, on the open folder - the
+        // closed drawer tile is tap-to-open only, so this is the sole place to reach it. Opening
+        // the menu doesn't close this dialog - it's anchored to folderContentsPopupAnchor (a view
+        // inside this dialog's own window, same trick showMemberMenu below uses) so it renders as
+        // part of this dialog rather than the activity window behind it, and the dialog only
+        // actually closes for the two actions that need to leave the open-folder view: Add
+        // (which hands off to the main drawer's selection mode) and Delete (the folder is gone)
+        binding.folderContentsKebab.imageTintList = ColorStateList.valueOf(activity.getAppDrawerTextColor())
+        binding.folderContentsKebab.setOnClickListener {
+            val location = IntArray(2)
+            binding.folderContentsKebab.getLocationOnScreen(location)
+            val x = (location[0] + binding.folderContentsKebab.width / 2).toFloat()
+            val y = location[1].toFloat()
+            activity.showFolderMenu(
+                x, y, folder,
+                anchorView = binding.folderContentsPopupAnchor,
+                onFolderRenamed = { newTitle -> binding.folderContentsTitle.text = newTitle },
+                onFolderDeleted = { dialog.dismiss() },
+                onAddSelected = { dialog.dismiss() },
+            )
+        }
+
         dialog.show()
 
         val layoutManager = binding.folderContentsGrid.layoutManager as MyGridLayoutManager
@@ -82,7 +105,6 @@ class FolderContentsDialog(
                 // this dialog's own grid only ever holds plain apps, never nested folders, and
                 // never enters the folder "Add" selection mode (that's driven by the main drawer)
                 override fun onFolderClicked(folder: DrawerFolder) = Unit
-                override fun onFolderLongPressed(x: Float, y: Float, folder: DrawerFolder) = Unit
                 override fun onAppSelectionToggled(appLauncher: AppLauncher) = Unit
             },
             itemClick = {
