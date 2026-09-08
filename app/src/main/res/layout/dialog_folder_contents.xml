@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/activity_margin"
-    android:paddingEnd="@dimen/activity_margin">
+    android:paddingStart="@dimen/smaller_margin"
+    android:paddingEnd="@dimen/smaller_margin">
 
     <LinearLayout
         android:id="@+id/folder_contents_card"
@@ -48,8 +48,6 @@
             android:id="@+id/folder_contents_grid"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/smaller_margin"
-            android:layout_marginEnd="@dimen/smaller_margin"
             android:clipToPadding="false"
             android:scrollbars="vertical"
             app:layoutManager="org.fossify.commons.views.MyGridLayoutManager"
