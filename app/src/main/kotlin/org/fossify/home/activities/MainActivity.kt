@@ -77,7 +77,7 @@ import org.fossify.home.dialogs.RenameItemDialog
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.drawerFoldersDB
 import org.fossify.home.extensions.getAppDrawerBackgroundColor
-import org.fossify.home.extensions.getAppDrawerOverlaySurfaceColor
+import org.fossify.home.extensions.getAppDrawerElevatedSurfaceColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.getAppIconBitmapWithContrastBackdrop
 import org.fossify.home.extensions.getLabel
@@ -88,6 +88,7 @@ import org.fossify.home.extensions.isDefaultLauncher
 import org.fossify.home.extensions.launchApp
 import org.fossify.home.extensions.launchAppInfo
 import org.fossify.home.extensions.launchersDB
+import org.fossify.home.extensions.moveToScreenPosition
 import org.fossify.home.extensions.roleManager
 import org.fossify.home.extensions.supportsDarkText
 import org.fossify.home.extensions.uninstallApp
@@ -1154,13 +1155,12 @@ class MainActivity : SimpleActivity(), FlingListener {
         onFolderDeleted: (() -> Unit)? = null,
         onAddSelected: (() -> Unit)? = null,
     ) {
-        anchorView.x = x
-        anchorView.y = y
+        anchorView.moveToScreenPosition(x, y)
         PillPopupMenu(
             this,
             anchorView,
             Gravity.TOP or Gravity.END,
-            backgroundColor = getAppDrawerOverlaySurfaceColor(),
+            backgroundColor = getAppDrawerElevatedSurfaceColor(),
             textColor = getAppDrawerTextColor(),
         ).apply {
             inflate(R.menu.menu_drawer_folder)

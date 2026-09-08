@@ -199,6 +199,15 @@ fun Context.getAppDrawerOverlaySurfaceColor(): Int {
     return ColorUtils.blendARGB(getAppDrawerBackgroundColor(), blendTarget, 0.08f)
 }
 
+// a surface meant to sit on top of an overlay surface itself - the folder menu popup shown over
+// an open folder's own card, for example. Blends further in the same direction the overlay
+// surface already blended toward, so it still reads as a step up rather than matching the
+// overlay surface it's rendered on top of
+fun Context.getAppDrawerElevatedSurfaceColor(): Int {
+    val blendTarget = if (isSystemInLightMode()) Color.BLACK else Color.WHITE
+    return ColorUtils.blendARGB(getAppDrawerOverlaySurfaceColor(), blendTarget, 0.08f)
+}
+
 // what an unscaled (100%) icon should measure, in px, shared by the app drawer and the home
 // screen so both render icons at the same physical size at 100% - based on the screen width at
 // the default column count, independent of whatever column/row count is actually in use, so icon

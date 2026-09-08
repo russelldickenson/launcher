@@ -11,6 +11,7 @@
     <dimen name="page_indicator_margin">6dp</dimen>
     <dimen name="min_folder_view_height">200dp</dimen>
     <dimen name="max_folder_view_height">500dp</dimen>
+    <dimen name="folder_contents_card_corner_radius">16dp</dimen>
     <dimen name="menu_icon_size">24dp</dimen>
     <!-- Pixel-style disconnected pill popup menu -->
     <dimen name="pill_menu_item_height">52dp</dimen>

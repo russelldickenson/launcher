@@ -26,6 +26,19 @@ fun View.animateScale(
         scaleY = from
     }
 
+// positions this view so it renders at the given absolute screen coordinates, regardless of which
+// window it lives in - plain `view.x = screenX` only lands correctly when the view's own window
+// starts at the screen origin (a fullscreen Activity window), since View.x/y are relative to the
+// view's parent, not the screen. A view inside a WRAP_CONTENT/centered Dialog window (or any
+// window not anchored at (0,0)) needs that window+ancestor offset subtracted out first, which
+// this computes by comparing the view's actual laid-out screen location against the target
+fun View.moveToScreenPosition(x: Float, y: Float) {
+    val location = IntArray(2)
+    getLocationOnScreen(location)
+    this.x += x - location[0]
+    this.y += y - location[1]
+}
+
 fun View.setupDrawerBackground(backgroundColor: Int = context.getProperBackgroundColor()) {
     background = backgroundColor.toDrawable()
 

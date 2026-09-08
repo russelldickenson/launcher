@@ -17,6 +17,7 @@ import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppDrawerOverlaySurfaceColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.handleGridItemPopupMenu
+import org.fossify.home.extensions.moveToScreenPosition
 import org.fossify.home.helpers.ITEM_TYPE_ICON
 import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.interfaces.ItemMenuListener
@@ -33,11 +34,12 @@ import org.fossify.home.models.HomeScreenGridItem
 // MaterialAlertDialogBuilder - the Material dialog's own card chrome (title bar, corner radius,
 // content insets) shows through in a different colour than the drawer background we set on our
 // own content view, so the whole thing reads as two mismatched panels rather than one seamless
-// drawer-like surface. Rounded corners (matching material_dialog_corner_radius, the same radius
-// used elsewhere in this app's dialogs) are applied to the inner card view instead, inset from the
-// dialog window's own edges by activity_margin so the rounding has room to actually read as
-// rounded rather than clipping into the screen edge. Dismissing is tap-outside only, no separate
-// cancel button needed
+// drawer-like surface. Rounded corners (folder_contents_card_corner_radius, smaller than the
+// standard material_dialog_corner_radius other dialogs use, since this card fills most of the
+// screen width and a full dialog radius reads as too aggressive at that size) are applied to the
+// inner card view instead, inset from the dialog window's own edges by activity_margin so the
+// rounding has room to actually read as rounded rather than clipping into the screen edge.
+// Dismissing is tap-outside only, no separate cancel button needed
 class FolderContentsDialog(
     private val activity: MainActivity,
     folder: DrawerFolder,
@@ -59,7 +61,7 @@ class FolderContentsDialog(
 
     init {
         val backgroundColor = activity.getAppDrawerOverlaySurfaceColor()
-        val cornerRadius = activity.resources.getDimension(org.fossify.commons.R.dimen.material_dialog_corner_radius)
+        val cornerRadius = activity.resources.getDimension(org.fossify.home.R.dimen.folder_contents_card_corner_radius)
         binding.folderContentsCard.background = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
             this.cornerRadius = cornerRadius
@@ -164,8 +166,7 @@ class FolderContentsDialog(
             drawable = launcher.drawable
         )
 
-        binding.folderContentsPopupAnchor.x = x
-        binding.folderContentsPopupAnchor.y = y
+        binding.folderContentsPopupAnchor.moveToScreenPosition(x, y)
         activity.handleGridItemPopupMenu(
             anchorView = binding.folderContentsPopupAnchor,
             gridItem = gridItem,

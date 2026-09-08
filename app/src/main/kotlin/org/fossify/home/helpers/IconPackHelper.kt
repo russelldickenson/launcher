@@ -21,8 +21,12 @@ import org.fossify.commons.extensions.getProperBackgroundColor
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
+import kotlin.math.PI
+import kotlin.math.cos
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 object IconPackHelper {
@@ -36,6 +40,16 @@ object IconPackHelper {
     )
 
     private const val SHAPED_ICON_SIZE = 108
+
+    // exponent of the |x/a|^n + |y/a|^n = 1 superellipse used for the squircle shape - 4 is the
+    // classic Lamé-curve "squircle" exponent; higher values pull the sides closer to flat/square
+    // (n=5 in particular reads almost identical to the rounded-rect iOS shape), while 4 keeps the
+    // sides visibly bulged, which is what actually distinguishes a squircle from a rounded square
+    private const val SQUIRCLE_SUPERELLIPSE_EXPONENT = 4f
+
+    // number of points sampled per quarter-curve when building the squircle path - plenty smooth
+    // at the sizes this is rendered at, without needing a bezier approximation of the curve
+    private const val SQUIRCLE_SEGMENTS_PER_QUADRANT = 90
 
     // alpha at which a pixel counts as part of the icon rather than its transparent margin or
     // antialiasing fringe - kept close to fully opaque, since icon bitmaps are re-rasterized to
@@ -287,11 +301,33 @@ object IconPackHelper {
             ICON_SHAPE_SQUARE -> path.addRect(0f, 0f, size, size, Path.Direction.CW)
             ICON_SHAPE_ROUNDED_SQUARE, ICON_SHAPE_IOS -> path.addRoundRect(RectF(0f, 0f, size, size), size * 0.225f, size * 0.225f, Path.Direction.CW)
             ICON_SHAPE_ONE_UI -> path.addRoundRect(RectF(0f, 0f, size, size), size * 0.30f, size * 0.30f, Path.Direction.CW)
-            // approximated with an extra-rounded rect - a true superellipse isn't worth the complexity here
-            ICON_SHAPE_SQUIRCLE -> path.addRoundRect(RectF(0f, 0f, size, size), size * 0.4f, size * 0.4f, Path.Direction.CW)
+            ICON_SHAPE_SQUIRCLE -> addSuperellipse(path, size, SQUIRCLE_SUPERELLIPSE_EXPONENT)
             else -> path.addCircle(size / 2f, size / 2f, size / 2f, Path.Direction.CW)
         }
         return path
+    }
+
+    // builds a true superellipse (|x/a|^n + |y/a|^n = 1) centered in a size x size box, by
+    // sampling one quadrant of the parametric form x=a*cos(t)^(2/n), y=a*sin(t)^(2/n) and
+    // mirroring it into the other three - this is the curve most icon packs actually use for
+    // their own squircle icons, unlike a merely extra-rounded rect
+    private fun addSuperellipse(path: Path, size: Float, n: Float) {
+        val a = size / 2f
+        val exponent = 2.0 / n
+
+        val quadrant = (0..SQUIRCLE_SEGMENTS_PER_QUADRANT).map { i ->
+            val t = (PI / 2) * i / SQUIRCLE_SEGMENTS_PER_QUADRANT
+            val x = a * cos(t).pow(exponent).toFloat()
+            val y = a * sin(t).pow(exponent).toFloat()
+            x to y
+        }
+
+        path.moveTo(a + quadrant.first().first, a - quadrant.first().second)
+        for ((x, y) in quadrant) path.lineTo(a + x, a - y)
+        for ((x, y) in quadrant.asReversed()) path.lineTo(a - x, a - y)
+        for ((x, y) in quadrant) path.lineTo(a - x, a + y)
+        for ((x, y) in quadrant.asReversed()) path.lineTo(a + x, a + y)
+        path.close()
     }
 
     fun clearCache() {
