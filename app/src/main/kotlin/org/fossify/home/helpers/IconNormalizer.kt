@@ -41,7 +41,14 @@ object IconNormalizer {
 
     private const val MIN_VISIBLE_ALPHA = 40
     private const val BOUND_RATIO_MARGIN = .05f
-    private const val PIXEL_DIFF_PERCENTAGE_THRESHOLD = 0.005f
+
+    // real icon-pack art is a rasterized, anti-aliased bitmap being compared against an exact
+    // vector shape path, not a pixel-perfect rendering of that same path - a real match still
+    // differs by a soft edge fringe plus small curve/inset variance between the pack's own
+    // squircle and this app's approximation of it, so both the tolerance band drawn along the
+    // outline and the overall diff threshold need real slack, not just enough for rounding error
+    private const val PIXEL_DIFF_PERCENTAGE_THRESHOLD = 0.03f
+    private const val OUTLINE_TOLERANCE_FRACTION = 0.02f
 
     // boundsFraction is the icon's own visible ("ink") bounding box, as a fraction of its full
     // canvas ([0,1] on each axis) - lets callers tell how much of the icon's own canvas its
@@ -175,7 +182,7 @@ object IconNormalizer {
         canvas.drawPath(shapePath, maskShapePaint)
 
         val outlinePaint = Paint().apply {
-            strokeWidth = 2f
+            strokeWidth = size * OUTLINE_TOLERANCE_FRACTION
             style = Paint.Style.STROKE
             color = Color.BLACK
             xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR)

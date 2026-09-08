@@ -66,6 +66,11 @@ object IconPackHelper {
     // a badge, or a drop shadow baked into their art don't get cropped away
     private const val MAX_ZOOM_SCALE = 1.35f
 
+    // hard cap on how far a shape-matching icon gets cropped to remove its own baked-in export
+    // margin - much smaller than MAX_ZOOM_SCALE above, since this is only ever trimming a few
+    // percent of padding, not reframing an under-filled icon
+    private const val MAX_FLUSH_ZOOM_SCALE = 1.15f
+
     private data class ParsedAppFilter(
         val componentMap: Map<ComponentName, String>
     )
@@ -167,26 +172,31 @@ object IconPackHelper {
             )
         }
 
+        // a real AdaptiveIconDrawable (normalized == null, above) always renders full-bleed - its
+        // own foreground/background layers are designed to span the entire canvas and rely on
+        // external clipping, per spec - so that's the full-size baseline every other icon needs
+        // to visually match. An icon whose own silhouette already matches the chosen shape is
+        // effectively the same situation (it's already shaped to fill this exact outline), so it
+        // gets the same full-size treatment; only a genuine mismatch needs shrinking to leave
+        // room for a backdrop
         val iconSize = when {
-            normalized == null -> size
-            // the icon's own silhouette already closely matches the chosen shape - render it
-            // full-bleed like an adaptive icon, with no backdrop needed behind it
-            normalized.matchesShape -> size
+            normalized == null || normalized.matchesShape -> size
             else -> (size * normalized.scale).toInt().coerceAtLeast(1)
         }
 
         val offset = (size - iconSize) / 2
-        val iconBitmap = if (normalized != null && !normalized.matchesShape) {
-            renderZoomedIconBitmap(originalIcon, iconSize, normalized.boundsFraction)
-        } else {
-            originalIcon.toBitmap(width = iconSize, height = iconSize, config = Bitmap.Config.ARGB_8888)
+        val iconBitmap = when {
+            normalized == null -> originalIcon.toBitmap(width = iconSize, height = iconSize, config = Bitmap.Config.ARGB_8888)
+            // a shape match only checks the silhouette's curve, not whether its bounding box
+            // reaches the canvas edges - a pack icon can match the outline shape while still
+            // carrying its own small export margin, which would otherwise sit as an unwanted gap
+            normalized.matchesShape -> renderFlushIconBitmap(originalIcon, iconSize, normalized.boundsFraction)
+            else -> renderZoomedIconBitmap(originalIcon, iconSize, normalized.boundsFraction)
         }
 
-        // an icon whose own silhouette already matches the chosen shape is rendered full-bleed
-        // above with no zoom applied, so any transparent margin baked into its own artwork sits
-        // right at the shape's edge - filling a backdrop behind it would show through as a
-        // mismatched ring around an icon that's already the right shape, so skip it entirely and
-        // let it sit on the shape outline with no fill, same as an adaptive icon needs none
+        // an icon whose own silhouette already matches the chosen shape needs no backdrop - its
+        // normalized margin is already the same shape as the outline it sits inside, so it reads
+        // as a plain inset rather than a gap that needs covering
         if (normalized == null || !normalized.matchesShape) {
             // fill the gap between the icon and the shape with a color sampled from the icon's own
             // edge pixels, so it reads as a natural bleed instead of an unrelated colored halo
@@ -218,7 +228,26 @@ object IconPackHelper {
 
         val targetFraction = sqrt(MIN_INK_FILL_TO_ZOOM)
         val zoom = min(targetFraction / widthFraction, targetFraction / heightFraction).coerceIn(1f, MAX_ZOOM_SCALE)
+        return cropToIconBounds(originalIcon, iconSize, boundsFraction, zoom)
+    }
 
+    // a shape-matching icon can still carry a small export margin baked into its own artwork by
+    // the icon pack (unrelated to the outline-curve check matchesShape already passed) - unlike
+    // renderZoomedIconBitmap above, this always crops to the icon's own bounds rather than only
+    // when badly under-filled, since a shape match already implies those bounds are close to full
+    // and this is only ever trimming a small residual gap, not reframing genuinely small art
+    private fun renderFlushIconBitmap(originalIcon: Drawable, iconSize: Int, boundsFraction: RectF): Bitmap {
+        val widthFraction = boundsFraction.width()
+        val heightFraction = boundsFraction.height()
+        if (widthFraction <= 0f || heightFraction <= 0f) {
+            return originalIcon.toBitmap(width = iconSize, height = iconSize, config = Bitmap.Config.ARGB_8888)
+        }
+
+        val zoom = min(1f / widthFraction, 1f / heightFraction).coerceIn(1f, MAX_FLUSH_ZOOM_SCALE)
+        return cropToIconBounds(originalIcon, iconSize, boundsFraction, zoom)
+    }
+
+    private fun cropToIconBounds(originalIcon: Drawable, iconSize: Int, boundsFraction: RectF, zoom: Float): Bitmap {
         val enlargedSize = (iconSize * zoom).roundToInt().coerceAtLeast(iconSize)
         val enlargedBitmap = originalIcon.toBitmap(width = enlargedSize, height = enlargedSize, config = Bitmap.Config.ARGB_8888)
 
