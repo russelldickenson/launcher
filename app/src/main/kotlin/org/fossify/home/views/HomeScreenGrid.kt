@@ -88,12 +88,14 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
 
     private lateinit var binding: HomeScreenGridBinding
     private var columnCount = context.config.homeColumnCount
+    private var dockColumnCount = context.config.dockColumnCount
     private var rowCount = context.config.homeRowCount
     private var pageIndicatorsYPos = 0
     private val cells = mutableMapOf<Point, Rect>()
     private var dockCellY = 0
     var cellWidth = 0
     var cellHeight = 0
+    private var dockCellWidth = 0
 
     private var iconMargin =
         (context.resources.getDimension(R.dimen.icon_side_margin) * 5 / columnCount).toInt()
@@ -297,20 +299,29 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         }
     }
 
-    fun resizeGrid(newRowCount: Int, newColumnCount: Int) {
-        if (columnCount != newColumnCount || rowCount != newRowCount) {
+    fun resizeGrid(newRowCount: Int, newColumnCount: Int, newDockColumnCount: Int) {
+        val regularGridChanged = columnCount != newColumnCount || rowCount != newRowCount
+        val dockChanged = dockColumnCount != newDockColumnCount
+        if (regularGridChanged || dockChanged) {
             rowCount = newRowCount
             columnCount = newColumnCount
+            dockColumnCount = newDockColumnCount
             cells.clear()
             gridCenters.clear()
             iconMargin =
                 (context.resources.getDimension(R.dimen.icon_side_margin) * 5 / columnCount).toInt()
             isFirstDraw = true
-            gridItems.filter { it.type == ITEM_TYPE_WIDGET }.forEach {
-                appWidgetHost.deleteAppWidgetId(it.widgetId)
+
+            // widgets can never occupy the dock row, so a dock-only column count change doesn't
+            // touch their geometry and doesn't need to tear them down and rebuild them
+            if (regularGridChanged) {
+                gridItems.filter { it.type == ITEM_TYPE_WIDGET }.forEach {
+                    appWidgetHost.deleteAppWidgetId(it.widgetId)
+                }
+                widgetViews.forEach { removeView(it) }
+                widgetViews.clear()
             }
-            widgetViews.forEach { removeView(it) }
-            widgetViews.clear()
+
             redrawGrid()
         }
     }
@@ -1562,6 +1573,9 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     private fun fillCellSizes() {
         cellWidth = getFakeWidth() / columnCount
         cellHeight = getFakeHeight() / rowCount
+        // the dock row has its own column count (dockColumnCount), independent of the rest of
+        // the grid, so it needs its own cell width and its own square-ifying margin below
+        dockCellWidth = getFakeWidth() / dockColumnCount
         val extraXMargin = if (cellWidth > cellHeight) {
             (cellWidth - cellHeight) / 2
         } else {
@@ -1572,6 +1586,11 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         } else {
             0
         }
+        val dockExtraXMargin = if (dockCellWidth > cellHeight) {
+            (dockCellWidth - cellHeight) / 2
+        } else {
+            0
+        }
         // Match the app drawer: its icon view has 10% padding on both horizontal sides, so the
         // drawable itself occupies 80% of the scaled reference frame.
         val scaledIconFrameSize =
@@ -1579,21 +1598,29 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         val iconPadding = (scaledIconFrameSize * 0.1f).toInt()
         iconSize = scaledIconFrameSize - 2 * iconPadding
         pageIndicatorsYPos = (rowCount - 1) * cellHeight + extraYMargin
+        dockCellY = (rowCount - 1) * cellHeight
         for (i in 0 until columnCount) {
-            for (j in 0 until rowCount) {
-                val yMarginToAdd = if (j == rowCount - 1) 0 else extraYMargin
+            for (j in 0 until rowCount - 1) {
                 val rect = Rect(
                     i * cellWidth + extraXMargin,
-                    j * cellHeight + yMarginToAdd,
+                    j * cellHeight + extraYMargin,
                     (i + 1) * cellWidth - extraXMargin,
-                    (j + 1) * cellHeight - yMarginToAdd,
+                    (j + 1) * cellHeight - extraYMargin,
                 )
                 cells[Point(i, j)] = rect
                 gridCenters.add(Point(rect.centerX(), rect.centerY()))
-                if (j == rowCount - 1) {
-                    dockCellY = j * cellHeight
-                }
             }
+        }
+
+        for (i in 0 until dockColumnCount) {
+            val rect = Rect(
+                i * dockCellWidth + dockExtraXMargin,
+                dockCellY,
+                (i + 1) * dockCellWidth - dockExtraXMargin,
+                dockCellY + cellHeight,
+            )
+            cells[Point(i, rowCount - 1)] = rect
+            gridCenters.add(Point(rect.centerX(), rect.centerY()))
         }
     }
 
@@ -1729,8 +1756,11 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     }
 
     private fun HomeScreenGridItem.outOfBounds(): Boolean {
-        return (left >= columnCount
-                || right >= columnCount
+        // a docked item's column bound is the dock's own column count, not the regular grid's -
+        // the two can differ now that the dock has its own independent column count
+        val maxColumn = if (docked) dockColumnCount else columnCount
+        return (left >= maxColumn
+                || right >= maxColumn
                 || (!docked && (top >= rowCount - 1 || bottom >= rowCount - 1))
                 || (type == ITEM_TYPE_WIDGET && (bottom - top > rowCount - 1 || right - left > columnCount - 1))
                 // a resize can leave a widget with an inverted or negative range (e.g. dragging

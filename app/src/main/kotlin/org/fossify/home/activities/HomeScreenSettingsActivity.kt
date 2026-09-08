@@ -38,6 +38,7 @@ class HomeScreenSettingsActivity : SimpleActivity() {
         setupTopAppBar(binding.homeScreenSettingsAppbar, NavigationIcon.Arrow)
 
         setupHomeColumnCount()
+        setupDockColumnCount()
         setupHomeIconScale()
         setupShowHomeAppLabels()
         setupHomeLabelMaxLines()
@@ -65,6 +66,34 @@ class HomeScreenSettingsActivity : SimpleActivity() {
                 if (currentColumnCount != newColumnCount) {
                     config.homeColumnCount = newColumnCount
                     setupHomeColumnCount()
+                }
+            }
+        }
+    }
+
+    // independent of the regular grid's column count above - the dock row can hold a different
+    // number of icons than fits on a normal home screen row
+    private fun setupDockColumnCount() {
+        val currentColumnCount = config.dockColumnCount
+        binding.settingsDockColumnCount.text = currentColumnCount.toString()
+        binding.settingsDockColumnCountHolder.setOnClickListener {
+            val items = ArrayList<RadioItem>()
+            for (i in MIN_DRAWER_COLUMN_COUNT..MAX_DRAWER_COLUMN_COUNT) {
+                items.add(
+                    RadioItem(
+                        id = i,
+                        title = resources.getQuantityString(
+                            org.fossify.commons.R.plurals.column_counts, i, i
+                        )
+                    )
+                )
+            }
+
+            showRadioGroupDialog(items = items, checkedItemId = currentColumnCount) {
+                val newColumnCount = it as Int
+                if (currentColumnCount != newColumnCount) {
+                    config.dockColumnCount = newColumnCount
+                    setupDockColumnCount()
                 }
             }
         }

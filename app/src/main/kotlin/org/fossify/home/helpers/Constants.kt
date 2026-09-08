@@ -9,6 +9,7 @@ const val REPOSITORY_NAME = "Launcher"
 const val WAS_HOME_SCREEN_INIT = "was_home_screen_init"
 const val HOME_ROW_COUNT = "home_row_count"
 const val HOME_COLUMN_COUNT = "home_column_count"
+const val DOCK_COLUMN_COUNT = "dock_column_count"
 const val DRAWER_COLUMN_COUNT = "drawer_column_count"
 const val SHOW_SEARCH_BAR = "show_search_bar"
 const val CLOSE_APP_DRAWER = "close_app_drawer"
@@ -50,6 +51,10 @@ const val MAX_ROW_COUNT = 15
 // icon grid column count
 const val MIN_DRAWER_COLUMN_COUNT = 3
 const val MAX_DRAWER_COLUMN_COUNT = 6
+
+// the dock row's own column count is independent of the rest of the home screen grid's
+// homeColumnCount, so it can hold more (or fewer) icons than fit on a regular page row
+const val DEFAULT_DOCK_COLUMN_COUNT = 5
 
 // icon scale, in percent, shared by the app drawer and the home screen - "100%" is what used to
 // be labelled "120%" before the rescale

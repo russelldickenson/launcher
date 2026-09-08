@@ -23,6 +23,13 @@ class Config(context: Context) : BaseConfig(context) {
             .coerceIn(MIN_DRAWER_COLUMN_COUNT, MAX_DRAWER_COLUMN_COUNT)
         set(homeColumnCount) = prefs.edit().putInt(HOME_COLUMN_COUNT, homeColumnCount).apply()
 
+    // independent of homeColumnCount - the dock row can hold a different number of icons than a
+    // regular home screen row
+    var dockColumnCount: Int
+        get() = prefs.getInt(DOCK_COLUMN_COUNT, DEFAULT_DOCK_COLUMN_COUNT)
+            .coerceIn(MIN_DRAWER_COLUMN_COUNT, MAX_DRAWER_COLUMN_COUNT)
+        set(dockColumnCount) = prefs.edit().putInt(DOCK_COLUMN_COUNT, dockColumnCount).apply()
+
     var drawerColumnCount: Int
         get() = prefs.getInt(DRAWER_COLUMN_COUNT, context.resources.getInteger(R.integer.portrait_column_count))
             .coerceIn(MIN_DRAWER_COLUMN_COUNT, MAX_DRAWER_COLUMN_COUNT)

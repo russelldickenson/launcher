@@ -66,6 +66,32 @@
             <include layout="@layout/divider_inset" />
 
             <RelativeLayout
+                android:id="@+id/settings_dock_column_count_holder"
+                style="@style/SettingsHolderTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
+
+                <TextView
+                    android:id="@+id/settings_dock_column_count_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dock_columns" />
+
+                <TextView
+                    android:id="@+id/settings_dock_column_count"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_dock_column_count_label"
+                    tools:text="5" />
+
+            </RelativeLayout>
+
+            <include layout="@layout/divider_inset" />
+
+            <RelativeLayout
                 android:id="@+id/settings_home_icon_scale_holder"
                 style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"

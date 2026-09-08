@@ -307,7 +307,8 @@ class MainActivity : SimpleActivity(), FlingListener {
 
         binding.homeScreenGrid.root.resizeGrid(
             newRowCount = config.homeRowCount,
-            newColumnCount = config.homeColumnCount
+            newColumnCount = config.homeColumnCount,
+            newDockColumnCount = config.dockColumnCount
         )
         if (lastHomeIconScalePercent != config.homeIconScalePercent) {
             binding.homeScreenGrid.root.refreshIconScale()
