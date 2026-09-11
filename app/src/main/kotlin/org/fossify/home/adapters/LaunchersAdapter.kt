@@ -34,6 +34,7 @@ import org.fossify.home.extensions.getAppDrawerBackgroundColor
 import org.fossify.home.extensions.getAppDrawerTextColor
 import org.fossify.home.extensions.getReferenceIconWidth
 import org.fossify.home.helpers.FolderIconGenerator
+import org.fossify.home.helpers.IconShadowHelper
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
 import org.fossify.home.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
 import org.fossify.home.helpers.NotificationCache
@@ -41,6 +42,7 @@ import org.fossify.home.interfaces.AllAppsListener
 import org.fossify.home.models.AppLauncher
 import org.fossify.home.models.DrawerFolder
 import org.fossify.home.models.DrawerGridItem
+import java.util.WeakHashMap
 
 class LaunchersAdapter(
     val activity: SimpleActivity,
@@ -52,6 +54,11 @@ class LaunchersAdapter(
     private var textColor = activity.getAppDrawerTextColor()
     private var iconPadding = 0
     private var targetIconWidth = 0
+
+    // keyed on the source drawable instance itself (not the launcher's identifier), so it
+    // self-invalidates whenever the upstream icon is regenerated (icon pack/shape change etc.)
+    // without needing any manual cache-clearing logic tied to those settings
+    private val shadowCache = WeakHashMap<Drawable, Drawable>()
 
     // driven by AllAppsFragment's folder "Add" flow - while active, app taps toggle selection
     // instead of launching, and AppViewHolder shows a checkmark overlay for selected identifiers
@@ -136,7 +143,17 @@ class LaunchersAdapter(
     // regardless of any imprecision in estimating the cell's actual on-screen size
     private fun calculateIconWidth() {
         targetIconWidth = (activity.getReferenceIconWidth() * (activity.config.drawerIconScalePercent / 100f)).toInt()
+        // a shadowed icon's bitmap is IconShadowHelper.GROWTH_FACTOR times wider/taller than the
+        // plain icon (see that class), so the display box needs to grow by the exact same factor -
+        // otherwise fitCenter-style scaling shrinks the icon itself to absorb the shadow's extra
+        // bitmap space, making shadowed drawer icons visibly smaller than the home screen's
+        if (activity.config.showDrawerIconDropShadow) {
+            targetIconWidth = (targetIconWidth * IconShadowHelper.GROWTH_FACTOR).toInt()
+        }
         iconPadding = (targetIconWidth * 0.1f).toInt()
+        // clears on any call here, which covers a shadow-toggle-only change too (it funnels
+        // through refreshIconAndLabelSettings() the same as a scale change)
+        shadowCache.clear()
     }
 
     // exposes the already-computed icon size for the drag-shadow view to match, rather than
@@ -228,15 +245,26 @@ class LaunchersAdapter(
                     isSelectionMode && selectedIdentifiers.contains(launcher.getLauncherIdentifier())
                 )
 
-                if (launcher.drawable != null && binding.launcherIcon.tag == true) {
-                    binding.launcherIcon.setImageDrawable(launcher.drawable)
+                // a drop shadow is drawer-only (see IconShadowHelper), so it's applied here at
+                // bind time rather than baked into the shared launcher.drawable the home screen
+                // also reads from - cached per source drawable so it isn't regenerated on every
+                // recycled-view rebind while scrolling
+                val sourceDrawable = launcher.drawable
+                val displayDrawable = if (sourceDrawable != null && activity.config.showDrawerIconDropShadow) {
+                    shadowCache.getOrPut(sourceDrawable) { IconShadowHelper.applyDropShadow(activity, sourceDrawable) }
+                } else {
+                    sourceDrawable
+                }
+
+                if (displayDrawable != null && binding.launcherIcon.tag == true) {
+                    binding.launcherIcon.setImageDrawable(displayDrawable)
                 } else {
                     val placeholderDrawable = activity.resources.getColoredDrawableWithColor(
                         drawableId = R.drawable.placeholder_drawable,
                         color = launcher.thumbnailColor
                     )
                     Glide.with(activity)
-                        .load(launcher.drawable)
+                        .load(displayDrawable)
                         .placeholder(placeholderDrawable)
                         .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                         .into(object : DrawableImageViewTarget(binding.launcherIcon) {

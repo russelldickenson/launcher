@@ -37,6 +37,7 @@ class DrawerSettingsActivity : SimpleActivity() {
         setupCloseAppDrawerOnOtherAppOpen()
         setupColumnCount()
         setupDrawerIconScale()
+        setupDrawerIconDropShadow()
         setupDrawerLabels()
         setupManageHiddenIcons()
     }
@@ -120,6 +121,14 @@ class DrawerSettingsActivity : SimpleActivity() {
                     setupDrawerIconScale()
                 }
             }
+        }
+    }
+
+    private fun setupDrawerIconDropShadow() {
+        binding.settingsShowDrawerIconDropShadow.isChecked = config.showDrawerIconDropShadow
+        binding.settingsShowDrawerIconDropShadowHolder.setOnClickListener {
+            binding.settingsShowDrawerIconDropShadow.toggle()
+            config.showDrawerIconDropShadow = binding.settingsShowDrawerIconDropShadow.isChecked
         }
     }
 

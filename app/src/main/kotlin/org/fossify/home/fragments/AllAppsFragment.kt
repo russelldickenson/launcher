@@ -50,6 +50,7 @@ class AllAppsFragment(
     private var lastLabelFontSize = -1
     private var lastLabelMaxLines = -1
     private var lastShowFavouritesDivider: Boolean? = null
+    private var lastShowDrawerIconDropShadow: Boolean? = null
 
     private var launchers = emptyList<AppLauncher>()
     private var folders = emptyList<DrawerFolder>()
@@ -116,7 +117,8 @@ class AllAppsFragment(
         } else if (
             lastIconScalePercent != context.config.drawerIconScalePercent ||
             lastLabelFontSize != context.config.drawerLabelFontSize ||
-            lastLabelMaxLines != context.config.drawerLabelMaxLines
+            lastLabelMaxLines != context.config.drawerLabelMaxLines ||
+            lastShowDrawerIconDropShadow != context.config.showDrawerIconDropShadow
         ) {
             getAdapter()?.refreshIconAndLabelSettings()
         }
@@ -125,6 +127,7 @@ class AllAppsFragment(
         lastLabelFontSize = context.config.drawerLabelFontSize
         lastLabelMaxLines = context.config.drawerLabelMaxLines
         lastShowFavouritesDivider = context.config.showFavouritesDivider
+        lastShowDrawerIconDropShadow = context.config.showDrawerIconDropShadow
     }
 
     fun onConfigurationChanged() {

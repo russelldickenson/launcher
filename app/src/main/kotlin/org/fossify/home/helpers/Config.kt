@@ -123,6 +123,12 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getBoolean(SHOW_FAVOURITES_DIVIDER, true)
         set(showFavouritesDivider) = prefs.edit().putBoolean(SHOW_FAVOURITES_DIVIDER, showFavouritesDivider).apply()
 
+    // drawer-only - the drawer and home screen share the same underlying icon bitmap, so this
+    // is applied at drawer-bind time rather than baked into that shared bitmap
+    var showDrawerIconDropShadow: Boolean
+        get() = prefs.getBoolean(SHOW_DRAWER_ICON_DROP_SHADOW, false)
+        set(showDrawerIconDropShadow) = prefs.edit().putBoolean(SHOW_DRAWER_ICON_DROP_SHADOW, showDrawerIconDropShadow).apply()
+
     var notificationBadgeColor: Int
         get() = prefs.getInt(NOTIFICATION_BADGE_COLOR, Color.RED)
         set(notificationBadgeColor) = prefs.edit().putInt(NOTIFICATION_BADGE_COLOR, notificationBadgeColor).apply()
