@@ -23,8 +23,7 @@ fun hasSigningVars(): Boolean {
 }
 
 base {
-    val versionCode = project.property("VERSION_CODE").toString().toInt()
-    archivesName = "launcher-$versionCode"
+    archivesName = "launcher"
 }
 
 android {
@@ -121,6 +120,17 @@ android {
     bundle {
         language {
             enableSplit = false
+        }
+    }
+}
+
+// archivesName above only sets the base name - AGP still appends the build type (e.g.
+// "launcher-release.apk"/"launcher-debug.apk") unless the output filename is overridden
+// directly, which this does for every variant so the APK is always exactly "launcher.apk"
+androidComponents {
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set("launcher.apk")
         }
     }
 }
