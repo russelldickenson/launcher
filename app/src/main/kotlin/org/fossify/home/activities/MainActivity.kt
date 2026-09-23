@@ -1292,7 +1292,11 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
 
         override fun remove(gridItem: HomeScreenGridItem) {
-            binding.homeScreenGrid.root.removeAppIcon(gridItem)
+            if (gridItem.type == ITEM_TYPE_WIDGET) {
+                binding.homeScreenGrid.root.removeWidget(gridItem)
+            } else {
+                binding.homeScreenGrid.root.removeAppIcon(gridItem)
+            }
         }
 
         override fun uninstall(gridItem: HomeScreenGridItem) {
