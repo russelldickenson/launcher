@@ -1259,10 +1259,11 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     }
 
     private fun calculateWidgetPos(topLeft: Point): Point {
-        val cell = cells[topLeft]!!
+        // widgets fill whole cells (cells * cellWidth), so don't apply the icon squaring margin
+        // from cells[]; otherwise the widget and its resize frame are offset from each other
         return Point(
-            cell.left + sideMargins.left,
-            cell.top + sideMargins.top
+            topLeft.x * cellWidth + sideMargins.left,
+            topLeft.y * cellHeight + sideMargins.top
         )
     }
 
