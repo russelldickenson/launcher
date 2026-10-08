@@ -389,8 +389,18 @@ class MainActivity : SimpleActivity(), FlingListener {
                 }
             }
 
-            REQUEST_ALLOW_BINDING_WIDGET -> mActionOnCanBindWidget?.invoke(resultCode == RESULT_OK)
-            REQUEST_CONFIGURE_WIDGET -> mActionOnWidgetConfiguredWidget?.invoke(resultCode == RESULT_OK)
+            REQUEST_ALLOW_BINDING_WIDGET -> {
+                val callback = mActionOnCanBindWidget
+                mActionOnCanBindWidget = null
+                callback?.invoke(resultCode == RESULT_OK)
+            }
+
+            REQUEST_CONFIGURE_WIDGET -> {
+                val callback = mActionOnWidgetConfiguredWidget
+                mActionOnWidgetConfiguredWidget = null
+                callback?.invoke(resultCode == RESULT_OK)
+            }
+
             REQUEST_CREATE_SHORTCUT -> {
                 if (resultCode == RESULT_OK && resultData != null) {
                     val launcherApps =

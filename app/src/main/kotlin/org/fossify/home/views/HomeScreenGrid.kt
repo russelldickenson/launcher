@@ -1092,8 +1092,6 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                 ensureBackgroundThread {
                     // store the new widget at creating it, else just move the existing one
                     if (widgetItem.id == null) {
-                        val itemId = context.homeScreenGridItemsDB.insert(widgetItem)
-                        widgetItem.id = itemId
                         post {
                             bindWidget(widgetItem)
                         }
@@ -1160,10 +1158,6 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                 .firstOrNull { it.provider.className == item.className }
         if (appWidgetProviderInfo != null) {
             item.widgetId = appWidgetHost.allocateAppWidgetId()
-            ensureBackgroundThread {
-                context.homeScreenGridItemsDB.updateWidgetId(item.widgetId, item.id!!)
-            }
-
             activity.handleWidgetBinding(
                 appWidgetManager = appWidgetManager,
                 appWidgetId = item.widgetId,
@@ -1176,13 +1170,13 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                             appWidgetId = item.widgetId
                         ) { success ->
                             if (success) {
-                                placeAppWidget(appWidgetProviderInfo, item)
+                                persistAndPlaceWidget(appWidgetProviderInfo, item)
                             } else {
                                 removeItemFromHomeScreen(item)
                             }
                         }
                     } else {
-                        placeAppWidget(appWidgetProviderInfo, item)
+                        persistAndPlaceWidget(appWidgetProviderInfo, item)
                     }
                 } else {
                     removeItemFromHomeScreen(item)
@@ -1191,6 +1185,20 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                 if (pager.isOutsideOfPageRange()) {
                     prevPage(redraw = true)
                 }
+            }
+        }
+    }
+
+    // the row is only written once binding and configuration have succeeded, so an interrupted flow
+    // (activity recreated or killed behind a permission or config screen) can't leave an orphaned row
+    private fun persistAndPlaceWidget(
+        appWidgetProviderInfo: AppWidgetProviderInfo,
+        item: HomeScreenGridItem,
+    ) {
+        ensureBackgroundThread {
+            item.id = context.homeScreenGridItemsDB.insert(item)
+            post {
+                placeAppWidget(appWidgetProviderInfo, item)
             }
         }
     }
