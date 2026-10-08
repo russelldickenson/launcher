@@ -264,8 +264,8 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     fun fetchGridItems() {
         ensureBackgroundThread {
             val providers = appWidgetManager.installedProviders
-            gridItems = context.homeScreenGridItemsDB.getAllItems() as ArrayList<HomeScreenGridItem>
-            gridItems.toImmutableList().forEach { item ->
+            val loadedItems = context.homeScreenGridItemsDB.getAllItems() as ArrayList<HomeScreenGridItem>
+            loadedItems.toImmutableList().forEach { item ->
                 if (item.type == ITEM_TYPE_ICON) {
                     // reuse the exact same drawable the app drawer shows for this app, rather
                     // than independently re-fetching/re-shaping it here - two separate fetches
@@ -295,7 +295,10 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                     providers.firstOrNull { it.provider.className == item.className }
             }
 
-            redrawGrid()
+            post {
+                gridItems = loadedItems
+                redrawGrid()
+            }
         }
     }
 
@@ -354,16 +357,16 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         ensureBackgroundThread {
             removeItemFromHomeScreen(item)
             post {
-                removeView(widgetViews.firstOrNull { it.tag == item.widgetId })
+                removeWidgetViews(item.widgetId)
             }
 
-            gridItems.removeIf { it.id == item.id }
-            if (pager.isOutsideOfPageRange()) {
-                post {
+            post {
+                gridItems.removeIf { it.id == item.id }
+                if (pager.isOutsideOfPageRange()) {
                     prevPage()
                 }
+                redrawGrid()
             }
-            redrawGrid()
         }
     }
 
@@ -371,11 +374,17 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
         ensureBackgroundThread {
             removeItemFromHomeScreen(item)
             post {
-                removeView(widgetViews.firstOrNull { it.tag == item.widgetId })
-                widgetViews.removeIf { it.tag == item.widgetId }
+                removeWidgetViews(item.widgetId)
+                gridItems.removeIf { it.id == item.id }
             }
-            gridItems.removeIf { it.id == item.id }
         }
+    }
+
+    // a widgetId must only ever have one live view; stray duplicates can't be reached by the
+    // firstOrNull lookups elsewhere, so they'd stay on screen forever
+    private fun removeWidgetViews(widgetId: Int) {
+        widgetViews.filter { it.tag == widgetId }.forEach { removeView(it) }
+        widgetViews.removeIf { it.tag == widgetId }
     }
 
     private fun removeItemFromHomeScreen(item: HomeScreenGridItem) {
@@ -383,7 +392,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             if (item.id != null) {
                 context.homeScreenGridItemsDB.deleteById(item.id!!)
                 if (item.parentId != null) {
-                    gridItems
+                    gridItems.toList()
                         .filter {
                             it.parentId == item.parentId && it.left > item.left && it.id != item.id
                         }
@@ -405,7 +414,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             }
 
             if (
-                item.page != 0 && gridItems
+                item.page != 0 && gridItems.toList()
                     .none { it.page == item.page && it.id != item.id && it.parentId == null }
             ) {
                 deletePage(item.page)
@@ -1213,6 +1222,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             hideResizeLines()
         }
 
+        removeWidgetViews(item.widgetId)
         val widgetSize = updateWidgetPositionAndSize(widgetView, item)
         addView(widgetView, widgetSize.width, widgetSize.height)
         widgetViews.add(widgetView)
