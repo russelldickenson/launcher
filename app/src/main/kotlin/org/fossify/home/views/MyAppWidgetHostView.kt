@@ -4,13 +4,14 @@ import android.appwidget.AppWidgetHostView
 import android.content.Context
 import android.graphics.PointF
 import android.os.Handler
+import android.os.Looper
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import org.fossify.home.R
 import kotlin.math.abs
 
 class MyAppWidgetHostView(context: Context) : AppWidgetHostView(context) {
-    private var longPressHandler = Handler()
+    private var longPressHandler = Handler(Looper.getMainLooper())
     private var actionDownCoords = PointF()
     private var currentCoords = PointF()
     private var actionDownMS = 0L

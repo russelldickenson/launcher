@@ -318,9 +318,6 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             // widgets can never occupy the dock row, so a dock-only column count change doesn't
             // touch their geometry and doesn't need to tear them down and rebuild them
             if (regularGridChanged) {
-                gridItems.filter { it.type == ITEM_TYPE_WIDGET }.forEach {
-                    appWidgetHost.deleteAppWidgetId(it.widgetId)
-                }
                 widgetViews.forEach { removeView(it) }
                 widgetViews.clear()
             }
@@ -1368,6 +1365,12 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             gridItems
                 .filter { it.type == ITEM_TYPE_WIDGET && !it.outOfBounds() }
                 .forEach { item ->
+                    val existingView = widgetViews.firstOrNull { it.tag == item.widgetId }
+                    if (existingView != null) {
+                        updateWidgetPositionAndSize(existingView, item)
+                        return@forEach
+                    }
+
                     val providerInfo = item.providerInfo
                         ?: appWidgetManager!!.installedProviders
                             .firstOrNull { it.provider.className == item.className }
