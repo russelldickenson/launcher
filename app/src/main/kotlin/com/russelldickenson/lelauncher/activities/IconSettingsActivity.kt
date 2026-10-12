@@ -2,17 +2,14 @@ package com.russelldickenson.lelauncher.activities
 
 import android.os.Bundle
 import com.russelldickenson.lelauncher.R
-import com.russelldickenson.lelauncher.extensions.beVisibleIf
-import com.russelldickenson.lelauncher.extensions.viewBinding
-import com.russelldickenson.lelauncher.helpers.NavigationIcon
-import com.russelldickenson.lelauncher.helpers.ensureBackgroundThread
-import com.russelldickenson.lelauncher.models.RadioItem
 import com.russelldickenson.lelauncher.databinding.ActivityIconSettingsBinding
+import com.russelldickenson.lelauncher.extensions.beVisibleIf
 import com.russelldickenson.lelauncher.extensions.config
 import com.russelldickenson.lelauncher.extensions.getAppIcon
 import com.russelldickenson.lelauncher.extensions.getDrawableForPackageName
 import com.russelldickenson.lelauncher.extensions.getReferenceIconWidth
 import com.russelldickenson.lelauncher.extensions.showRadioGroupDialog
+import com.russelldickenson.lelauncher.extensions.viewBinding
 import com.russelldickenson.lelauncher.helpers.ICON_SHAPE_CIRCLE
 import com.russelldickenson.lelauncher.helpers.ICON_SHAPE_IOS
 import com.russelldickenson.lelauncher.helpers.ICON_SHAPE_ONE_UI
@@ -20,6 +17,9 @@ import com.russelldickenson.lelauncher.helpers.ICON_SHAPE_ROUNDED_SQUARE
 import com.russelldickenson.lelauncher.helpers.ICON_SHAPE_SQUARE
 import com.russelldickenson.lelauncher.helpers.ICON_SHAPE_SQUIRCLE
 import com.russelldickenson.lelauncher.helpers.IconPackHelper
+import com.russelldickenson.lelauncher.helpers.NavigationIcon
+import com.russelldickenson.lelauncher.helpers.ensureBackgroundThread
+import com.russelldickenson.lelauncher.models.RadioItem
 import kotlin.system.exitProcess
 
 class IconSettingsActivity : SimpleActivity() {

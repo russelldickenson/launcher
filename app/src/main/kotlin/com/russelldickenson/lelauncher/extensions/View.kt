@@ -1,9 +1,9 @@
 package com.russelldickenson.lelauncher.extensions
 
 import android.graphics.drawable.LayerDrawable
+import android.view.HapticFeedbackConstants
 import android.view.RoundedCorner.POSITION_TOP_LEFT
 import android.view.RoundedCorner.POSITION_TOP_RIGHT
-import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver

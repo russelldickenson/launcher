@@ -4,22 +4,22 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.core.view.size
+import com.russelldickenson.lelauncher.R
+import com.russelldickenson.lelauncher.adapters.HiddenIconsAdapter
+import com.russelldickenson.lelauncher.databinding.ActivityHiddenIconsBinding
 import com.russelldickenson.lelauncher.extensions.beVisibleIf
+import com.russelldickenson.lelauncher.extensions.config
+import com.russelldickenson.lelauncher.extensions.getAppIcon
+import com.russelldickenson.lelauncher.extensions.getContrastColor
+import com.russelldickenson.lelauncher.extensions.getDrawableForPackageName
+import com.russelldickenson.lelauncher.extensions.getProperBackgroundColor
+import com.russelldickenson.lelauncher.extensions.hiddenIconsDB
 import com.russelldickenson.lelauncher.extensions.normalizeString
 import com.russelldickenson.lelauncher.extensions.viewBinding
 import com.russelldickenson.lelauncher.helpers.NavigationIcon
 import com.russelldickenson.lelauncher.helpers.ensureBackgroundThread
-import com.russelldickenson.lelauncher.views.SafeGridLayoutManager
-import com.russelldickenson.lelauncher.adapters.HiddenIconsAdapter
-import com.russelldickenson.lelauncher.R
-import com.russelldickenson.lelauncher.databinding.ActivityHiddenIconsBinding
-import com.russelldickenson.lelauncher.extensions.config
-import com.russelldickenson.lelauncher.extensions.getAppIcon
-import com.russelldickenson.lelauncher.extensions.getContrastColor
-import com.russelldickenson.lelauncher.extensions.getProperBackgroundColor
-import com.russelldickenson.lelauncher.extensions.getDrawableForPackageName
-import com.russelldickenson.lelauncher.extensions.hiddenIconsDB
 import com.russelldickenson.lelauncher.models.HiddenIcon
+import com.russelldickenson.lelauncher.views.SafeGridLayoutManager
 
 class HiddenIconsActivity : SimpleActivity() {
     private val binding by viewBinding(ActivityHiddenIconsBinding::inflate)

@@ -1,22 +1,22 @@
 package com.russelldickenson.lelauncher.activities
 
 import android.os.Bundle
-import com.russelldickenson.lelauncher.extensions.beVisibleIf
-import com.russelldickenson.lelauncher.extensions.viewBinding
-import com.russelldickenson.lelauncher.helpers.NavigationIcon
-import com.russelldickenson.lelauncher.models.RadioItem
 import com.russelldickenson.lelauncher.databinding.ActivityDrawerLabelsSettingsBinding
+import com.russelldickenson.lelauncher.extensions.beVisibleIf
 import com.russelldickenson.lelauncher.extensions.config
 import com.russelldickenson.lelauncher.extensions.getAppDrawerBackgroundColor
 import com.russelldickenson.lelauncher.extensions.getAppDrawerTextColor
 import com.russelldickenson.lelauncher.extensions.showColorPickerDialog
 import com.russelldickenson.lelauncher.extensions.showRadioGroupDialog
+import com.russelldickenson.lelauncher.extensions.viewBinding
 import com.russelldickenson.lelauncher.helpers.DRAWER_LABEL_FONT_SIZE_STEP
 import com.russelldickenson.lelauncher.helpers.DRAWER_LABEL_MAX_LINES_STEP
 import com.russelldickenson.lelauncher.helpers.MAX_DRAWER_LABEL_FONT_SIZE
 import com.russelldickenson.lelauncher.helpers.MAX_DRAWER_LABEL_MAX_LINES
 import com.russelldickenson.lelauncher.helpers.MIN_DRAWER_LABEL_FONT_SIZE
 import com.russelldickenson.lelauncher.helpers.MIN_DRAWER_LABEL_MAX_LINES
+import com.russelldickenson.lelauncher.helpers.NavigationIcon
+import com.russelldickenson.lelauncher.models.RadioItem
 
 class DrawerLabelsSettingsActivity : SimpleActivity() {
 

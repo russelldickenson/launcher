@@ -10,8 +10,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
-import com.russelldickenson.lelauncher.extensions.getProperPrimaryColor
 import com.russelldickenson.lelauncher.adapters.LaunchersAdapter
+import com.russelldickenson.lelauncher.extensions.getProperPrimaryColor
 import com.russelldickenson.lelauncher.models.AppLauncher
 import com.russelldickenson.lelauncher.models.DrawerGridItem
 

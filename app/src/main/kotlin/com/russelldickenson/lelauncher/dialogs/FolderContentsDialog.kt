@@ -5,11 +5,10 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
-import android.view.ViewTreeObserver
-import android.view.Window
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import com.russelldickenson.lelauncher.views.SafeGridLayoutManager
+import android.view.ViewTreeObserver
+import android.view.Window
 import com.russelldickenson.lelauncher.activities.MainActivity
 import com.russelldickenson.lelauncher.adapters.LaunchersAdapter
 import com.russelldickenson.lelauncher.databinding.DialogFolderContentsBinding
@@ -25,6 +24,7 @@ import com.russelldickenson.lelauncher.models.AppLauncher
 import com.russelldickenson.lelauncher.models.DrawerFolder
 import com.russelldickenson.lelauncher.models.DrawerGridItem
 import com.russelldickenson.lelauncher.models.HomeScreenGridItem
+import com.russelldickenson.lelauncher.views.SafeGridLayoutManager
 
 // the "mini app drawer" shown over the (dimmed, via the dialog's own default window behavior)
 // main app drawer when a folder is tapped - a small grid of just that folder's apps. Tapping an

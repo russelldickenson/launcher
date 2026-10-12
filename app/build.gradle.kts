@@ -96,6 +96,10 @@ android {
         includeInApk = false
     }
 
+    androidResources {
+        localeFilters += "en"
+    }
+
     tasks.withType<KotlinCompile> {
         compilerOptions.jvmTarget.set(
             JvmTarget.fromTarget(project.libs.versions.app.build.kotlinJVMTarget.get())

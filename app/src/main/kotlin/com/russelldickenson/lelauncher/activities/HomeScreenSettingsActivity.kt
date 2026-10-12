@@ -4,13 +4,11 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
-import com.russelldickenson.lelauncher.extensions.viewBinding
-import com.russelldickenson.lelauncher.helpers.NavigationIcon
-import com.russelldickenson.lelauncher.models.RadioItem
 import com.russelldickenson.lelauncher.R
 import com.russelldickenson.lelauncher.databinding.ActivityHomeScreenSettingsBinding
 import com.russelldickenson.lelauncher.extensions.config
 import com.russelldickenson.lelauncher.extensions.showRadioGroupDialog
+import com.russelldickenson.lelauncher.extensions.viewBinding
 import com.russelldickenson.lelauncher.helpers.DRAWER_ICON_SCALE_PERCENT_STEP
 import com.russelldickenson.lelauncher.helpers.DRAWER_LABEL_MAX_LINES_STEP
 import com.russelldickenson.lelauncher.helpers.MAX_DRAWER_COLUMN_COUNT
@@ -19,6 +17,8 @@ import com.russelldickenson.lelauncher.helpers.MAX_DRAWER_LABEL_MAX_LINES
 import com.russelldickenson.lelauncher.helpers.MIN_DRAWER_COLUMN_COUNT
 import com.russelldickenson.lelauncher.helpers.MIN_DRAWER_ICON_SCALE_PERCENT
 import com.russelldickenson.lelauncher.helpers.MIN_DRAWER_LABEL_MAX_LINES
+import com.russelldickenson.lelauncher.helpers.NavigationIcon
+import com.russelldickenson.lelauncher.models.RadioItem
 import com.russelldickenson.lelauncher.receivers.LockDeviceAdminReceiver
 
 class HomeScreenSettingsActivity : SimpleActivity() {

@@ -1,20 +1,20 @@
 package com.russelldickenson.lelauncher.activities
 
 import android.os.Bundle
-import com.russelldickenson.lelauncher.extensions.adjustForContrast
-import com.russelldickenson.lelauncher.extensions.getContrastColor
-import com.russelldickenson.lelauncher.extensions.toast
-import com.russelldickenson.lelauncher.extensions.viewBinding
-import com.russelldickenson.lelauncher.helpers.NavigationIcon
 import com.russelldickenson.lelauncher.R
 import com.russelldickenson.lelauncher.databinding.ActivityNotificationBadgeSettingsBinding
+import com.russelldickenson.lelauncher.extensions.adjustForContrast
 import com.russelldickenson.lelauncher.extensions.config
+import com.russelldickenson.lelauncher.extensions.getContrastColor
 import com.russelldickenson.lelauncher.extensions.isNotificationListenerEnabled
 import com.russelldickenson.lelauncher.extensions.openNotificationListenerSettings
 import com.russelldickenson.lelauncher.extensions.showColorPickerDialog
+import com.russelldickenson.lelauncher.extensions.toast
+import com.russelldickenson.lelauncher.extensions.viewBinding
 import com.russelldickenson.lelauncher.helpers.NOTIFICATION_BADGE_SHAPE_CIRCLE
 import com.russelldickenson.lelauncher.helpers.NOTIFICATION_BADGE_SHAPE_ROUNDED_SQUARE
 import com.russelldickenson.lelauncher.helpers.NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE
+import com.russelldickenson.lelauncher.helpers.NavigationIcon
 
 class NotificationBadgeSettingsActivity : SimpleActivity() {
 

@@ -2,12 +2,12 @@ package com.russelldickenson.lelauncher.activities
 
 import android.content.Intent
 import android.os.Bundle
-import com.russelldickenson.lelauncher.extensions.viewBinding
-import com.russelldickenson.lelauncher.helpers.NavigationIcon
 import com.russelldickenson.lelauncher.BuildConfig
 import com.russelldickenson.lelauncher.R
 import com.russelldickenson.lelauncher.databinding.ActivitySettingsBinding
 import com.russelldickenson.lelauncher.extensions.config
+import com.russelldickenson.lelauncher.extensions.viewBinding
+import com.russelldickenson.lelauncher.helpers.NavigationIcon
 
 class SettingsActivity : SimpleActivity() {
 

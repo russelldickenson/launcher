@@ -12,13 +12,13 @@ import android.graphics.drawable.ColorDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.RelativeLayout
-import kotlinx.collections.immutable.toImmutableList
-import com.russelldickenson.lelauncher.extensions.getProperPrimaryColor
 import com.russelldickenson.lelauncher.R
 import com.russelldickenson.lelauncher.extensions.config
 import com.russelldickenson.lelauncher.extensions.getCellCount
+import com.russelldickenson.lelauncher.extensions.getProperPrimaryColor
 import com.russelldickenson.lelauncher.helpers.MAX_CLICK_DURATION
 import com.russelldickenson.lelauncher.models.HomeScreenGridItem
+import kotlinx.collections.immutable.toImmutableList
 
 @SuppressLint("ViewConstructor")
 class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: Int) : RelativeLayout(context, attrs, defStyle) {

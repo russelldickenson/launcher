@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.russelldickenson.lelauncher.extensions.getProperTextColor
 import com.russelldickenson.lelauncher.R
 import com.russelldickenson.lelauncher.activities.SimpleActivity
-import com.russelldickenson.lelauncher.extensions.getThemeAwareTextColor
 import com.russelldickenson.lelauncher.databinding.ItemWidgetListItemsHolderBinding
 import com.russelldickenson.lelauncher.databinding.ItemWidgetListSectionBinding
 import com.russelldickenson.lelauncher.databinding.ItemWidgetPreviewBinding
+import com.russelldickenson.lelauncher.extensions.getProperTextColor
+import com.russelldickenson.lelauncher.extensions.getThemeAwareTextColor
 import com.russelldickenson.lelauncher.helpers.WIDGET_LIST_ITEMS_HOLDER
 import com.russelldickenson.lelauncher.helpers.WIDGET_LIST_SECTION
 import com.russelldickenson.lelauncher.interfaces.WidgetsFragmentListener

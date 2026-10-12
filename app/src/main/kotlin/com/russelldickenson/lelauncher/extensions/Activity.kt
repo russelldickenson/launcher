@@ -28,8 +28,6 @@ import androidx.core.view.MenuCompat
 import androidx.core.view.forEach
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.russelldickenson.lelauncher.models.RadioItem
-import com.russelldickenson.lelauncher.helpers.isSPlus
 import com.russelldickenson.lelauncher.R
 import com.russelldickenson.lelauncher.helpers.ITEM_TYPE_FOLDER
 import com.russelldickenson.lelauncher.helpers.ITEM_TYPE_ICON
@@ -37,8 +35,10 @@ import com.russelldickenson.lelauncher.helpers.ITEM_TYPE_WIDGET
 import com.russelldickenson.lelauncher.helpers.IconCache
 import com.russelldickenson.lelauncher.helpers.PillPopupMenu
 import com.russelldickenson.lelauncher.helpers.UNINSTALL_APP_REQUEST_CODE
+import com.russelldickenson.lelauncher.helpers.isSPlus
 import com.russelldickenson.lelauncher.interfaces.ItemMenuListener
 import com.russelldickenson.lelauncher.models.HomeScreenGridItem
+import com.russelldickenson.lelauncher.models.RadioItem
 
 // a fixed palette instead of a full hue/saturation picker - keeps the picker guaranteed
 // Material (MaterialAlertDialogBuilder) on every supported OS version
