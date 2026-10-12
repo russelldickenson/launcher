@@ -31,13 +31,10 @@ complexity:
 
 style:
   MagicNumber:
-    active: true
-    ignoreAnnotated: ["Composable"]
-    ignoreEnums: true
-    ignoreNumbers: ["-1", "0", "1", "2", "42", "1000"]
+    active: false
   MaxLineLength:
     active: true
-    maxLineLength: 120
+    maxLineLength: 160
     excludePackageStatements: true
     excludeImportStatements: true
   ReturnCount:

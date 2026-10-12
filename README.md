@@ -31,3 +31,7 @@ fork of [Fossify Launcher](https://github.com/FossifyOrg/Launcher).
 
 Find your balance of speed, customization, and privacy with Le Launcher.
 
+## License
+
+Copyright (C) Russell Dickenson. Derived from [Fossify Launcher](https://github.com/FossifyOrg/Launcher).
+Licensed under the GNU General Public License v3.0, see [LICENSE](LICENSE).

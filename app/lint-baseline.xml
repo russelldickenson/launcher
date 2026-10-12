@@ -79,61 +79,6 @@
     </issue>
 
     <issue
-        id="IncludeLayoutParam"
-        message="Layout parameter `layout_marginBottom` ignored unless both `layout_width` and `layout_height` are also specified on `&lt;include>` tag"
-        errorLine1="                android:layout_marginBottom=&quot;16dp&quot; />"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_icon_settings.xml"
-            line="103"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="IncludeLayoutParam"
-        message="Layout parameter `layout_marginBottom` ignored unless both `layout_width` and `layout_height` are also specified on `&lt;include>` tag"
-        errorLine1="                android:layout_marginBottom=&quot;16dp&quot; />"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_icon_settings.xml"
-            line="131"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="IncludeLayoutParam"
-        message="Layout parameter `layout_marginBottom` ignored unless both `layout_width` and `layout_height` are also specified on `&lt;include>` tag"
-        errorLine1="                android:layout_marginBottom=&quot;16dp&quot; />"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_notification_badge_settings.xml"
-            line="92"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="IncludeLayoutParam"
-        message="Layout parameter `layout_marginBottom` ignored unless both `layout_width` and `layout_height` are also specified on `&lt;include>` tag"
-        errorLine1="                android:layout_marginBottom=&quot;16dp&quot; />"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_notification_badge_settings.xml"
-            line="120"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="IncludeLayoutParam"
-        message="Layout parameter `layout_marginBottom` ignored unless both `layout_width` and `layout_height` are also specified on `&lt;include>` tag"
-        errorLine1="                android:layout_marginBottom=&quot;16dp&quot; />"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_notification_badge_settings.xml"
-            line="148"
-            column="17"/>
-    </issue>
-
-    <issue
         id="AndroidGradlePluginVersion"
         message="A newer version of Gradle than 9.6.1 is available: 9.8.1"
         errorLine1="distributionUrl=https\://services.gradle.org/distributions/gradle-9.6.1-bin.zip"
@@ -153,17 +98,6 @@
             file="$HOME/personal/repos/launcher/gradle/libs.versions.toml"
             line="23"
             column="21"/>
-    </issue>
-
-    <issue
-        id="DiffUtilEquals"
-        message="Suspicious equality check: `equals()` is not implemented in List"
-        errorLine1="                    oldItem.members.map { it.getLauncherIdentifier() } == newItem.members.map { it.getLauncherIdentifier() } &amp;&amp;"
-        errorLine2="                                                                       ~~">
-        <location
-            file="src/main/kotlin/com/russelldickenson/lelauncher/adapters/LaunchersAdapter.kt"
-            line="408"
-            column="72"/>
     </issue>
 
     <issue

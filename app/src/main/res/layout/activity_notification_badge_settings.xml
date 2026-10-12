@@ -88,8 +88,7 @@
             </RelativeLayout>
 
             <include
-                layout="@layout/divider_inset"
-                android:layout_marginBottom="16dp" />
+                layout="@layout/divider_inset" />
 
             <TextView
                 style="@style/SettingsSubHeadingStyle"
@@ -116,8 +115,7 @@
             </RelativeLayout>
 
             <include
-                layout="@layout/divider_inset"
-                android:layout_marginBottom="16dp" />
+                layout="@layout/divider_inset" />
 
             <TextView
                 style="@style/SettingsSubHeadingStyle"
@@ -144,8 +142,7 @@
             </RelativeLayout>
 
             <include
-                layout="@layout/divider_inset"
-                android:layout_marginBottom="16dp" />
+                layout="@layout/divider_inset" />
 
             <TextView
                 style="@style/SettingsSubHeadingStyle"

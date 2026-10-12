@@ -405,7 +405,10 @@ private class DrawerGridItemDiffCallback : DiffUtil.ItemCallback<DrawerGridItem>
             // require every member to already have a drawable so the preview icon isn't drawn
             // half-built while icons are still loading
             oldItem.folder.title == newItem.folder.title &&
-                    oldItem.members.map { it.getLauncherIdentifier() } == newItem.members.map { it.getLauncherIdentifier() } &&
+                    oldItem.members.size == newItem.members.size &&
+                    oldItem.members.indices.all {
+                        oldItem.members[it].getLauncherIdentifier() == newItem.members[it].getLauncherIdentifier()
+                    } &&
                     newItem.members.all { it.drawable != null }
         } else {
             oldItem == newItem
