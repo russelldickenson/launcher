@@ -11,12 +11,12 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
-import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.getProperPrimaryColor
-import org.fossify.commons.extensions.hideKeyboard
-import org.fossify.commons.extensions.normalizeString
-import org.fossify.commons.extensions.showKeyboard
-import org.fossify.commons.views.MyGridLayoutManager
+import org.fossify.home.extensions.beVisibleIf
+import org.fossify.home.extensions.getProperPrimaryColor
+import org.fossify.home.extensions.hideKeyboard
+import org.fossify.home.extensions.normalizeString
+import org.fossify.home.extensions.showKeyboard
+import org.fossify.home.views.SafeGridLayoutManager
 import org.fossify.home.R
 import org.fossify.home.activities.MainActivity
 import org.fossify.home.adapters.LaunchersAdapter
@@ -107,7 +107,7 @@ class AllAppsFragment(
             return
         }
 
-        val layoutManager = binding.allAppsGrid.layoutManager as MyGridLayoutManager
+        val layoutManager = binding.allAppsGrid.layoutManager as SafeGridLayoutManager
         val showFavouritesDividerChanged = lastShowFavouritesDivider != null && lastShowFavouritesDivider != context.config.showFavouritesDivider
         if (layoutManager.spanCount != context.config.drawerColumnCount || showFavouritesDividerChanged) {
             lastShowFavouritesDivider = context.config.showFavouritesDivider
@@ -135,7 +135,7 @@ class AllAppsFragment(
         binding.allAppsFastscroller.resetManualScrolling()
         setupViews()
 
-        val layoutManager = binding.allAppsGrid.layoutManager as MyGridLayoutManager
+        val layoutManager = binding.allAppsGrid.layoutManager as SafeGridLayoutManager
         layoutManager.spanCount = context.config.drawerColumnCount
         setupAdapter(launchers)
     }
@@ -206,7 +206,7 @@ class AllAppsFragment(
 
     private fun setupAdapter(launchers: List<AppLauncher>) {
         activity?.runOnUiThread {
-            val layoutManager = binding.allAppsGrid.layoutManager as MyGridLayoutManager
+            val layoutManager = binding.allAppsGrid.layoutManager as SafeGridLayoutManager
             layoutManager.spanCount = context.config.drawerColumnCount
 
             if (getAdapter() == null) {

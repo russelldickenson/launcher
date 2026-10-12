@@ -2,37 +2,47 @@ package org.fossify.home.dialogs
 
 import android.app.Activity
 import android.content.DialogInterface
+import android.view.WindowManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import org.fossify.commons.extensions.*
+import org.fossify.home.R
 import org.fossify.home.databinding.DialogRenameItemBinding
+import org.fossify.home.extensions.onGlobalLayout
+import org.fossify.home.extensions.toast
 
 class RenameItemDialog(
     val activity: Activity,
     val currentTitle: String,
-    val titleRes: Int = org.fossify.commons.R.string.rename,
+    val titleRes: Int = R.string.rename,
     val onConfirm: (newTitle: String, dialog: DialogInterface) -> Unit
 ) {
 
     init {
         val binding = DialogRenameItemBinding.inflate(activity.layoutInflater)
-        val view = binding.root
         binding.renameItemEdittext.setText(currentTitle)
 
-        MaterialAlertDialogBuilder(activity)
-            .setPositiveButton(org.fossify.commons.R.string.ok, null)
-            .setNegativeButton(org.fossify.commons.R.string.cancel, null)
-            .apply {
-                activity.setupDialogStuff(view, this, titleRes) { alertDialog ->
-                    alertDialog.showKeyboard(binding.renameItemEdittext)
-                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
-                        val newTitle = binding.renameItemEdittext.value
-                        if (newTitle.isNotEmpty()) {
-                            onConfirm(newTitle, alertDialog)
-                        } else {
-                            activity.toast(org.fossify.commons.R.string.value_cannot_be_empty)
-                        }
-                    }
+        if (!activity.isFinishing && !activity.isDestroyed) {
+            val dialog = MaterialAlertDialogBuilder(activity)
+                .setTitle(titleRes)
+                .setView(binding.root)
+                .setPositiveButton(R.string.ok, null)
+                .setNegativeButton(R.string.cancel, null)
+                .create()
+            dialog.show()
+
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+            binding.renameItemEdittext.apply {
+                requestFocus()
+                onGlobalLayout { setSelection(text?.length ?: 0) }
+            }
+
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+                val newTitle = binding.renameItemEdittext.text.toString().trim()
+                if (newTitle.isNotEmpty()) {
+                    onConfirm(newTitle, dialog)
+                } else {
+                    activity.toast(R.string.value_cannot_be_empty)
                 }
             }
+        }
     }
 }

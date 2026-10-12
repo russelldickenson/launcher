@@ -138,8 +138,12 @@ detekt {
 }
 
 dependencies {
-    implementation(libs.fossify.commons)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.glide)
+    implementation(libs.recyclerview.fast.scroller)
+    implementation(libs.kotlin.immutable.collections)
 
     implementation(libs.bundles.room)
     ksp(libs.androidx.room.compiler)

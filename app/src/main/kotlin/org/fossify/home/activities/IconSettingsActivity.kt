@@ -1,11 +1,12 @@
 package org.fossify.home.activities
 
 import android.os.Bundle
-import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.viewBinding
-import org.fossify.commons.helpers.NavigationIcon
-import org.fossify.commons.helpers.ensureBackgroundThread
-import org.fossify.commons.models.RadioItem
+import org.fossify.home.R
+import org.fossify.home.extensions.beVisibleIf
+import org.fossify.home.extensions.viewBinding
+import org.fossify.home.helpers.NavigationIcon
+import org.fossify.home.helpers.ensureBackgroundThread
+import org.fossify.home.models.RadioItem
 import org.fossify.home.databinding.ActivityIconSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppIcon
@@ -64,7 +65,7 @@ class IconSettingsActivity : SimpleActivity() {
         binding.settingsIconPackHolder.setOnClickListener {
             val iconPacks = IconPackHelper.getInstalledIconPacks(this)
             val items = ArrayList<RadioItem>()
-            items.add(RadioItem(0, getString(org.fossify.commons.R.string.system_default)))
+            items.add(RadioItem(0, getString(R.string.system_default)))
             iconPacks.forEachIndexed { index, iconPack ->
                 items.add(RadioItem(index + 1, iconPack.name))
             }
@@ -89,10 +90,10 @@ class IconSettingsActivity : SimpleActivity() {
     private fun updateIconPackLabel() {
         val iconPack = config.iconPack
         binding.settingsIconPack.text = if (iconPack.isEmpty()) {
-            getString(org.fossify.commons.R.string.system_default)
+            getString(R.string.system_default)
         } else {
             IconPackHelper.getInstalledIconPacks(this).firstOrNull { it.packageName == iconPack }?.name
-                ?: getString(org.fossify.commons.R.string.system_default)
+                ?: getString(R.string.system_default)
         }
     }
 

@@ -7,27 +7,34 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.LauncherApps
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.Process
 import android.provider.Settings
 import android.util.Size
+import android.util.TypedValue
+import android.view.WindowManager
+import android.widget.Toast
+import androidx.annotation.AttrRes
 import androidx.annotation.RequiresApi
+import androidx.annotation.StringRes
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
-import org.fossify.commons.extensions.getProperBackgroundColor
-import org.fossify.commons.extensions.getProperTextColor
-import org.fossify.commons.extensions.realScreenSize
-import org.fossify.commons.helpers.isQPlus
-import org.fossify.commons.helpers.isSPlus
 import org.fossify.home.R
 import org.fossify.home.databases.AppsDatabase
 import org.fossify.home.helpers.Config
 import org.fossify.home.helpers.IconContrastHelper
 import org.fossify.home.helpers.IconPackHelper
+import org.fossify.home.helpers.isOnMainThread
+import org.fossify.home.helpers.isQPlus
+import org.fossify.home.helpers.isSPlus
 import org.fossify.home.interfaces.AppLaunchersDao
 import org.fossify.home.interfaces.DrawerFoldersDao
 import org.fossify.home.interfaces.HiddenIconsDao
@@ -237,3 +244,47 @@ fun Context.isDefaultLauncher(): Boolean {
         }
     }
 }
+
+val Context.portrait get() = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+val Context.realScreenSize: Point
+    get() = Point().also { (getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.getRealSize(it) }
+
+fun Context.isPackageInstalled(packageName: String) = try {
+    packageManager.getPackageInfo(packageName, 0)
+    true
+} catch (_: PackageManager.NameNotFoundException) {
+    false
+}
+
+fun Context.toast(@StringRes id: Int, length: Int = Toast.LENGTH_SHORT) = toast(getString(id), length)
+
+fun Context.toast(message: String, length: Int = Toast.LENGTH_SHORT) {
+    if (isOnMainThread()) {
+        Toast.makeText(applicationContext, message, length).show()
+    } else {
+        Handler(Looper.getMainLooper()).post { Toast.makeText(applicationContext, message, length).show() }
+    }
+}
+
+fun Context.showErrorToast(exception: Exception, length: Int = Toast.LENGTH_LONG) =
+    toast(getString(R.string.error, exception.toString()), length)
+
+// resolves a color attribute against the current (Material 3, dynamic-color aware) theme
+fun Context.getThemeColor(@AttrRes attr: Int): Int {
+    val value = TypedValue()
+    theme.resolveAttribute(attr, value, true)
+    return if (value.resourceId != 0) getColor(value.resourceId) else value.data
+}
+
+fun Context.getProperTextColor() = getThemeColor(com.google.android.material.R.attr.colorOnSurface)
+
+fun Context.getProperBackgroundColor() = getThemeColor(android.R.attr.colorBackground)
+
+fun Context.getProperPrimaryColor() = getThemeColor(androidx.appcompat.R.attr.colorPrimary)
+
+// tint of the top bar once the content below it has been scrolled
+fun Context.getScrolledTopBarColor() = getThemeColor(com.google.android.material.R.attr.colorSurfaceContainer)
+
+fun Context.showErrorToast(message: String, length: Int = Toast.LENGTH_LONG) =
+    toast(getString(R.string.error, message), length)

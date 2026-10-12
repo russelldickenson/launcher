@@ -1,18 +1,13 @@
 package org.fossify.home.activities
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.viewBinding
-import org.fossify.commons.helpers.NavigationIcon
-import org.fossify.commons.helpers.isTiramisuPlus
+import org.fossify.home.extensions.viewBinding
+import org.fossify.home.helpers.NavigationIcon
 import org.fossify.home.BuildConfig
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivitySettingsBinding
 import org.fossify.home.extensions.config
-import java.util.Locale
-import kotlin.system.exitProcess
 
 class SettingsActivity : SimpleActivity() {
 
@@ -34,29 +29,11 @@ class SettingsActivity : SimpleActivity() {
         setupNotificationBadgeSettings()
         setupDrawerSettings()
         setupHomeScreenSettings()
-        setupUseEnglish()
-        setupLanguage()
         setupVersion()
     }
 
     private fun setupVersion() {
         binding.settingsVersion.text = getString(R.string.settings_version, BuildConfig.VERSION_NAME)
-    }
-
-    private fun setupUseEnglish() {
-        val showUseEnglish = (config.wasUseEnglishToggled || Locale.getDefault().language != "en")
-                && !isTiramisuPlus()
-        binding.settingsUseEnglishHolder.beVisibleIf(showUseEnglish)
-        // this row's own divider would otherwise stay put and stack on top of the next visible
-        // row's divider, rendering as one noticeably thicker line
-        binding.settingsUseEnglishDivider.root.beVisibleIf(showUseEnglish)
-
-        binding.settingsUseEnglish.isChecked = config.useEnglish
-        binding.settingsUseEnglishHolder.setOnClickListener {
-            binding.settingsUseEnglish.toggle()
-            config.useEnglish = binding.settingsUseEnglish.isChecked
-            exitProcess(0)
-        }
     }
 
     private fun setupIconSettings() {
@@ -80,15 +57,6 @@ class SettingsActivity : SimpleActivity() {
     private fun setupHomeScreenSettings() {
         binding.settingsHomeScreenSettingsHolder.setOnClickListener {
             startActivity(Intent(this, HomeScreenSettingsActivity::class.java))
-        }
-    }
-
-    @SuppressLint("NewApi")
-    private fun setupLanguage() {
-        binding.settingsLanguage.text = Locale.getDefault().displayLanguage
-        binding.settingsLanguageHolder.beVisibleIf(isTiramisuPlus())
-        binding.settingsLanguageHolder.setOnClickListener {
-            launchChangeAppLanguageIntent()
         }
     }
 }

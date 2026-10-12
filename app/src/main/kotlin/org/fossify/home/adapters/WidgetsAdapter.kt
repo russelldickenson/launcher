@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import org.fossify.commons.extensions.getProperTextColor
+import org.fossify.home.extensions.getProperTextColor
 import org.fossify.home.R
 import org.fossify.home.activities.SimpleActivity
 import org.fossify.home.extensions.getThemeAwareTextColor
@@ -74,7 +74,7 @@ class WidgetsAdapter(
             binding.widgetListItemsHolder.addView(widgetPreview.root)
 
             val endMargin = if (index == listItem.widgets.size - 1) {
-                activity.resources.getDimension(org.fossify.commons.R.dimen.medium_margin).toInt()
+                activity.resources.getDimension(R.dimen.medium_margin).toInt()
             } else {
                 0
             }
@@ -86,7 +86,7 @@ class WidgetsAdapter(
 
             widgetPreview.widgetSize.apply {
                 text = if (widget.isShortcut) {
-                    activity.getString(org.fossify.commons.R.string.shortcut)
+                    activity.getString(R.string.shortcut)
                 } else {
                     "${widget.widthCells} x ${widget.heightCells}"
                 }
@@ -94,7 +94,7 @@ class WidgetsAdapter(
             }
 
             (widgetPreview.widgetImage.layoutParams as RelativeLayout.LayoutParams).apply {
-                marginStart = activity.resources.getDimension(org.fossify.commons.R.dimen.activity_margin).toInt()
+                marginStart = activity.resources.getDimension(R.dimen.activity_margin).toInt()
                 marginEnd = endMargin
                 width = imageSize
                 height = imageSize

@@ -17,8 +17,8 @@ import android.util.Log
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.toBitmap
-import org.fossify.commons.extensions.getProperBackgroundColor
-import org.fossify.commons.extensions.getProperPrimaryColor
+import org.fossify.home.extensions.getProperBackgroundColor
+import org.fossify.home.extensions.getProperPrimaryColor
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import kotlin.math.PI

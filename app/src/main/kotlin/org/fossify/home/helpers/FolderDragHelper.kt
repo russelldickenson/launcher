@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.RecyclerView
-import org.fossify.commons.extensions.getProperPrimaryColor
+import org.fossify.home.extensions.getProperPrimaryColor
 import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.models.AppLauncher
 import org.fossify.home.models.DrawerGridItem

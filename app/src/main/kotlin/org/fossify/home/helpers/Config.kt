@@ -2,11 +2,15 @@ package org.fossify.home.helpers
 
 import android.content.Context
 import android.graphics.Color
-import org.fossify.commons.helpers.BaseConfig
 import org.fossify.home.R
 
-class Config(context: Context) : BaseConfig(context) {
+class Config(val context: Context) {
+    private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
     companion object {
+        // unchanged since before the commons library was removed, so existing preferences keep loading
+        private const val PREFS_NAME = "Prefs"
+
         fun newInstance(context: Context) = Config(context)
     }
 

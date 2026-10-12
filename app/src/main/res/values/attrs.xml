@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="applyWindowInsets" format="boolean" />
+
+    <declare-styleable name="InsetAppBarLayout">
+        <attr name="applyWindowInsets" />
+    </declare-styleable>
+</resources>

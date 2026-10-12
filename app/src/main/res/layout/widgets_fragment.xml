@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <org.fossify.commons.views.MySearchMenu
+    <org.fossify.home.views.SearchBarLayout
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,12 +18,12 @@
         android:layout_below="@id/search_bar"
         app:fastScrollEnabled="false">
 
-        <org.fossify.commons.views.MyRecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/widgets_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            app:layoutManager="org.fossify.commons.views.MyLinearLayoutManager" />
+            app:layoutManager="org.fossify.home.views.SafeLinearLayoutManager" />
 
     </com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller>
 </org.fossify.home.fragments.WidgetsFragment>

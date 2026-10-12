@@ -2,9 +2,6 @@ package org.fossify.home.models
 
 import android.graphics.drawable.Drawable
 import androidx.room.*
-import org.fossify.commons.extensions.normalizeString
-import org.fossify.commons.helpers.SORT_BY_TITLE
-import org.fossify.commons.helpers.SORT_DESCENDING
 
 @Entity(tableName = "apps", indices = [(Index(value = ["package_name"], unique = true))])
 data class AppLauncher(
@@ -23,10 +20,6 @@ data class AppLauncher(
 
     constructor() : this(null, "", "", "", 0, 0, false, null, null, null)
 
-    companion object {
-        var sorting = 0
-    }
-
     override fun equals(other: Any?) = packageName.equals((other as AppLauncher).packageName, true)
 
     override fun hashCode() = super.hashCode()
@@ -36,25 +29,14 @@ data class AppLauncher(
     fun getLauncherIdentifier() = "$packageName/$activityName"
 
     override fun compareTo(other: AppLauncher): Int {
-        var result = when {
-            sorting and SORT_BY_TITLE != 0 -> title.normalizeString().lowercase().compareTo(other.title.normalizeString().lowercase())
-            else -> {
-                if (order > 0 && other.order == 0) {
-                    -1
-                } else if (order == 0 && other.order > 0) {
-                    1
-                } else if (order > 0 && other.order > 0) {
-                    order.compareTo(other.order)
-                } else {
-                    title.lowercase().compareTo(other.title.lowercase())
-                }
-            }
+        return if (order > 0 && other.order == 0) {
+            -1
+        } else if (order == 0 && other.order > 0) {
+            1
+        } else if (order > 0 && other.order > 0) {
+            order.compareTo(other.order)
+        } else {
+            title.lowercase().compareTo(other.title.lowercase())
         }
-
-        if (sorting and SORT_DESCENDING != 0) {
-            result *= -1
-        }
-
-        return result
     }
 }

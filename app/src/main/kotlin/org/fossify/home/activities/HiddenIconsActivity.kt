@@ -3,23 +3,27 @@ package org.fossify.home.activities
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.normalizeString
-import org.fossify.commons.extensions.viewBinding
-import org.fossify.commons.helpers.NavigationIcon
-import org.fossify.commons.helpers.ensureBackgroundThread
-import org.fossify.commons.interfaces.RefreshRecyclerViewListener
-import org.fossify.commons.views.MyGridLayoutManager
+import androidx.core.view.size
+import org.fossify.home.extensions.beVisibleIf
+import org.fossify.home.extensions.normalizeString
+import org.fossify.home.extensions.viewBinding
+import org.fossify.home.helpers.NavigationIcon
+import org.fossify.home.helpers.ensureBackgroundThread
+import org.fossify.home.views.SafeGridLayoutManager
 import org.fossify.home.adapters.HiddenIconsAdapter
+import org.fossify.home.R
 import org.fossify.home.databinding.ActivityHiddenIconsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppIcon
+import org.fossify.home.extensions.getContrastColor
+import org.fossify.home.extensions.getProperBackgroundColor
 import org.fossify.home.extensions.getDrawableForPackageName
 import org.fossify.home.extensions.hiddenIconsDB
 import org.fossify.home.models.HiddenIcon
 
-class HiddenIconsActivity : SimpleActivity(), RefreshRecyclerViewListener {
+class HiddenIconsActivity : SimpleActivity() {
     private val binding by viewBinding(ActivityHiddenIconsBinding::inflate)
+    private var adapter: HiddenIconsAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,13 +33,43 @@ class HiddenIconsActivity : SimpleActivity(), RefreshRecyclerViewListener {
         setupEdgeToEdge(padBottomSystem = listOf(binding.manageHiddenIconsList))
         setupMaterialScrollListener(binding.manageHiddenIconsList, binding.manageHiddenIconsAppbar)
 
-        val layoutManager = binding.manageHiddenIconsList.layoutManager as MyGridLayoutManager
+        val layoutManager = binding.manageHiddenIconsList.layoutManager as SafeGridLayoutManager
         layoutManager.spanCount = config.drawerColumnCount
     }
 
     override fun onResume() {
         super.onResume()
         setupTopAppBar(binding.manageHiddenIconsAppbar, NavigationIcon.Arrow)
+        setupUnhideAction()
+    }
+
+    private fun setupUnhideAction() {
+        val toolbar = binding.manageHiddenIconsToolbar
+        if (toolbar.menu.size == 0) {
+            toolbar.inflateMenu(R.menu.menu_hidden_icons)
+            toolbar.setOnMenuItemClickListener {
+                if (it.itemId == R.id.cab_unhide_icon) {
+                    unhideSelection()
+                }
+                true
+            }
+        }
+
+        val unhideItem = toolbar.menu.findItem(R.id.cab_unhide_icon)
+        unhideItem.icon?.setTint(getProperBackgroundColor().getContrastColor())
+        unhideItem.isVisible = (adapter?.getSelectedIcons()?.size ?: 0) > 0
+    }
+
+    private fun unhideSelection() {
+        val adapter = adapter ?: return
+        val selected = adapter.getSelectedIcons()
+        ensureBackgroundThread {
+            hiddenIconsDB.removeHiddenIcons(selected)
+            runOnUiThread {
+                adapter.removeIcons(selected)
+                binding.manageHiddenIconsPlaceholder.beVisibleIf(adapter.itemCount == 0)
+            }
+        }
     }
 
     private fun updateIcons() {
@@ -79,15 +113,11 @@ class HiddenIconsActivity : SimpleActivity(), RefreshRecyclerViewListener {
             }
 
             runOnUiThread {
-                HiddenIconsAdapter(this, hiddenIcons, this, binding.manageHiddenIconsList) {
-                }.apply {
-                    binding.manageHiddenIconsList.adapter = this
+                adapter = HiddenIconsAdapter(this, hiddenIcons) {
+                    binding.manageHiddenIconsToolbar.menu.findItem(R.id.cab_unhide_icon)?.isVisible = it > 0
                 }
+                binding.manageHiddenIconsList.adapter = adapter
             }
         }
-    }
-
-    override fun refreshItems() {
-        updateIcons()
     }
 }

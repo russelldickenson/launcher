@@ -1,10 +1,10 @@
 package org.fossify.home.activities
 
 import android.os.Bundle
-import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.viewBinding
-import org.fossify.commons.helpers.NavigationIcon
-import org.fossify.commons.models.RadioItem
+import org.fossify.home.extensions.beVisibleIf
+import org.fossify.home.extensions.viewBinding
+import org.fossify.home.helpers.NavigationIcon
+import org.fossify.home.models.RadioItem
 import org.fossify.home.databinding.ActivityDrawerLabelsSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getAppDrawerBackgroundColor

@@ -47,26 +47,24 @@ import androidx.viewbinding.ViewBinding
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.collections.immutable.toImmutableList
-import org.fossify.commons.extensions.appLaunched
-import org.fossify.commons.extensions.beVisible
-import org.fossify.commons.extensions.getContrastColor
-import org.fossify.commons.extensions.getProperBackgroundColor
-import org.fossify.commons.extensions.getProperTextColor
-import org.fossify.commons.extensions.insetsController
-import org.fossify.commons.extensions.isDynamicTheme
-import org.fossify.commons.extensions.isPackageInstalled
-import org.fossify.commons.extensions.normalizeString
-import org.fossify.commons.extensions.onGlobalLayout
-import org.fossify.commons.extensions.performHapticFeedback
-import org.fossify.commons.extensions.realScreenSize
-import org.fossify.commons.extensions.showErrorToast
-import org.fossify.commons.extensions.toast
-import org.fossify.commons.extensions.viewBinding
-import org.fossify.commons.helpers.DARK_GREY
-import org.fossify.commons.helpers.ensureBackgroundThread
-import org.fossify.commons.helpers.isOreoMr1Plus
-import org.fossify.commons.helpers.isQPlus
-import org.fossify.commons.helpers.isSPlus
+import org.fossify.home.extensions.beVisible
+import org.fossify.home.extensions.getContrastColor
+import org.fossify.home.extensions.getProperBackgroundColor
+import org.fossify.home.extensions.getProperTextColor
+import org.fossify.home.extensions.insetsController
+import org.fossify.home.extensions.isPackageInstalled
+import org.fossify.home.extensions.normalizeString
+import org.fossify.home.extensions.onGlobalLayout
+import org.fossify.home.extensions.performHapticFeedback
+import org.fossify.home.extensions.realScreenSize
+import org.fossify.home.extensions.showErrorToast
+import org.fossify.home.extensions.toast
+import org.fossify.home.extensions.viewBinding
+import org.fossify.home.extensions.DARK_GREY
+import org.fossify.home.helpers.ensureBackgroundThread
+import org.fossify.home.helpers.isOreoMr1Plus
+import org.fossify.home.helpers.isQPlus
+import org.fossify.home.helpers.isSPlus
 import org.fossify.home.BuildConfig
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivityMainBinding
@@ -152,11 +150,8 @@ class MainActivity : SimpleActivity(), FlingListener {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        useDynamicTheme = false
-
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        appLaunched(BuildConfig.APPLICATION_ID)
         setupEdgeToEdge(
             padTopSystem = listOf(binding.allAppsFragment.root, binding.widgetsFragment.root),
             padBottomImeAndSystem = listOf(
@@ -975,13 +970,13 @@ class MainActivity : SimpleActivity(), FlingListener {
         RenameItemDialog(this, homeScreenGridItem.title) { newTitle, dialog ->
             ensureBackgroundThread {
                 if (homeScreenGridItem.type == ITEM_TYPE_FOLDER && isHomeFolderNameTaken(newTitle, excludeItemId = homeScreenGridItem.id)) {
-                    runOnUiThread { toast(org.fossify.commons.R.string.rename_folder_exists) }
+                    runOnUiThread { toast(R.string.rename_folder_exists) }
                     return@ensureBackgroundThread
                 }
 
                 val result = homeScreenGridItemsDB.updateItemTitle(newTitle, homeScreenGridItem.id!!)
                 if (result != 1) {
-                    runOnUiThread { toast(org.fossify.commons.R.string.unknown_error_occurred) }
+                    runOnUiThread { toast(R.string.unknown_error_occurred) }
                     return@ensureBackgroundThread
                 }
 
@@ -1081,7 +1076,7 @@ class MainActivity : SimpleActivity(), FlingListener {
     private fun createFolderWithApps(apps: List<AppLauncher>) {
         RenameItemDialog(this, "", titleRes = R.string.new_folder) { title, dialog ->
             if (isDrawerFolderNameTaken(title)) {
-                toast(org.fossify.commons.R.string.rename_folder_exists)
+                toast(R.string.rename_folder_exists)
                 return@RenameItemDialog
             }
 
@@ -1201,7 +1196,7 @@ class MainActivity : SimpleActivity(), FlingListener {
     private fun renameFolder(folder: DrawerFolder, onRenamed: ((String) -> Unit)? = null) {
         RenameItemDialog(this, folder.title, titleRes = R.string.rename_folder) { newTitle, dialog ->
             if (isDrawerFolderNameTaken(newTitle, excludeFolderId = folder.id)) {
-                toast(org.fossify.commons.R.string.rename_folder_exists)
+                toast(R.string.rename_folder_exists)
                 return@RenameItemDialog
             }
 
@@ -1221,7 +1216,7 @@ class MainActivity : SimpleActivity(), FlingListener {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.delete_folder)
             .setMessage(R.string.delete_folder_confirmation)
-            .setPositiveButton(org.fossify.commons.R.string.yes) { _, _ ->
+            .setPositiveButton(R.string.yes) { _, _ ->
                 ensureBackgroundThread {
                     drawerFoldersDB.deleteFolder(folder.id!!)
                     IconCache.folders = IconCache.folders.filter { it.id != folder.id }
@@ -1234,7 +1229,7 @@ class MainActivity : SimpleActivity(), FlingListener {
                     }
                 }
             }
-            .setNegativeButton(org.fossify.commons.R.string.no, null)
+            .setNegativeButton(R.string.no, null)
             .show()
     }
 
@@ -1244,7 +1239,7 @@ class MainActivity : SimpleActivity(), FlingListener {
                 startActivity(this)
             }
         } catch (_: ActivityNotFoundException) {
-            toast(org.fossify.commons.R.string.no_app_found)
+            toast(R.string.no_app_found)
         } catch (e: Exception) {
             showErrorToast(e)
         }

@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
-import org.fossify.commons.extensions.getContrastColor
+import org.fossify.home.extensions.getContrastColor
 import kotlin.math.ceil
 import kotlin.math.roundToInt
 import kotlin.math.sqrt

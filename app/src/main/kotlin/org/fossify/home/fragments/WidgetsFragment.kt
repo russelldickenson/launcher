@@ -9,14 +9,14 @@ import android.content.pm.PackageManager
 import android.os.Process
 import android.util.AttributeSet
 import android.view.MotionEvent
-import org.fossify.commons.extensions.beGone
-import org.fossify.commons.extensions.getProperPrimaryColor
-import org.fossify.commons.extensions.getProperTextColor
-import org.fossify.commons.extensions.hideKeyboard
-import org.fossify.commons.extensions.normalizeString
-import org.fossify.commons.extensions.showErrorToast
-import org.fossify.commons.extensions.toast
-import org.fossify.commons.helpers.ensureBackgroundThread
+import org.fossify.home.extensions.beGone
+import org.fossify.home.extensions.getProperPrimaryColor
+import org.fossify.home.extensions.getProperTextColor
+import org.fossify.home.extensions.hideKeyboard
+import org.fossify.home.extensions.normalizeString
+import org.fossify.home.extensions.showErrorToast
+import org.fossify.home.extensions.toast
+import org.fossify.home.helpers.ensureBackgroundThread
 import org.fossify.home.R
 import org.fossify.home.activities.MainActivity
 import org.fossify.home.adapters.WidgetsAdapter
@@ -49,7 +49,7 @@ class WidgetsFragment(context: Context, attributeSet: AttributeSet) :
 
         binding.widgetsList.setOnTouchListener { v, event ->
             if (event.actionMasked == MotionEvent.ACTION_DOWN && binding.searchBar.hasFocus()) {
-                binding.searchBar.binding.topToolbarSearch.clearFocus()
+                binding.searchBar.binding.searchBarInput.clearFocus()
                 activity?.hideKeyboard()
             }
 
@@ -259,7 +259,6 @@ class WidgetsFragment(context: Context, attributeSet: AttributeSet) :
         (binding.widgetsList.adapter as? WidgetsAdapter)?.updateTextColor(context.getThemeAwareTextColor(context.getProperTextColor()))
         setupDrawerBackground()
 
-        binding.searchBar.requireToolbar().beGone()
         binding.searchBar.updateColors()
         binding.searchBar.setupMenu()
         binding.searchBar.onSearchTextChangedListener = {

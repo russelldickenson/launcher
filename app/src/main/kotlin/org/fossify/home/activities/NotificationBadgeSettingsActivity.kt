@@ -1,11 +1,11 @@
 package org.fossify.home.activities
 
 import android.os.Bundle
-import org.fossify.commons.extensions.adjustForContrast
-import org.fossify.commons.extensions.getContrastColor
-import org.fossify.commons.extensions.toast
-import org.fossify.commons.extensions.viewBinding
-import org.fossify.commons.helpers.NavigationIcon
+import org.fossify.home.extensions.adjustForContrast
+import org.fossify.home.extensions.getContrastColor
+import org.fossify.home.extensions.toast
+import org.fossify.home.extensions.viewBinding
+import org.fossify.home.helpers.NavigationIcon
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivityNotificationBadgeSettingsBinding
 import org.fossify.home.extensions.config

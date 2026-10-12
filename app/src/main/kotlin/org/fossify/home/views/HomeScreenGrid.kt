@@ -15,6 +15,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Point
 import android.graphics.Rect
+import android.graphics.Typeface
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -44,16 +45,15 @@ import androidx.customview.widget.ExploreByTouchHelper
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.math.MathUtils
 import kotlinx.collections.immutable.toImmutableList
-import org.fossify.commons.extensions.adjustAlpha
-import org.fossify.commons.extensions.beGone
-import org.fossify.commons.extensions.beVisible
-import org.fossify.commons.extensions.getContrastColor
-import org.fossify.commons.extensions.getProperBackgroundColor
-import org.fossify.commons.extensions.getProperTextColor
-import org.fossify.commons.extensions.performHapticFeedback
-import org.fossify.commons.helpers.FontHelper
-import org.fossify.commons.helpers.ensureBackgroundThread
-import org.fossify.commons.helpers.isSPlus
+import org.fossify.home.extensions.adjustAlpha
+import org.fossify.home.extensions.beGone
+import org.fossify.home.extensions.beVisible
+import org.fossify.home.extensions.getContrastColor
+import org.fossify.home.extensions.getProperBackgroundColor
+import org.fossify.home.extensions.getProperTextColor
+import org.fossify.home.extensions.performHapticFeedback
+import org.fossify.home.helpers.ensureBackgroundThread
+import org.fossify.home.helpers.isSPlus
 import org.fossify.home.R
 import org.fossify.home.activities.MainActivity
 import org.fossify.home.databinding.HomeScreenGridBinding
@@ -100,11 +100,11 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     private var iconMargin =
         (context.resources.getDimension(R.dimen.icon_side_margin) * 5 / columnCount).toInt()
     private var labelSideMargin =
-        context.resources.getDimension(org.fossify.commons.R.dimen.small_margin).toInt()
+        context.resources.getDimension(R.dimen.small_margin).toInt()
     private var roundedCornerRadius =
-        context.resources.getDimension(org.fossify.commons.R.dimen.activity_margin)
+        context.resources.getDimension(R.dimen.activity_margin)
     private var folderPadding =
-        context.resources.getDimension(org.fossify.commons.R.dimen.medium_margin)
+        context.resources.getDimension(R.dimen.medium_margin)
     private var pageIndicatorRadius =
         context.resources.getDimension(R.dimen.page_indicator_dot_radius)
     private var pageIndicatorMargin = context.resources.getDimension(R.dimen.page_indicator_margin)
@@ -160,30 +160,30 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
     init {
         ViewCompat.setAccessibilityDelegate(this, accessibilityHelper)
 
-        val customTypeface = FontHelper.getTypeface(context)
+        val customTypeface = Typeface.DEFAULT
         textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = Color.WHITE
-            textSize = context.resources.getDimension(org.fossify.commons.R.dimen.smaller_text_size)
+            textSize = context.resources.getDimension(R.dimen.smaller_text_size)
             setShadowLayer(2f, 0f, 0f, Color.BLACK)
             typeface = customTypeface
         }
 
         contrastTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = context.getThemeAwareTextColor(context.getProperTextColor())
-            textSize = context.resources.getDimension(org.fossify.commons.R.dimen.smaller_text_size)
+            textSize = context.resources.getDimension(R.dimen.smaller_text_size)
             setShadowLayer(2f, 0f, 0f, context.getProperTextColor().getContrastColor())
             typeface = customTypeface
         }
 
         folderTitleTextPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = context.getThemeAwareTextColor(context.getProperTextColor())
-            textSize = context.resources.getDimension(org.fossify.commons.R.dimen.medium_text_size)
+            textSize = context.resources.getDimension(R.dimen.medium_text_size)
             typeface = customTypeface
         }
 
         dragShadowCirclePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = context.resources.getColor(org.fossify.commons.R.color.hint_white)
-            strokeWidth = context.resources.getDimension(org.fossify.commons.R.dimen.small_margin)
+            color = context.resources.getColor(R.color.hint_white)
+            strokeWidth = context.resources.getDimension(R.dimen.small_margin)
             style = Paint.Style.STROKE
         }
 
@@ -227,7 +227,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
             val navIgnoring = insets.getInsetsIgnoringVisibility(Type.navigationBars())
 
             val sideMargin = context.resources
-                .getDimension(org.fossify.commons.R.dimen.normal_margin).toInt()
+                .getDimension(R.dimen.normal_margin).toInt()
 
             val newLeft   = sideMargin + bars.left
             val newRight  = sideMargin + bars.right
@@ -803,7 +803,7 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                     val parentItem = potentialParent.copy(
                         type = ITEM_TYPE_FOLDER,
                         id = null,
-                        title = resources.getString(org.fossify.commons.R.string.folder)
+                        title = resources.getString(R.string.folder)
                     )
                     ensureBackgroundThread {
                         val newId = context.homeScreenGridItemsDB.insert(parentItem)

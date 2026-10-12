@@ -3,14 +3,17 @@ package org.fossify.home.extensions
 import android.graphics.drawable.LayerDrawable
 import android.view.RoundedCorner.POSITION_TOP_LEFT
 import android.view.RoundedCorner.POSITION_TOP_RIGHT
+import android.view.HapticFeedbackConstants
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toDrawable
-import org.fossify.commons.R
-import org.fossify.commons.extensions.applyColorFilter
-import org.fossify.commons.extensions.getProperBackgroundColor
-import org.fossify.commons.helpers.isSPlus
+import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import org.fossify.home.R
+import org.fossify.home.helpers.isSPlus
 
 fun View.animateScale(
     from: Float,
@@ -55,5 +58,71 @@ fun View.setupDrawerBackground(backgroundColor: Int = context.getProperBackgroun
                     .applyColorFilter(backgroundColor)
             }
         }
+    }
+}
+fun View.beVisible() {
+    visibility = View.VISIBLE
+}
+
+fun View.beGone() {
+    visibility = View.GONE
+}
+
+fun View.beVisibleIf(visible: Boolean) = if (visible) beVisible() else beGone()
+
+fun View.onGlobalLayout(callback: () -> Unit) {
+    viewTreeObserver?.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+        override fun onGlobalLayout() {
+            if (viewTreeObserver != null) {
+                viewTreeObserver.removeOnGlobalLayoutListener(this)
+                callback()
+            }
+        }
+    })
+}
+
+fun View.performHapticFeedback() = performHapticFeedback(
+    HapticFeedbackConstants.VIRTUAL_KEY,
+    HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING
+)
+
+// system-bar insets get added on top of whatever padding/margin the layout declared, so repeated
+// inset dispatches don't accumulate
+private fun View.basePadding(): IntArray {
+    val saved = getTag(R.id.tag_base_padding) as? IntArray
+    if (saved != null) return saved
+    return intArrayOf(paddingLeft, paddingTop, paddingRight, paddingBottom).also { setTag(R.id.tag_base_padding, it) }
+}
+
+private fun View.baseMargin(): IntArray {
+    val saved = getTag(R.id.tag_base_margin) as? IntArray
+    if (saved != null) return saved
+    val params = layoutParams as? ViewGroup.MarginLayoutParams
+    return intArrayOf(
+        params?.leftMargin ?: 0,
+        params?.topMargin ?: 0,
+        params?.rightMargin ?: 0,
+        params?.bottomMargin ?: 0
+    ).also { setTag(R.id.tag_base_margin, it) }
+}
+
+fun View.updatePaddingWithBase(left: Int? = null, top: Int? = null, right: Int? = null, bottom: Int? = null) {
+    val base = basePadding()
+    updatePadding(
+        left = left?.let { base[0] + it } ?: paddingLeft,
+        top = top?.let { base[1] + it } ?: paddingTop,
+        right = right?.let { base[2] + it } ?: paddingRight,
+        bottom = bottom?.let { base[3] + it } ?: paddingBottom
+    )
+}
+
+fun View.updateMarginWithBase(left: Int? = null, top: Int? = null, right: Int? = null, bottom: Int? = null) {
+    val base = baseMargin()
+    val params = layoutParams as? ViewGroup.MarginLayoutParams ?: return
+    updateLayoutParams<ViewGroup.MarginLayoutParams> {
+        leftMargin = left?.let { base[0] + it } ?: params.leftMargin
+        topMargin = top?.let { base[1] + it } ?: params.topMargin
+        rightMargin = right?.let { base[2] + it } ?: params.rightMargin
+        bottomMargin = bottom?.let { base[3] + it } ?: params.bottomMargin
     }
 }

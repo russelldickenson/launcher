@@ -15,6 +15,8 @@ import android.provider.Settings
 import android.view.Gravity
 import android.view.Menu
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -26,12 +28,8 @@ import androidx.core.view.MenuCompat
 import androidx.core.view.forEach
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import org.fossify.commons.extensions.getContrastColor
-import org.fossify.commons.extensions.getProperTextColor
-import org.fossify.commons.extensions.isDynamicTheme
-import org.fossify.commons.extensions.showErrorToast
-import org.fossify.commons.models.RadioItem
-import org.fossify.commons.helpers.isSPlus
+import org.fossify.home.models.RadioItem
+import org.fossify.home.helpers.isSPlus
 import org.fossify.home.R
 import org.fossify.home.helpers.ITEM_TYPE_FOLDER
 import org.fossify.home.helpers.ITEM_TYPE_ICON
@@ -43,8 +41,7 @@ import org.fossify.home.interfaces.ItemMenuListener
 import org.fossify.home.models.HomeScreenGridItem
 
 // a fixed palette instead of a full hue/saturation picker - keeps the picker guaranteed
-// Material (MaterialAlertDialogBuilder) on every supported OS version, unlike the commons
-// library's ColorPickerDialog, which only gets Material dialog chrome on Android 12+
+// Material (MaterialAlertDialogBuilder) on every supported OS version
 private val COLOR_PICKER_PALETTE = intArrayOf(
     Color.RED,
     Color.parseColor("#000080"), // navy blue
@@ -83,7 +80,7 @@ fun Activity.showColorPickerDialog(currentColor: Int, onColorSelected: (Int) -> 
             if (color == currentColor) {
                 addView(ImageView(context).apply {
                     layoutParams = FrameLayout.LayoutParams(checkSize, checkSize, Gravity.CENTER)
-                    setImageResource(org.fossify.commons.R.drawable.ic_check_vector)
+                    setImageResource(R.drawable.ic_check_vector)
                     setColorFilter(color.getContrastColor())
                 })
             }
@@ -100,7 +97,7 @@ fun Activity.showColorPickerDialog(currentColor: Int, onColorSelected: (Int) -> 
     dialog = MaterialAlertDialogBuilder(this)
         .setTitle(R.string.select_color)
         .setView(row)
-        .setNegativeButton(org.fossify.commons.R.string.cancel, null)
+        .setNegativeButton(R.string.cancel, null)
         .create()
     dialog.show()
 }
@@ -121,7 +118,7 @@ fun Activity.showRadioGroupDialog(
             dialog.dismiss()
             onItemSelected(items[which].id)
         }
-        .setNegativeButton(org.fossify.commons.R.string.cancel, null)
+        .setNegativeButton(R.string.cancel, null)
         .show()
 }
 
@@ -295,4 +292,15 @@ fun Activity.handleGridItemPopupMenu(
 
         show()
     }
+}
+
+fun Activity.hideKeyboard() {
+    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.hideSoftInputFromWindow((currentFocus ?: View(this)).windowToken, 0)
+}
+
+fun Activity.showKeyboard(editText: EditText) {
+    editText.requestFocus()
+    val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
 }

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <org.fossify.commons.views.MyAppBarLayout
+    <org.fossify.home.views.InsetAppBarLayout
         android:id="@+id/manage_hidden_icons_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -14,11 +14,11 @@
             android:id="@+id/manage_hidden_icons_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/color_primary"
+            android:background="@color/m3_background"
             app:title="@string/hidden_icons"
-            app:titleTextAppearance="@style/AppTheme.ActionBar.TitleTextStyle" />
+            app:titleTextAppearance="@style/ToolbarTitleTextStyle" />
 
-    </org.fossify.commons.views.MyAppBarLayout>
+    </org.fossify.home.views.InsetAppBarLayout>
 
     <RelativeLayout
         android:id="@+id/manage_hidden_icons_wrapper"
@@ -26,13 +26,13 @@
         android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <org.fossify.commons.views.MyRecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/manage_hidden_icons_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:scrollbars="vertical"
-            app:layoutManager="org.fossify.commons.views.MyGridLayoutManager" />
+            app:layoutManager="org.fossify.home.views.SafeGridLayoutManager" />
 
         <TextView
             android:id="@+id/manage_hidden_icons_placeholder"

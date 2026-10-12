@@ -49,20 +49,18 @@ Gradle project (`settings.gradle` only includes `:app`).
   string unchanged unless a migration is written — otherwise existing users'
   saved value silently resets to default.
 - **ViewBinding only** — `private val binding by viewBinding(ActivityXBinding::inflate)`
-  (from `org.fossify.commons.extensions`). No `findViewById`.
+  (from `org.fossify.home.extensions`). No `findViewById`.
 - **No DI framework** — objects are constructed manually; singletons use a
   companion-object `getInstance()` with double-checked locking (see
   `AppsDatabase`).
 - **No MVVM/ViewModel/Compose in this module** — logic lives directly in
   Activities/Fragments/Views.
-- **Threading**: `org.fossify.commons.helpers.ensureBackgroundThread { }` for
+- **Threading**: `org.fossify.home.helpers.ensureBackgroundThread { }` for
   background work, paired with `runOnUiThread { }` to hop back. No
   coroutines/RxJava in app code.
-- **Reuse `org.fossify:commons` before writing new code** — it's the shared
-  base library (`BaseConfig`, `viewBinding`, `ensureBackgroundThread`,
-  `SimpleActivity`, color/contrast utilities like `getContrastColor()` /
-  `adjustForContrast()`, dialogs like `ColorPickerDialog`/`RadioGroupDialog`,
-  etc.). Check it before adding a new utility or dependency.
+- **No shared base library** — `Config`, `SimpleActivity` (edge-to-edge, top app bar), color/contrast
+helpers and the small view and dialog utilities all live in this module. `Config` reads the
+same `Prefs` SharedPreferences file it always has; don't rename it.
 - Nested/child settings (a setting that only applies when a parent toggle is
   on) are done by `beVisibleIf(parentCondition)` on the child row, re-applied
   in both `onResume()`/initial setup and the parent toggle's click listener —
@@ -80,7 +78,7 @@ Gradle project (`settings.gradle` only includes `:app`).
 - Comments are sparse by design — only for non-obvious *why* (e.g. explaining
   a shared/aliased preference in `Config.kt`). Don't add narrative comments.
 - Imports fully qualified, no wildcards, roughly alphabetical within
-  `android.*` / `androidx`+`org.fossify.commons.*` / `org.fossify.home.*`
+  `android.*` / `androidx`+`com.*` / `org.fossify.home.*`
   groups.
 - `.editorconfig`: LF, UTF-8, 4-space indent, `max_line_length = 160`.
   `detekt.yml` separately enforces `MaxLineLength: 120` for style checks —
@@ -97,10 +95,8 @@ Gradle project (`settings.gradle` only includes `:app`).
   snake_case.
 - `strings.xml` is a flat list loosely grouped by feature via ordering (no
   section-header comments) — add new strings near their feature's existing
-  strings. Shared/common strings live in the `org.fossify:commons` library,
-  not here.
-- 80+ `values-<locale>/` translation directories exist — never hand-edit a
-  translated string across locales; only touch the default `values/strings.xml`.
+  strings.
+- Translations were removed; only `values/strings.xml` exists.
 
 ## Git
 

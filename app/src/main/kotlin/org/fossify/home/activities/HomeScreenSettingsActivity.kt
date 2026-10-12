@@ -4,9 +4,9 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
-import org.fossify.commons.extensions.viewBinding
-import org.fossify.commons.helpers.NavigationIcon
-import org.fossify.commons.models.RadioItem
+import org.fossify.home.extensions.viewBinding
+import org.fossify.home.helpers.NavigationIcon
+import org.fossify.home.models.RadioItem
 import org.fossify.home.R
 import org.fossify.home.databinding.ActivityHomeScreenSettingsBinding
 import org.fossify.home.extensions.config
@@ -55,7 +55,7 @@ class HomeScreenSettingsActivity : SimpleActivity() {
                     RadioItem(
                         id = i,
                         title = resources.getQuantityString(
-                            org.fossify.commons.R.plurals.column_counts, i, i
+                            R.plurals.column_counts, i, i
                         )
                     )
                 )
@@ -83,7 +83,7 @@ class HomeScreenSettingsActivity : SimpleActivity() {
                     RadioItem(
                         id = i,
                         title = resources.getQuantityString(
-                            org.fossify.commons.R.plurals.column_counts, i, i
+                            R.plurals.column_counts, i, i
                         )
                     )
                 )

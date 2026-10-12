@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppTheme" parent="AppTheme.Base">
+    <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/m3_primary</item>
         <item name="colorOnPrimary">@color/m3_on_primary</item>
         <item name="colorPrimaryContainer">@color/m3_primary_container</item>
@@ -50,9 +50,7 @@
         <item name="android:textSize">16sp</item>
     </style>
 
-    <!-- overrides Commons' same-named style (app-module resources win over library ones) with a
-         bigger, bolder title closer to Material 3's Large Top App Bar treatment -->
-    <style name="AppTheme.ActionBar.TitleTextStyle">
+    <style name="ToolbarTitleTextStyle">
         <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -90,13 +88,15 @@
          Lawnchair-like row rhythm applied across every settings screen. Horizontal padding is
          0dp here - the page itself now supplies the 20dp side inset (settings_page_padding), so
          rows don't double up on it -->
-    <style name="SettingsHolderSwitchStyle" parent="@style/SettingsHolderSwitchStyle">
+    <style name="SettingsHolderSwitchStyle">
+        <item name="android:background">@drawable/ripple_background</item>
         <item name="android:minHeight">64dp</item>
         <item name="android:paddingStart">0dp</item>
         <item name="android:paddingEnd">0dp</item>
     </style>
 
-    <style name="SettingsHolderTextViewStyle" parent="@style/SettingsHolderTextViewStyle">
+    <style name="SettingsHolderTextViewStyle">
+        <item name="android:background">@drawable/ripple_background</item>
         <item name="android:minHeight">48dp</item>
         <item name="android:paddingStart">0dp</item>
         <item name="android:paddingEnd">0dp</item>
@@ -104,7 +104,8 @@
         <item name="android:paddingBottom">20dp</item>
     </style>
 
-    <style name="SettingsHolderTextViewOneLinerStyle" parent="@style/SettingsHolderTextViewOneLinerStyle">
+    <style name="SettingsHolderTextViewOneLinerStyle">
+        <item name="android:background">@drawable/ripple_background</item>
         <item name="android:minHeight">48dp</item>
         <item name="android:paddingStart">0dp</item>
         <item name="android:paddingEnd">0dp</item>

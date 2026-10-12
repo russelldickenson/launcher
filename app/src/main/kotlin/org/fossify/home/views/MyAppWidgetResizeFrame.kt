@@ -13,7 +13,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.widget.RelativeLayout
 import kotlinx.collections.immutable.toImmutableList
-import org.fossify.commons.extensions.getProperPrimaryColor
+import org.fossify.home.extensions.getProperPrimaryColor
 import org.fossify.home.R
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.getCellCount
@@ -56,7 +56,7 @@ class MyAppWidgetResizeFrame(context: Context, attrs: AttributeSet, defStyle: In
         val primaryAccent = context.getProperPrimaryColor()
         resizeWidgetLinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = primaryAccent
-            strokeWidth = context.resources.getDimension(org.fossify.commons.R.dimen.tiny_margin)
+            strokeWidth = context.resources.getDimension(R.dimen.tiny_margin)
             style = Paint.Style.STROKE
         }
 

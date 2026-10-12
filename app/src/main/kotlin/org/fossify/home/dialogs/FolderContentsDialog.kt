@@ -9,7 +9,7 @@ import android.view.ViewTreeObserver
 import android.view.Window
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
-import org.fossify.commons.views.MyGridLayoutManager
+import org.fossify.home.views.SafeGridLayoutManager
 import org.fossify.home.activities.MainActivity
 import org.fossify.home.adapters.LaunchersAdapter
 import org.fossify.home.databinding.DialogFolderContentsBinding
@@ -94,7 +94,7 @@ class FolderContentsDialog(
 
         dialog.show()
 
-        val layoutManager = binding.folderContentsGrid.layoutManager as MyGridLayoutManager
+        val layoutManager = binding.folderContentsGrid.layoutManager as SafeGridLayoutManager
         layoutManager.spanCount = activity.config.drawerColumnCount
 
         val adapter = LaunchersAdapter(

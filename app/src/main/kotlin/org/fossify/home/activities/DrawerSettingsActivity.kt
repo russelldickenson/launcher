@@ -2,10 +2,11 @@ package org.fossify.home.activities
 
 import android.content.Intent
 import android.os.Bundle
-import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.viewBinding
-import org.fossify.commons.helpers.NavigationIcon
-import org.fossify.commons.models.RadioItem
+import org.fossify.home.R
+import org.fossify.home.extensions.beVisibleIf
+import org.fossify.home.extensions.viewBinding
+import org.fossify.home.helpers.NavigationIcon
+import org.fossify.home.models.RadioItem
 import org.fossify.home.databinding.ActivityDrawerSettingsBinding
 import org.fossify.home.extensions.config
 import org.fossify.home.extensions.showRadioGroupDialog
@@ -87,7 +88,7 @@ class DrawerSettingsActivity : SimpleActivity() {
                     RadioItem(
                         id = i,
                         title = resources.getQuantityString(
-                            org.fossify.commons.R.plurals.column_counts, i, i
+                            R.plurals.column_counts, i, i
                         )
                     )
                 )

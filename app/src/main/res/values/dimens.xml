@@ -13,6 +13,10 @@
     <dimen name="max_folder_view_height">500dp</dimen>
     <dimen name="folder_contents_card_corner_radius">16dp</dimen>
     <dimen name="menu_icon_size">24dp</dimen>
+    <dimen name="activity_margin">16dp</dimen>
+    <dimen name="big_margin">24dp</dimen>
+    <dimen name="color_sample_size">34dp</dimen>
+    <dimen name="smaller_text_size">12sp</dimen>
     <!-- Pixel-style disconnected pill popup menu -->
     <dimen name="pill_menu_item_height">52dp</dimen>
     <dimen name="pill_menu_item_corner_radius">24dp</dimen>
@@ -30,4 +34,13 @@
     <!-- matches launcher_icon_size so the Appearance > Icons preview shows the icon at the same
          size the app drawer will actually render it at (before the user's own scale setting) -->
     <dimen name="icon_preview_size">@dimen/launcher_icon_size</dimen>
+    <dimen name="bigger_margin">20dp</dimen>
+    <dimen name="settings_label_start_margin">16dp</dimen>
+    <dimen name="small_margin">4dp</dimen>
+    <dimen name="smaller_margin">6dp</dimen>
+    <dimen name="medium_margin">8dp</dimen>
+    <dimen name="normal_margin">12dp</dimen>
+    <dimen name="medium_text_size">15sp</dimen>
+    <dimen name="tiny_margin">2dp</dimen>
+    <dimen name="bottom_sheet_corner_radius">24dp</dimen>
 </resources>

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <org.fossify.commons.views.MyAppBarLayout
+    <org.fossify.home.views.InsetAppBarLayout
         android:id="@+id/drawer_labels_settings_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -15,11 +15,11 @@
             android:id="@+id/drawer_labels_settings_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/color_primary"
+            android:background="@color/m3_background"
             app:title="@string/drawer_labels_settings"
-            app:titleTextAppearance="@style/AppTheme.ActionBar.TitleTextStyle" />
+            app:titleTextAppearance="@style/ToolbarTitleTextStyle" />
 
-    </org.fossify.commons.views.MyAppBarLayout>
+    </org.fossify.home.views.InsetAppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/drawer_labels_settings_nested_scrollview"
