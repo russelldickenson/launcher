@@ -1369,35 +1369,27 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                 }
         }
 
-        if (isFirstDraw) {
-            gridItems
-                .filter { it.type == ITEM_TYPE_WIDGET && !it.outOfBounds() }
-                .forEach { item ->
-                    val existingView = widgetViews.firstOrNull { it.tag == item.widgetId }
-                    if (existingView != null) {
-                        updateWidgetPositionAndSize(existingView, item)
-                        return@forEach
-                    }
-
-                    val providerInfo = item.providerInfo
-                        ?: appWidgetManager!!.installedProviders
-                            .firstOrNull { it.provider.className == item.className }
-
-                    if (providerInfo != null) {
-                        placeAppWidget(providerInfo, item)
-                    } else {
-                        removeWidget(item)
-                    }
+        // views are created lazily rather than only on first draw, since gridItems loads
+        // asynchronously and may arrive after the first draw
+        gridItems
+            .filter { it.type == ITEM_TYPE_WIDGET && !it.outOfBounds() }
+            .forEach { item ->
+                val existingView = widgetViews.firstOrNull { it.tag == item.widgetId }
+                if (existingView != null) {
+                    updateWidgetPositionAndSize(existingView, item)
+                    return@forEach
                 }
-        } else {
-            gridItems
-                .filter { it.type == ITEM_TYPE_WIDGET && !it.outOfBounds() }
-                .forEach { item ->
-                    widgetViews.firstOrNull { it.tag == item.widgetId }?.also {
-                        updateWidgetPositionAndSize(it, item)
-                    }
+
+                val providerInfo = item.providerInfo
+                    ?: appWidgetManager!!.installedProviders
+                        .firstOrNull { it.provider.className == item.className }
+
+                if (providerInfo != null) {
+                    placeAppWidget(providerInfo, item)
+                } else {
+                    removeWidget(item)
                 }
-        }
+            }
 
         // Only draw page indicators when there is a need for it
         if (pager.shouldDisplayPageChangeIndicator()) {
