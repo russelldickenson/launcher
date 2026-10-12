@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <org.fossify.home.views.InsetAppBarLayout
+    <com.russelldickenson.lelauncher.views.InsetAppBarLayout
         android:id="@+id/drawer_settings_appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -19,7 +19,7 @@
             app:title="@string/app_drawer_settings"
             app:titleTextAppearance="@style/ToolbarTitleTextStyle" />
 
-    </org.fossify.home.views.InsetAppBarLayout>
+    </com.russelldickenson.lelauncher.views.InsetAppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/drawer_settings_nested_scrollview"

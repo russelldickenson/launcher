@@ -73,7 +73,7 @@
         errorLine1="class SplashActivity : AppCompatActivity() {"
         errorLine2="      ~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/activities/SplashActivity.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/activities/SplashActivity.kt"
             line="7"
             column="7"/>
     </issue>
@@ -161,7 +161,7 @@
         errorLine1="                    oldItem.members.map { it.getLauncherIdentifier() } == newItem.members.map { it.getLauncherIdentifier() } &amp;&amp;"
         errorLine2="                                                                       ~~">
         <location
-            file="src/main/kotlin/org/fossify/home/adapters/LaunchersAdapter.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/adapters/LaunchersAdapter.kt"
             line="408"
             column="72"/>
     </issue>
@@ -304,7 +304,7 @@
         errorLine1="            val resId = resources.getIdentifier(drawableName, &quot;drawable&quot;, iconPackPackageName)"
         errorLine2="                                  ~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/IconPackHelper.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/IconPackHelper.kt"
             line="376"
             column="35"/>
     </issue>
@@ -315,7 +315,7 @@
         errorLine1="            val xmlResId = resources.getIdentifier(&quot;appfilter&quot;, &quot;xml&quot;, iconPackPackageName)"
         errorLine2="                                     ~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/IconPackHelper.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/IconPackHelper.kt"
             line="417"
             column="38"/>
     </issue>
@@ -337,7 +337,7 @@
         errorLine1="        notifyDataSetChanged()"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/adapters/HiddenIconsAdapter.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/adapters/HiddenIconsAdapter.kt"
             line="36"
             column="9"/>
     </issue>
@@ -348,7 +348,7 @@
         errorLine1="            notifyDataSetChanged()"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/adapters/WidgetsAdapter.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/adapters/WidgetsAdapter.kt"
             line="121"
             column="13"/>
     </issue>
@@ -359,7 +359,7 @@
         errorLine1="            notifyDataSetChanged()"
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/adapters/WidgetsAdapter.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/adapters/WidgetsAdapter.kt"
             line="128"
             column="13"/>
     </issue>
@@ -531,7 +531,7 @@
         errorLine1="    Color.parseColor(&quot;#000080&quot;), // navy blue"
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/extensions/Activity.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/extensions/Activity.kt"
             line="47"
             column="5"/>
     </issue>
@@ -542,7 +542,7 @@
         errorLine1="        set(wasHomeScreenInit) = prefs.edit().putBoolean(WAS_HOME_SCREEN_INIT, wasHomeScreenInit).apply()"
         errorLine2="                                 ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="19"
             column="34"/>
     </issue>
@@ -553,7 +553,7 @@
         errorLine1="        set(homeRowCount) = prefs.edit().putInt(HOME_ROW_COUNT, homeRowCount).apply()"
         errorLine2="                            ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="23"
             column="29"/>
     </issue>
@@ -564,7 +564,7 @@
         errorLine1="        set(homeColumnCount) = prefs.edit().putInt(HOME_COLUMN_COUNT, homeColumnCount).apply()"
         errorLine2="                               ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="28"
             column="32"/>
     </issue>
@@ -575,7 +575,7 @@
         errorLine1="        set(dockColumnCount) = prefs.edit().putInt(DOCK_COLUMN_COUNT, dockColumnCount).apply()"
         errorLine2="                               ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="35"
             column="32"/>
     </issue>
@@ -586,7 +586,7 @@
         errorLine1="        set(drawerColumnCount) = prefs.edit().putInt(DRAWER_COLUMN_COUNT, drawerColumnCount).apply()"
         errorLine2="                                 ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="40"
             column="34"/>
     </issue>
@@ -597,7 +597,7 @@
         errorLine1="        set(showSearchBar) = prefs.edit().putBoolean(SHOW_SEARCH_BAR, showSearchBar).apply()"
         errorLine2="                             ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="44"
             column="30"/>
     </issue>
@@ -608,7 +608,7 @@
         errorLine1="        set(closeAppDrawer) = prefs.edit().putBoolean(CLOSE_APP_DRAWER, closeAppDrawer).apply()"
         errorLine2="                              ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="48"
             column="31"/>
     </issue>
@@ -619,7 +619,7 @@
         errorLine1="        set(autoShowKeyboardInAppDrawer) = prefs.edit()"
         errorLine2="                                           ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="52"
             column="44"/>
     </issue>
@@ -630,7 +630,7 @@
         errorLine1="        set(showDrawerAppLabels) = prefs.edit().putBoolean(SHOW_DRAWER_APP_LABELS, showDrawerAppLabels).apply()"
         errorLine2="                                   ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="57"
             column="36"/>
     </issue>
@@ -641,7 +641,7 @@
         errorLine1="        set(drawerLabelMaxLines) = prefs.edit().putInt(DRAWER_LABEL_MAX_LINES, drawerLabelMaxLines).apply()"
         errorLine2="                                   ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="70"
             column="36"/>
     </issue>
@@ -652,7 +652,7 @@
         errorLine1="        set(drawerIconScalePercent) = prefs.edit().putInt(DRAWER_ICON_SCALE_PERCENT, drawerIconScalePercent).apply()"
         errorLine2="                                      ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="82"
             column="39"/>
     </issue>
@@ -663,7 +663,7 @@
         errorLine1="        set(homeIconScalePercent) = prefs.edit().putInt(HOME_ICON_SCALE_PERCENT, homeIconScalePercent).apply()"
         errorLine2="                                    ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="87"
             column="37"/>
     </issue>
@@ -674,7 +674,7 @@
         errorLine1="        set(drawerLabelFontSize) = prefs.edit().putInt(DRAWER_LABEL_FONT_SIZE, drawerLabelFontSize).apply()"
         errorLine2="                                   ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="92"
             column="36"/>
     </issue>
@@ -685,7 +685,7 @@
         errorLine1="        set(drawerBackgroundColor) = prefs.edit().putInt(DRAWER_BACKGROUND_COLOR, drawerBackgroundColor).apply()"
         errorLine2="                                     ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="99"
             column="38"/>
     </issue>
@@ -696,7 +696,7 @@
         errorLine1="        set(drawerTextColor) = prefs.edit().putInt(DRAWER_TEXT_COLOR, drawerTextColor).apply()"
         errorLine2="                               ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="103"
             column="32"/>
     </issue>
@@ -707,7 +707,7 @@
         errorLine1="        set(useDefaultDrawerColors) = prefs.edit().putBoolean(USE_DEFAULT_DRAWER_COLORS, useDefaultDrawerColors).apply()"
         errorLine2="                                      ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="107"
             column="39"/>
     </issue>
@@ -718,7 +718,7 @@
         errorLine1="        set(iconPack) = prefs.edit().putString(ICON_PACK, iconPack).apply()"
         errorLine2="                        ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="112"
             column="25"/>
     </issue>
@@ -729,7 +729,7 @@
         errorLine1="        set(reshapeAllIcons) = prefs.edit().putBoolean(RESHAPE_ALL_ICONS, reshapeAllIcons).apply()"
         errorLine2="                               ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="116"
             column="32"/>
     </issue>
@@ -740,7 +740,7 @@
         errorLine1="        set(iconShape) = prefs.edit().putInt(ICON_SHAPE, iconShape).apply()"
         errorLine2="                         ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="120"
             column="26"/>
     </issue>
@@ -751,7 +751,7 @@
         errorLine1="        set(showNotificationBadges) = prefs.edit().putBoolean(SHOW_NOTIFICATION_BADGES, showNotificationBadges).apply()"
         errorLine2="                                      ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="124"
             column="39"/>
     </issue>
@@ -762,7 +762,7 @@
         errorLine1="        set(showFavouritesDivider) = prefs.edit().putBoolean(SHOW_FAVOURITES_DIVIDER, showFavouritesDivider).apply()"
         errorLine2="                                     ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="128"
             column="38"/>
     </issue>
@@ -773,7 +773,7 @@
         errorLine1="        set(showDrawerIconDropShadow) = prefs.edit().putBoolean(SHOW_DRAWER_ICON_DROP_SHADOW, showDrawerIconDropShadow).apply()"
         errorLine2="                                        ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="134"
             column="41"/>
     </issue>
@@ -784,7 +784,7 @@
         errorLine1="        set(notificationBadgeColor) = prefs.edit().putInt(NOTIFICATION_BADGE_COLOR, notificationBadgeColor).apply()"
         errorLine2="                                      ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="138"
             column="39"/>
     </issue>
@@ -795,7 +795,7 @@
         errorLine1="        set(notificationBadgeShape) = prefs.edit().putInt(NOTIFICATION_BADGE_SHAPE, notificationBadgeShape).apply()"
         errorLine2="                                      ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="142"
             column="39"/>
     </issue>
@@ -806,7 +806,7 @@
         errorLine1="        set(showNotificationCount) = prefs.edit().putBoolean(SHOW_NOTIFICATION_COUNT, showNotificationCount).apply()"
         errorLine2="                                     ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/Config.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/Config.kt"
             line="146"
             column="38"/>
     </issue>
@@ -817,7 +817,7 @@
         errorLine1="        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))"
         errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/dialogs/FolderContentsDialog.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/dialogs/FolderContentsDialog.kt"
             line="58"
             column="39"/>
     </issue>
@@ -828,7 +828,7 @@
         errorLine1="        val result = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)"
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/IconContrastHelper.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/IconContrastHelper.kt"
             line="82"
             column="22"/>
     </issue>
@@ -839,7 +839,7 @@
         errorLine1="        val bitmap = Bitmap.createBitmap(analysisSize, analysisSize, Bitmap.Config.ALPHA_8)"
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/IconNormalizer.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/IconNormalizer.kt"
             line="65"
             column="22"/>
     </issue>
@@ -850,7 +850,7 @@
         errorLine1="        val result = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)"
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/IconPackHelper.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/IconPackHelper.kt"
             line="156"
             column="22"/>
     </issue>
@@ -861,7 +861,7 @@
         errorLine1="        canvas.save()"
         errorLine2="        ~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/IconPackHelper.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/IconPackHelper.kt"
             line="208"
             column="9"/>
     </issue>
@@ -872,7 +872,7 @@
         errorLine1="        return BitmapDrawable(context.resources, result)"
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/IconPackHelper.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/IconPackHelper.kt"
             line="213"
             column="16"/>
     </issue>
@@ -883,7 +883,7 @@
         errorLine1="        val result = Bitmap.createBitmap(resultWidth, resultHeight, Bitmap.Config.ARGB_8888)"
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/IconShadowHelper.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/IconShadowHelper.kt"
             line="49"
             column="22"/>
     </issue>
@@ -894,7 +894,7 @@
         errorLine1="        return BitmapDrawable(context.resources, result)"
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/helpers/IconShadowHelper.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/helpers/IconShadowHelper.kt"
             line="71"
             column="16"/>
     </issue>
@@ -905,7 +905,7 @@
         errorLine1="        background = ColorDrawable(Color.TRANSPARENT)"
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/views/MyAppWidgetResizeFrame.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/views/MyAppWidgetResizeFrame.kt"
             line="54"
             column="22"/>
     </issue>
@@ -916,7 +916,7 @@
         errorLine1="        background = ColorDrawable(Color.TRANSPARENT)"
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/views/MyAppWidgetResizeFrame.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/views/MyAppWidgetResizeFrame.kt"
             line="54"
             column="22"/>
     </issue>
@@ -927,7 +927,7 @@
         errorLine1="    override fun onTouchEvent(event: MotionEvent?): Boolean {"
         errorLine2="                 ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/views/MyAppWidgetHostView.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/views/MyAppWidgetHostView.kt"
             line="24"
             column="18"/>
     </issue>
@@ -938,7 +938,7 @@
         errorLine1="    override fun onTouchEvent(event: MotionEvent?): Boolean {"
         errorLine2="                 ~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/views/MyAppWidgetResizeFrame.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/views/MyAppWidgetResizeFrame.kt"
             line="112"
             column="18"/>
     </issue>
@@ -960,7 +960,7 @@
         errorLine1="        binding.settingsDrawerLabelFontSize.text = &quot;${currentFontSize}sp&quot;"
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/activities/DrawerLabelsSettingsActivity.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/activities/DrawerLabelsSettingsActivity.kt"
             line="87"
             column="52"/>
     </issue>
@@ -971,7 +971,7 @@
         errorLine1="        binding.settingsDrawerLabelFontSize.text = &quot;${currentFontSize}sp&quot;"
         errorLine2="                                                                      ~~">
         <location
-            file="src/main/kotlin/org/fossify/home/activities/DrawerLabelsSettingsActivity.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/activities/DrawerLabelsSettingsActivity.kt"
             line="87"
             column="71"/>
     </issue>
@@ -982,7 +982,7 @@
         errorLine1="        binding.settingsDrawerLabelMaxLines.text = currentMaxLines.toString()"
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/activities/DrawerLabelsSettingsActivity.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/activities/DrawerLabelsSettingsActivity.kt"
             line="109"
             column="52"/>
     </issue>
@@ -993,7 +993,7 @@
         errorLine1="        binding.settingsColumnCount.text = currentColumnCount.toString()"
         errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/activities/DrawerSettingsActivity.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/activities/DrawerSettingsActivity.kt"
             line="83"
             column="44"/>
     </issue>
@@ -1004,7 +1004,7 @@
         errorLine1="        binding.settingsDrawerIconScale.text = &quot;$currentScale%&quot;"
         errorLine2="                                               ~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/activities/DrawerSettingsActivity.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/activities/DrawerSettingsActivity.kt"
             line="109"
             column="48"/>
     </issue>
@@ -1015,7 +1015,7 @@
         errorLine1="        binding.settingsHomeScreenColumnCount.text = currentColumnCount.toString()"
         errorLine2="                                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/activities/HomeScreenSettingsActivity.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/activities/HomeScreenSettingsActivity.kt"
             line="50"
             column="54"/>
     </issue>
@@ -1026,7 +1026,7 @@
         errorLine1="        binding.settingsDockColumnCount.text = currentColumnCount.toString()"
         errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/activities/HomeScreenSettingsActivity.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/activities/HomeScreenSettingsActivity.kt"
             line="78"
             column="48"/>
     </issue>
@@ -1037,7 +1037,7 @@
         errorLine1="        binding.settingsHomeIconScale.text = &quot;$currentScale%&quot;"
         errorLine2="                                             ~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/activities/HomeScreenSettingsActivity.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/activities/HomeScreenSettingsActivity.kt"
             line="107"
             column="46"/>
     </issue>
@@ -1048,7 +1048,7 @@
         errorLine1="        binding.settingsHomeLabelMaxLines.text = currentMaxLines.toString()"
         errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="src/main/kotlin/org/fossify/home/activities/HomeScreenSettingsActivity.kt"
+            file="src/main/kotlin/com/russelldickenson/lelauncher/activities/HomeScreenSettingsActivity.kt"
             line="145"
             column="50"/>
     </issue>

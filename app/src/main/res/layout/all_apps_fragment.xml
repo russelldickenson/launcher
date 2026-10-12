@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<org.fossify.home.fragments.AllAppsFragment xmlns:android="http://schemas.android.com/apk/res/android"
+<com.russelldickenson.lelauncher.fragments.AllAppsFragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/all_apps_holder"
@@ -104,7 +104,7 @@
             android:layout_marginStart="@dimen/smaller_margin"
             android:layout_marginEnd="@dimen/smaller_margin"
             android:clipToPadding="false"
-            app:layoutManager="org.fossify.home.views.SafeGridLayoutManager"
+            app:layoutManager="com.russelldickenson.lelauncher.views.SafeGridLayoutManager"
             app:spanCount="@integer/portrait_column_count" />
 
     </com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller>
@@ -140,4 +140,4 @@
 
     </FrameLayout>
 
-</org.fossify.home.fragments.AllAppsFragment>
+</com.russelldickenson.lelauncher.fragments.AllAppsFragment>

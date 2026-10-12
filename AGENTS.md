@@ -4,8 +4,8 @@ Guidance for AI coding agents working in this repo.
 
 ## What this is
 
-Fossify Launcher — an Android home-screen launcher app, package `org.fossify.home`.
-This is a personal fork of [FossifyOrg/Launcher](https://github.com/FossifyOrg/Launcher);
+Le Launcher — an Android home-screen launcher app, package `com.russelldickenson.lelauncher`.
+This is a personal fork of [FossifyOrg/Launcher](https://github.com/FossifyOrg/Launcher).
 No CI. GPLv3. Single-module
 Gradle project (`settings.gradle` only includes `:app`).
 
@@ -25,7 +25,7 @@ Gradle project (`settings.gradle` only includes `:app`).
 - No test source sets exist (`app/src/test`, `app/src/androidTest` are both
   absent) — there is nothing to run; don't invent a test command.
 
-## Structure (`app/src/main/kotlin/org/fossify/home/`)
+## Structure (`app/src/main/kotlin/com/russelldickenson/lelauncher/`)
 
 | Package | Contents |
 |---|---|
@@ -49,13 +49,13 @@ Gradle project (`settings.gradle` only includes `:app`).
   string unchanged unless a migration is written — otherwise existing users'
   saved value silently resets to default.
 - **ViewBinding only** — `private val binding by viewBinding(ActivityXBinding::inflate)`
-  (from `org.fossify.home.extensions`). No `findViewById`.
+  (from `com.russelldickenson.lelauncher.extensions`). No `findViewById`.
 - **No DI framework** — objects are constructed manually; singletons use a
   companion-object `getInstance()` with double-checked locking (see
   `AppsDatabase`).
 - **No MVVM/ViewModel/Compose in this module** — logic lives directly in
   Activities/Fragments/Views.
-- **Threading**: `org.fossify.home.helpers.ensureBackgroundThread { }` for
+- **Threading**: `com.russelldickenson.lelauncher.helpers.ensureBackgroundThread { }` for
   background work, paired with `runOnUiThread { }` to hop back. No
   coroutines/RxJava in app code.
 - **No shared base library** — `Config`, `SimpleActivity` (edge-to-edge, top app bar), color/contrast
@@ -78,7 +78,7 @@ same `Prefs` SharedPreferences file it always has; don't rename it.
 - Comments are sparse by design — only for non-obvious *why* (e.g. explaining
   a shared/aliased preference in `Config.kt`). Don't add narrative comments.
 - Imports fully qualified, no wildcards, roughly alphabetical within
-  `android.*` / `androidx`+`com.*` / `org.fossify.home.*`
+  `android.*` / `androidx`+`com.*` / `com.russelldickenson.lelauncher.*`
   groups.
 - `.editorconfig`: LF, UTF-8, 4-space indent, `max_line_length = 160`.
   `detekt.yml` separately enforces `MaxLineLength: 120` for style checks —

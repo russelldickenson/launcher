@@ -1,0 +1,15 @@
+package com.russelldickenson.lelauncher.extensions
+
+import android.app.WallpaperColors
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.russelldickenson.lelauncher.helpers.isSPlus
+
+@RequiresApi(Build.VERSION_CODES.O_MR1)
+fun WallpaperColors.supportsDarkText(): Boolean {
+    return if (isSPlus()) {
+        (colorHints and WallpaperColors.HINT_SUPPORTS_DARK_TEXT) != 0
+    } else {
+        primaryColor.toArgb().getContrastColor() == DARK_GREY
+    }
+}

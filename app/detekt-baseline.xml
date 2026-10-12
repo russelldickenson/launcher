@@ -103,8 +103,8 @@
     <ID>NestedBlockDepth:MainActivity.kt$MainActivity$override fun onTouchEvent(event: MotionEvent?): Boolean</ID>
     <ID>NestedBlockDepth:MainActivity.kt$MainActivity$private fun findFirstEmptyCell(): Pair&lt;Int, Rect&gt;</ID>
     <ID>NestedBlockDepth:MyAppWidgetResizeFrame.kt$MyAppWidgetResizeFrame$override fun onTouchEvent(event: MotionEvent?): Boolean</ID>
-    <ID>NewLineAtEndOfFile:IconCache.kt$org.fossify.home.helpers.IconCache.kt</ID>
-    <ID>NewLineAtEndOfFile:View.kt$org.fossify.home.extensions.View.kt</ID>
+    <ID>NewLineAtEndOfFile:IconCache.kt$com.russelldickenson.lelauncher.helpers.IconCache.kt</ID>
+    <ID>NewLineAtEndOfFile:View.kt$com.russelldickenson.lelauncher.extensions.View.kt</ID>
     <ID>ReturnCount:HomeScreenGrid.kt$HomeScreenGrid$fun isClickingGridItem(x: Int, y: Int): HomeScreenGridItem?</ID>
     <ID>SwallowedException:Activity.kt$e: Exception</ID>
     <ID>SwallowedException:Context.kt$e: Error</ID>
@@ -137,6 +137,5 @@
     <ID>WildcardImport:HomeScreenGridItem.kt$import androidx.room.*</ID>
     <ID>WildcardImport:HomeScreenGridItemsDao.kt$import androidx.room.*</ID>
     <ID>WildcardImport:MyAppWidgetResizeFrame.kt$import android.graphics.*</ID>
-    <ID>WildcardImport:RenameItemDialog.kt$import org.fossify.commons.extensions.*</ID>
   </CurrentIssues>
 </SmellBaseline>
