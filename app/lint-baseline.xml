@@ -461,17 +461,6 @@
 
     <issue
         id="UnusedResources"
-        message="The resource `R.dimen.settings_stepper_gap` appears to be unused"
-        errorLine1="    &lt;dimen name=&quot;settings_stepper_gap&quot;>16dp&lt;/dimen>"
-        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/dimens.xml"
-            line="33"
-            column="12"/>
-    </issue>
-
-    <issue
-        id="UnusedResources"
         message="The resource `R.string.hide_icon` appears to be unused"
         errorLine1="    &lt;string name=&quot;hide_icon&quot;>Hide icon&lt;/string>"
         errorLine2="            ~~~~~~~~~~~~~~~~">
