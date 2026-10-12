@@ -29,8 +29,8 @@ permissions, your data stays with you. No tracking, no ads – just a launcher b
 privacy.
 
 **🌐 OPEN-SOURCE ASSURANCE:**  
-Le Launcher is built on an open-source foundation, allowing you to review our code on GitHub,
-fostering trust and a community committed to privacy.
+Le Launcher is open source under the GPLv3, so you can read exactly what it does. It started as a
+fork of [Fossify Launcher](https://github.com/FossifyOrg/Launcher).
 
 Find your balance of speed, customization, and privacy with Le Launcher.
 
