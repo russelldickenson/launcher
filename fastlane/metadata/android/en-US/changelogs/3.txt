@@ -1,2 +1,0 @@
-* Added double tap to lock screen feature
-* Added more translations

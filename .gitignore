@@ -9,7 +9,5 @@
 keystore.jks
 keystore.properties
 /keystore/
-fastlane/fastlane.json
-fastlane/report.xml
 .kotlin/
 launcher.apk

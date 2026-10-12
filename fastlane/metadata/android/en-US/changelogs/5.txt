@@ -1,8 +1,0 @@
-Changed:
-
-• Updated translations
-
-Fixed:
-
-• Clicking home screen app labels now works as expected 
-

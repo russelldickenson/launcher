@@ -1,8 +1,0 @@
-Added:
-
-• Option to hide app labels 
-
-Changed:
-
-• Updated translations
-
