@@ -284,7 +284,8 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
 
         ensureBackgroundThread {
-            if (IconCache.launchers.isEmpty()) {
+            val cacheHadIcons = IconCache.launchers.isNotEmpty()
+            if (!cacheHadIcons) {
                 val hiddenIcons = hiddenIconsDB.getHiddenIcons().map {
                     it.getIconIdentifier()
                 }
@@ -301,7 +302,11 @@ class MainActivity : SimpleActivity(), FlingListener {
                 }.toMutableList() as ArrayList<AppLauncher>
             }
 
-            binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+            // rows loaded from the DB carry no drawables, so showing them would flash placeholder
+            // circles until refreshLaunchers() finishes scanning; only the scan result is shown then
+            if (cacheHadIcons) {
+                binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+            }
             refreshLaunchers()
         }
 
