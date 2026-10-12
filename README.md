@@ -1,8 +1,5 @@
 # Le Launcher
 
-<img alt="Logo" src="graphics/icon.webp" width="120" />
-
-
 Le Launcher is your gateway to a fast, personalized, and privacy-first home screen experience.
 No ads, no bloat – just a smooth, efficient launcher designed to fit your unique style and
 preferences.
