@@ -12,7 +12,3 @@ Your privacy is at the heart of Fossify Launcher. With no internet access and no
 <b>🌐 OPEN-SOURCE ASSURANCE:</b><br>
 Fossify Launcher is built on an open-source foundation, allowing you to review our code on GitHub, fostering trust and a community committed to privacy.<br><br>
 Find your balance of speed, customization, and privacy with Fossify Launcher.<br><br>
-Explore more Fossify apps: https://www.fossify.org<br>
-Open-Source Code: https://www.github.com/FossifyOrg<br>
-Join the community on Reddit: https://www.reddit.com/r/Fossify<br>
-Connect on Telegram: https://t.me/Fossify<br>

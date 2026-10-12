@@ -6,7 +6,7 @@ Guidance for AI coding agents working in this repo.
 
 Fossify Launcher — an Android home-screen launcher app, package `org.fossify.home`.
 This is a personal fork of [FossifyOrg/Launcher](https://github.com/FossifyOrg/Launcher);
-CI still calls reusable workflows from `FossifyOrg/.github`. GPLv3. Single-module
+No CI. GPLv3. Single-module
 Gradle project (`settings.gradle` only includes `:app`).
 
 ## Build
