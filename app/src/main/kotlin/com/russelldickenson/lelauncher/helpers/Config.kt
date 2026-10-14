@@ -5,7 +5,7 @@ import android.graphics.Color
 import com.russelldickenson.lelauncher.R
 
 class Config(val context: Context) {
-    private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    internal val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     companion object {
         // unchanged since before the commons library was removed, so existing preferences keep loading
