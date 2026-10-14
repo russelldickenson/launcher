@@ -1377,6 +1377,14 @@ class HomeScreenGrid(context: Context, attrs: AttributeSet, defStyle: Int) :
                 val existingView = widgetViews.firstOrNull { it.tag == item.widgetId }
                 if (existingView != null) {
                     updateWidgetPositionAndSize(existingView, item)
+                    // the view is hidden while dragged; any drag exit that misses the explicit
+                    // beVisible() in addWidget() (cancel, no target cell) would leave it invisible
+                    val isBeingDragged = draggedItem?.type == ITEM_TYPE_WIDGET
+                        && draggedItem?.widgetId == item.widgetId
+                        && draggedItemCurrentCoords.first != -1
+                    if (!isBeingDragged && existingView.visibility != View.VISIBLE) {
+                        existingView.beVisible()
+                    }
                     return@forEach
                 }
 
