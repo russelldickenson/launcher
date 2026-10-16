@@ -11,8 +11,8 @@ cd "$(dirname "$0")"
 APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
 
 if [ -n "$APK_PATH" ]; then
-    cp "$APK_PATH" ./launcher.apk
-    echo "Success! APK moved to: ./launcher.apk"
+    cp "$APK_PATH" ./le-launcher.apk
+    echo "Success! APK moved to: ./le-launcher.apk"
 else
     echo "Error: No APK found in app/build/outputs/apk/release/"
     exit 1
