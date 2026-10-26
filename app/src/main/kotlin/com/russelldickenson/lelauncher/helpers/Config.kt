@@ -123,10 +123,6 @@ class Config(val context: Context) {
         get() = prefs.getBoolean(SHOW_NOTIFICATION_BADGES, true)
         set(showNotificationBadges) = prefs.edit().putBoolean(SHOW_NOTIFICATION_BADGES, showNotificationBadges).apply()
 
-    var enableDrawerTabs: Boolean
-        get() = prefs.getBoolean(ENABLE_DRAWER_TABS, true)
-        set(enableDrawerTabs) = prefs.edit().putBoolean(ENABLE_DRAWER_TABS, enableDrawerTabs).apply()
-
     var showFavouritesDivider: Boolean
         get() = prefs.getBoolean(SHOW_FAVOURITES_DIVIDER, true)
         set(showFavouritesDivider) = prefs.edit().putBoolean(SHOW_FAVOURITES_DIVIDER, showFavouritesDivider).apply()

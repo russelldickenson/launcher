@@ -28,7 +28,6 @@ const val NOTIFICATION_BADGE_COLOR = "notification_badge_color"
 const val NOTIFICATION_BADGE_SHAPE = "notification_badge_shape"
 const val SHOW_NOTIFICATION_COUNT = "show_notification_count"
 const val SHOW_FAVOURITES_DIVIDER = "show_favourites_divider"
-const val ENABLE_DRAWER_TABS = "enable_drawer_tabs"
 const val SHOW_DRAWER_ICON_DROP_SHADOW = "show_drawer_icon_drop_shadow"
 
 const val NOTIFICATION_BADGE_SHAPE_CIRCLE = 0

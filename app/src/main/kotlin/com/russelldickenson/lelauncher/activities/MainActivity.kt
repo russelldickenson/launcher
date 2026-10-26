@@ -1169,7 +1169,9 @@ class MainActivity : SimpleActivity(), FlingListener {
             .show()
     }
 
-    private fun createTabForApp(launcher: AppLauncher) {
+    private fun createTabForApp(launcher: AppLauncher) = showNewTabDialog(launcher)
+
+    fun showNewTabDialog(launcher: AppLauncher? = null) {
         RenameItemDialog(this, "", titleRes = R.string.new_tab) { title, dialog ->
             if (isDrawerTabNameTaken(title)) {
                 toast(R.string.rename_tab_exists)
@@ -1180,8 +1182,11 @@ class MainActivity : SimpleActivity(), FlingListener {
                 val order = (IconCache.tabs.maxOfOrNull { it.order } ?: 0) + 1
                 val tabId = drawerTabsDB.insert(DrawerTab(id = null, title = title, order = order))
                 IconCache.tabs = IconCache.tabs + DrawerTab(tabId, title, order)
-                assignAppToTab(launcher, tabId)
+                if (launcher != null) {
+                    assignAppToTab(launcher, tabId)
+                }
                 runOnUiThread {
+                    binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
                     binding.allAppsFragment.root.selectTab(tabId)
                     dialog.dismiss()
                 }

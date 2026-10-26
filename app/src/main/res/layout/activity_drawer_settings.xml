@@ -58,24 +58,6 @@
             <include layout="@layout/divider_inset" />
 
             <RelativeLayout
-                android:id="@+id/settings_enable_drawer_tabs_holder"
-                style="@style/SettingsHolderSwitchStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
-
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/settings_enable_drawer_tabs"
-                    style="@style/SettingsSwitchStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/enable_drawer_tabs" />
-
-            </RelativeLayout>
-
-            <include layout="@layout/divider_inset" />
-
-            <RelativeLayout
                 android:id="@+id/settings_drawer_search_holder"
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"

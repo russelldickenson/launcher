@@ -53,7 +53,6 @@ class AllAppsFragment(
     private var lastLabelMaxLines = -1
     private var lastShowFavouritesDivider: Boolean? = null
     private var lastShowDrawerIconDropShadow: Boolean? = null
-    private var lastEnableDrawerTabs: Boolean? = null
 
     private var launchers = emptyList<AppLauncher>()
     private var folders = emptyList<DrawerFolder>()
@@ -140,12 +139,6 @@ class AllAppsFragment(
         lastLabelMaxLines = context.config.drawerLabelMaxLines
         lastShowFavouritesDivider = context.config.showFavouritesDivider
         lastShowDrawerIconDropShadow = context.config.showDrawerIconDropShadow
-
-        val enableDrawerTabs = context.config.enableDrawerTabs
-        if (lastEnableDrawerTabs != null && lastEnableDrawerTabs != enableDrawerTabs) {
-            gotLaunchers(launchers)
-        }
-        lastEnableDrawerTabs = enableDrawerTabs
     }
 
     fun onConfigurationChanged() {
@@ -155,7 +148,7 @@ class AllAppsFragment(
 
         val layoutManager = binding.allAppsGrid.layoutManager as SafeGridLayoutManager
         layoutManager.spanCount = context.config.drawerColumnCount
-        tabs = if (context.config.enableDrawerTabs) IconCache.tabs else emptyList()
+        tabs = IconCache.tabs
         if (tabs.none { it.id == selectedTabId }) {
             selectedTabId = null
         }
@@ -172,11 +165,11 @@ class AllAppsFragment(
 
     private fun rebuildTabs() {
         val tabLayout = binding.drawerTabs
-        tabLayout.beVisibleIf(tabs.isNotEmpty())
+        tabLayout.beVisibleIf(true)
         isBuildingTabs = true
         tabLayout.removeAllTabs()
         tabLayout.clearOnTabSelectedListeners()
-        if (tabs.isNotEmpty()) {
+        run {
             tabLayout.addTab(tabLayout.newTab().setText(R.string.all_tab).setTag(null), selectedTabId == null)
             tabs.forEach { tab ->
                 tabLayout.addTab(tabLayout.newTab().setText(tab.title).setTag(tab.id), selectedTabId == tab.id)
@@ -186,13 +179,26 @@ class AllAppsFragment(
                 }
             }
 
+            tabLayout.addTab(
+                tabLayout.newTab().setText("+").setContentDescription(R.string.new_tab).setTag(ADD_TAB_TAG),
+                false
+            )
+
             val textColor = context.getAppDrawerTextColor()
             tabLayout.setTabTextColors(ColorUtils.setAlphaComponent(textColor, 150), textColor)
             tabLayout.setSelectedTabIndicatorColor(context.getProperPrimaryColor())
             tabLayout.setBackgroundColor(context.getAppDrawerBackgroundColor())
             tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab) {
-                    if (!isBuildingTabs) {
+                    if (isBuildingTabs) {
+                        return
+                    }
+
+                    if (tab.tag == ADD_TAB_TAG) {
+                        // "+" is an action, not a destination - snap back to the real selection
+                        tabLayout.post { rebuildTabs() }
+                        activity?.showNewTabDialog()
+                    } else {
                         selectedTabId = tab.tag as Long?
                         submitList(launchers)
                     }
@@ -203,6 +209,10 @@ class AllAppsFragment(
             })
         }
         isBuildingTabs = false
+    }
+
+    companion object {
+        private const val ADD_TAB_TAG = "add_tab"
     }
 
     override fun onTabLongPressed(tab: DrawerTab) {
