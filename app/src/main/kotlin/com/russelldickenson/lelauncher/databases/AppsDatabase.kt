@@ -10,16 +10,18 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.russelldickenson.lelauncher.helpers.Converters
 import com.russelldickenson.lelauncher.interfaces.AppLaunchersDao
 import com.russelldickenson.lelauncher.interfaces.DrawerFoldersDao
+import com.russelldickenson.lelauncher.interfaces.DrawerTabsDao
 import com.russelldickenson.lelauncher.interfaces.HiddenIconsDao
 import com.russelldickenson.lelauncher.interfaces.HomeScreenGridItemsDao
 import com.russelldickenson.lelauncher.models.AppLauncher
 import com.russelldickenson.lelauncher.models.DrawerFolder
+import com.russelldickenson.lelauncher.models.DrawerTab
 import com.russelldickenson.lelauncher.models.HiddenIcon
 import com.russelldickenson.lelauncher.models.HomeScreenGridItem
 
 @Database(
-    entities = [AppLauncher::class, HomeScreenGridItem::class, HiddenIcon::class, DrawerFolder::class],
-    version = 8
+    entities = [AppLauncher::class, HomeScreenGridItem::class, HiddenIcon::class, DrawerFolder::class, DrawerTab::class],
+    version = 9
 )
 @TypeConverters(Converters::class)
 abstract class AppsDatabase : RoomDatabase() {
@@ -31,6 +33,8 @@ abstract class AppsDatabase : RoomDatabase() {
     abstract fun HiddenIconsDao(): HiddenIconsDao
 
     abstract fun DrawerFoldersDao(): DrawerFoldersDao
+
+    abstract fun DrawerTabsDao(): DrawerTabsDao
 
     companion object {
         private var db: AppsDatabase? = null
@@ -60,6 +64,15 @@ abstract class AppsDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `drawer_tabs` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `title` TEXT NOT NULL, `order` INTEGER NOT NULL)"
+                )
+                db.execSQL("ALTER TABLE apps ADD COLUMN tab_id INTEGER")
+            }
+        }
+
         fun getInstance(context: Context): AppsDatabase {
             if (db == null) {
                 synchronized(AppsDatabase::class) {
@@ -68,7 +81,7 @@ abstract class AppsDatabase : RoomDatabase() {
                             context.applicationContext,
                             AppsDatabase::class.java,
                             "apps.db"
-                        ).addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8).build()
+                        ).addMigrations(MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9).build()
                     }
                 }
             }

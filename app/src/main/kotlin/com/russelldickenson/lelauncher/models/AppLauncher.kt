@@ -14,11 +14,12 @@ data class AppLauncher(
     @ColumnInfo(name = "pinned", defaultValue = "0") var pinned: Boolean = false,
     @ColumnInfo(name = "custom_title") var customTitle: String? = null,
     @ColumnInfo(name = "folder_id") var folderId: Long? = null,
+    @ColumnInfo(name = "tab_id") var tabId: Long? = null,
 
     @Ignore var drawable: Drawable?
 ) : Comparable<AppLauncher> {
 
-    constructor() : this(null, "", "", "", 0, 0, false, null, null, null)
+    constructor() : this(null, "", "", "", 0, 0, false, null, null, null, null)
 
     override fun equals(other: Any?) = packageName.equals((other as AppLauncher).packageName, true)
 

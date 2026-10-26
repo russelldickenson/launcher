@@ -37,6 +37,7 @@ import com.russelldickenson.lelauncher.helpers.isQPlus
 import com.russelldickenson.lelauncher.helpers.isSPlus
 import com.russelldickenson.lelauncher.interfaces.AppLaunchersDao
 import com.russelldickenson.lelauncher.interfaces.DrawerFoldersDao
+import com.russelldickenson.lelauncher.interfaces.DrawerTabsDao
 import com.russelldickenson.lelauncher.interfaces.HiddenIconsDao
 import com.russelldickenson.lelauncher.interfaces.HomeScreenGridItemsDao
 import com.russelldickenson.lelauncher.services.NotificationBadgeListenerService
@@ -58,6 +59,9 @@ val Context.hiddenIconsDB: HiddenIconsDao
 
 val Context.drawerFoldersDB: DrawerFoldersDao
     get() = AppsDatabase.getInstance(applicationContext).DrawerFoldersDao()
+
+val Context.drawerTabsDB: DrawerTabsDao
+    get() = AppsDatabase.getInstance(applicationContext).DrawerTabsDao()
 
 @get:RequiresApi(Build.VERSION_CODES.Q)
 val Context.roleManager: RoleManager

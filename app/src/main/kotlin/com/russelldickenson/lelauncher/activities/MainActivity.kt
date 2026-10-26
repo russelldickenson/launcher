@@ -57,6 +57,7 @@ import com.russelldickenson.lelauncher.extensions.DARK_GREY
 import com.russelldickenson.lelauncher.extensions.beVisible
 import com.russelldickenson.lelauncher.extensions.config
 import com.russelldickenson.lelauncher.extensions.drawerFoldersDB
+import com.russelldickenson.lelauncher.extensions.drawerTabsDB
 import com.russelldickenson.lelauncher.extensions.getAppDrawerBackgroundColor
 import com.russelldickenson.lelauncher.extensions.getAppDrawerElevatedSurfaceColor
 import com.russelldickenson.lelauncher.extensions.getAppDrawerTextColor
@@ -106,6 +107,7 @@ import com.russelldickenson.lelauncher.interfaces.FlingListener
 import com.russelldickenson.lelauncher.interfaces.ItemMenuListener
 import com.russelldickenson.lelauncher.models.AppLauncher
 import com.russelldickenson.lelauncher.models.DrawerFolder
+import com.russelldickenson.lelauncher.models.DrawerTab
 import com.russelldickenson.lelauncher.models.HiddenIcon
 import com.russelldickenson.lelauncher.models.HomeScreenGridItem
 import com.russelldickenson.lelauncher.receivers.LockDeviceAdminReceiver
@@ -642,6 +644,7 @@ class MainActivity : SimpleActivity(), FlingListener {
     private fun refreshLaunchers() {
         val launchers = getAllAppLaunchers()
         IconCache.folders = drawerFoldersDB.getFolders()
+        IconCache.tabs = drawerTabsDB.getTabs()
         binding.allAppsFragment.root.gotLaunchers(launchers)
         binding.widgetsFragment.root.getAppWidgets()
 
@@ -1126,6 +1129,112 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
     }
 
+    private fun showMoveToTabDialog(gridItem: HomeScreenGridItem) {
+        val launcher = IconCache.launchers.firstOrNull {
+            it.packageName == gridItem.packageName && it.activityName == gridItem.activityName
+        } ?: return
+
+        val tabs = IconCache.tabs
+        val titles = (listOf(getString(R.string.all_tab)) + tabs.map { it.title } + getString(R.string.new_tab))
+            .toTypedArray()
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.move_to_tab)
+            .setItems(titles) { _, which ->
+                when (which) {
+                    0 -> ensureBackgroundThread { assignAppToTab(launcher, null) }
+                    titles.lastIndex -> createTabForApp(launcher)
+                    else -> ensureBackgroundThread { assignAppToTab(launcher, tabs[which - 1].id) }
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun createTabForApp(launcher: AppLauncher) {
+        RenameItemDialog(this, "", titleRes = R.string.new_tab) { title, dialog ->
+            if (isDrawerTabNameTaken(title)) {
+                toast(R.string.rename_tab_exists)
+                return@RenameItemDialog
+            }
+
+            ensureBackgroundThread {
+                val order = (IconCache.tabs.maxOfOrNull { it.order } ?: 0) + 1
+                val tabId = drawerTabsDB.insert(DrawerTab(id = null, title = title, order = order))
+                IconCache.tabs = IconCache.tabs + DrawerTab(tabId, title, order)
+                assignAppToTab(launcher, tabId)
+                runOnUiThread {
+                    binding.allAppsFragment.root.selectTab(tabId)
+                    dialog.dismiss()
+                }
+            }
+        }
+    }
+
+    private fun isDrawerTabNameTaken(name: String, excludeTabId: Long? = null): Boolean {
+        return IconCache.tabs.any { it.id != excludeTabId && it.title.trim().equals(name.trim(), ignoreCase = true) }
+    }
+
+    // must be called on a background thread
+    private fun assignAppToTab(launcher: AppLauncher, tabId: Long?) {
+        launchersDB.updateTabId(launcher.packageName, launcher.activityName, tabId)
+        IconCache.launchers = IconCache.launchers.map {
+            if (it.getLauncherIdentifier() == launcher.getLauncherIdentifier()) it.copy(tabId = tabId) else it
+        }
+
+        runOnUiThread {
+            binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+        }
+    }
+
+    fun showTabMenu(tab: DrawerTab) {
+        val items = arrayOf(getString(R.string.rename_tab), getString(R.string.delete_tab))
+        MaterialAlertDialogBuilder(this)
+            .setTitle(tab.title)
+            .setItems(items) { _, which ->
+                if (which == 0) renameTab(tab) else confirmDeleteTab(tab)
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun renameTab(tab: DrawerTab) {
+        RenameItemDialog(this, tab.title, titleRes = R.string.rename_tab) { newTitle, dialog ->
+            if (isDrawerTabNameTaken(newTitle, excludeTabId = tab.id)) {
+                toast(R.string.rename_tab_exists)
+                return@RenameItemDialog
+            }
+
+            ensureBackgroundThread {
+                drawerTabsDB.renameTab(tab.id!!, newTitle)
+                IconCache.tabs = IconCache.tabs.map { if (it.id == tab.id) it.copy(title = newTitle) else it }
+                runOnUiThread {
+                    binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+                    dialog.dismiss()
+                }
+            }
+        }
+    }
+
+    private fun confirmDeleteTab(tab: DrawerTab) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.delete_tab)
+            .setMessage(R.string.delete_tab_confirmation)
+            .setPositiveButton(R.string.yes) { _, _ ->
+                ensureBackgroundThread {
+                    drawerTabsDB.deleteTab(tab.id!!)
+                    IconCache.tabs = IconCache.tabs.filter { it.id != tab.id }
+                    IconCache.launchers = IconCache.launchers.map {
+                        if (it.tabId == tab.id) it.copy(tabId = null) else it
+                    }
+                    runOnUiThread {
+                        binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+                    }
+                }
+            }
+            .setNegativeButton(R.string.no, null)
+            .show()
+    }
+
     private fun removeAppFromFolder(gridItem: HomeScreenGridItem) {
         val launcher = IconCache.launchers.firstOrNull {
             it.packageName == gridItem.packageName && it.activityName == gridItem.activityName
@@ -1321,6 +1430,10 @@ class MainActivity : SimpleActivity(), FlingListener {
             removeAppFromFolder(gridItem)
         }
 
+        override fun moveToTab(gridItem: HomeScreenGridItem) {
+            showMoveToTabDialog(gridItem)
+        }
+
         override fun onDismiss() {
             mOpenPopupMenu = null
             resetFragmentTouches()
@@ -1480,6 +1593,7 @@ class MainActivity : SimpleActivity(), FlingListener {
                     pinned = pinnedPackages.contains(packageName),
                     customTitle = customTitle,
                     folderId = existingApps[packageName]?.folderId,
+                    tabId = existingApps[packageName]?.tabId,
                     drawable = finalBitmap.toDrawable(resources)
                 )
             )

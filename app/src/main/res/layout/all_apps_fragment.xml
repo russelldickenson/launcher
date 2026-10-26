@@ -90,11 +90,20 @@
 
     </FrameLayout>
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/drawer_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/search_bar_slot"
+        android:visibility="gone"
+        app:tabGravity="start"
+        app:tabMode="scrollable" />
+
     <com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
         android:id="@+id/all_apps_fastscroller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/search_bar_slot"
+        android:layout_below="@+id/drawer_tabs"
         app:fastScrollEnabled="true">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -114,7 +123,7 @@
         style="@style/TextAppearance.Material3.BodyLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/search_bar_slot"
+        android:layout_below="@+id/drawer_tabs"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/bigger_margin"
         android:alpha="0.8"

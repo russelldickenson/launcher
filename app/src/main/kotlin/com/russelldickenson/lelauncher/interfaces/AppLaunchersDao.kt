@@ -31,4 +31,7 @@ interface AppLaunchersDao {
 
     @Query("UPDATE apps SET folder_id = :folderId WHERE package_name = :packageName AND activity_name = :activityName")
     fun updateFolderId(packageName: String, activityName: String, folderId: Long?)
+
+    @Query("UPDATE apps SET tab_id = :tabId WHERE package_name = :packageName AND activity_name = :activityName")
+    fun updateTabId(packageName: String, activityName: String, tabId: Long?)
 }

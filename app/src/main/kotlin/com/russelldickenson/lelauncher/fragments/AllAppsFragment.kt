@@ -11,6 +11,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
+import com.google.android.material.tabs.TabLayout
 import com.russelldickenson.lelauncher.R
 import com.russelldickenson.lelauncher.activities.MainActivity
 import com.russelldickenson.lelauncher.adapters.LaunchersAdapter
@@ -33,6 +34,7 @@ import com.russelldickenson.lelauncher.helpers.NotificationCache
 import com.russelldickenson.lelauncher.interfaces.AllAppsListener
 import com.russelldickenson.lelauncher.models.AppLauncher
 import com.russelldickenson.lelauncher.models.DrawerFolder
+import com.russelldickenson.lelauncher.models.DrawerTab
 import com.russelldickenson.lelauncher.models.DrawerGridItem
 import com.russelldickenson.lelauncher.models.HomeScreenGridItem
 import com.russelldickenson.lelauncher.views.SafeGridLayoutManager
@@ -54,6 +56,11 @@ class AllAppsFragment(
 
     private var launchers = emptyList<AppLauncher>()
     private var folders = emptyList<DrawerFolder>()
+    private var tabs = emptyList<DrawerTab>()
+
+    // null is the implicit "All" tab
+    private var selectedTabId: Long? = null
+    private var isBuildingTabs = false
 
     // set while the folder "Add" flow (from the folder's ellipsis/long-press menu) is active -
     // see startFolderSelectionMode()/exitFolderSelectionMode()
@@ -137,7 +144,58 @@ class AllAppsFragment(
 
         val layoutManager = binding.allAppsGrid.layoutManager as SafeGridLayoutManager
         layoutManager.spanCount = context.config.drawerColumnCount
+        tabs = IconCache.tabs
+        if (tabs.none { it.id == selectedTabId }) {
+            selectedTabId = null
+        }
+        rebuildTabs()
+
         setupAdapter(launchers)
+    }
+
+    fun selectTab(tabId: Long?) {
+        selectedTabId = tabId
+        rebuildTabs()
+        submitList(launchers)
+    }
+
+    private fun rebuildTabs() {
+        val tabLayout = binding.drawerTabs
+        tabLayout.beVisibleIf(tabs.isNotEmpty())
+        isBuildingTabs = true
+        tabLayout.removeAllTabs()
+        tabLayout.clearOnTabSelectedListeners()
+        if (tabs.isNotEmpty()) {
+            tabLayout.addTab(tabLayout.newTab().setText(R.string.all_tab).setTag(null), selectedTabId == null)
+            tabs.forEach { tab ->
+                tabLayout.addTab(tabLayout.newTab().setText(tab.title).setTag(tab.id), selectedTabId == tab.id)
+                tabLayout.getTabAt(tabLayout.tabCount - 1)?.view?.setOnLongClickListener {
+                    onTabLongPressed(tab)
+                    true
+                }
+            }
+
+            val textColor = context.getAppDrawerTextColor()
+            tabLayout.setTabTextColors(ColorUtils.setAlphaComponent(textColor, 150), textColor)
+            tabLayout.setSelectedTabIndicatorColor(context.getProperPrimaryColor())
+            tabLayout.setBackgroundColor(context.getAppDrawerBackgroundColor())
+            tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab) {
+                    if (!isBuildingTabs) {
+                        selectedTabId = tab.tag as Long?
+                        submitList(launchers)
+                    }
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab) = Unit
+                override fun onTabReselected(tab: TabLayout.Tab) = Unit
+            })
+        }
+        isBuildingTabs = false
+    }
+
+    override fun onTabLongPressed(tab: DrawerTab) {
+        activity?.showTabMenu(tab)
     }
 
     override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
@@ -480,8 +538,14 @@ class AllAppsFragment(
             items
         }
 
-        val membersByFolderId = filtered.filter { it.folderId != null }.groupBy { it.folderId }
-        val topLevel = filtered.filter { it.folderId == null }
+        // a search looks across every tab; otherwise only the selected tab's apps are shown
+        val inTab = if (searchQuery.isEmpty() && selectedTabId != null) {
+            filtered.filter { it.tabId == selectedTabId }
+        } else {
+            filtered
+        }
+        val membersByFolderId = inTab.filter { it.folderId != null }.groupBy { it.folderId }
+        val topLevel = inTab.filter { it.folderId == null }
 
         val drawerItems = mutableListOf<DrawerGridItem>()
 
@@ -495,7 +559,7 @@ class AllAppsFragment(
         } else {
             folders.mapNotNull { folder ->
                 val members = membersByFolderId[folder.id].orEmpty()
-                if (searchQuery.isEmpty() || members.isNotEmpty()) {
+                if ((searchQuery.isEmpty() && selectedTabId == null) || members.isNotEmpty()) {
                     DrawerGridItem.Folder(folder, members)
                 } else {
                     null

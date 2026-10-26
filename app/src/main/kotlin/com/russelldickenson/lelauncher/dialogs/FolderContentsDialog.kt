@@ -22,6 +22,7 @@ import com.russelldickenson.lelauncher.interfaces.AllAppsListener
 import com.russelldickenson.lelauncher.interfaces.ItemMenuListener
 import com.russelldickenson.lelauncher.models.AppLauncher
 import com.russelldickenson.lelauncher.models.DrawerFolder
+import com.russelldickenson.lelauncher.models.DrawerTab
 import com.russelldickenson.lelauncher.models.DrawerGridItem
 import com.russelldickenson.lelauncher.models.HomeScreenGridItem
 import com.russelldickenson.lelauncher.views.SafeGridLayoutManager
@@ -108,6 +109,7 @@ class FolderContentsDialog(
                 // never enters the folder "Add" selection mode (that's driven by the main drawer)
                 override fun onFolderClicked(folder: DrawerFolder) = Unit
                 override fun onAppSelectionToggled(appLauncher: AppLauncher) = Unit
+                override fun onTabLongPressed(tab: DrawerTab) = Unit
             },
             itemClick = {
                 val launcher = it as AppLauncher
