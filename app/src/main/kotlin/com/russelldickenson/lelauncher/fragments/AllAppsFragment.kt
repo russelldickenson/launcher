@@ -53,6 +53,7 @@ class AllAppsFragment(
     private var lastLabelMaxLines = -1
     private var lastShowFavouritesDivider: Boolean? = null
     private var lastShowDrawerIconDropShadow: Boolean? = null
+    private var lastEnableDrawerTabs: Boolean? = null
 
     private var launchers = emptyList<AppLauncher>()
     private var folders = emptyList<DrawerFolder>()
@@ -66,6 +67,10 @@ class AllAppsFragment(
     // see startFolderSelectionMode()/exitFolderSelectionMode()
     private var selectionTargetFolder: DrawerFolder? = null
     private var selectedForFolder: MutableSet<String> = mutableSetOf()
+
+    // set while the tab "Add apps" flow is active; shares selectedForFolder and the selection
+    // bar with the folder flow, and never overlaps with it
+    private var selectionTargetTab: DrawerTab? = null
 
     private val folderDragHelper by lazy {
         FolderDragHelper(
@@ -135,6 +140,12 @@ class AllAppsFragment(
         lastLabelMaxLines = context.config.drawerLabelMaxLines
         lastShowFavouritesDivider = context.config.showFavouritesDivider
         lastShowDrawerIconDropShadow = context.config.showDrawerIconDropShadow
+
+        val enableDrawerTabs = context.config.enableDrawerTabs
+        if (lastEnableDrawerTabs != null && lastEnableDrawerTabs != enableDrawerTabs) {
+            gotLaunchers(launchers)
+        }
+        lastEnableDrawerTabs = enableDrawerTabs
     }
 
     fun onConfigurationChanged() {
@@ -144,7 +155,7 @@ class AllAppsFragment(
 
         val layoutManager = binding.allAppsGrid.layoutManager as SafeGridLayoutManager
         layoutManager.spanCount = context.config.drawerColumnCount
-        tabs = IconCache.tabs
+        tabs = if (context.config.enableDrawerTabs) IconCache.tabs else emptyList()
         if (tabs.none { it.id == selectedTabId }) {
             selectedTabId = null
         }
@@ -448,15 +459,33 @@ class AllAppsFragment(
         submitList(launchers)
     }
 
+    fun startTabSelectionMode(tab: DrawerTab) {
+        selectionTargetTab = tab
+        selectedForFolder = mutableSetOf()
+        closeSearch()
+        setupSelectionModeBarColors()
+        binding.searchBar.beVisibleIf(false)
+        binding.selectionModeBar.beVisibleIf(true)
+        updateSelectionCountLabel()
+        getAdapter()?.setSelectionState(active = true, selected = selectedForFolder)
+        submitList(launchers)
+    }
+
     private fun exitFolderSelectionMode(commit: Boolean) {
         val folderId = selectionTargetFolder?.id
+        val tabId = selectionTargetTab?.id
         val selected = selectedForFolder.toSet()
-        if (commit && folderId != null && selected.isNotEmpty()) {
+        if (commit && selected.isNotEmpty()) {
             val selectedLaunchers = launchers.filter { it.getLauncherIdentifier() in selected }
-            activity?.assignSelectedAppsToFolder(selectedLaunchers, folderId)
+            if (folderId != null) {
+                activity?.assignSelectedAppsToFolder(selectedLaunchers, folderId)
+            } else if (tabId != null) {
+                activity?.assignSelectedAppsToTab(selectedLaunchers, tabId)
+            }
         }
 
         selectionTargetFolder = null
+        selectionTargetTab = null
         selectedForFolder = mutableSetOf()
         binding.selectionModeBar.beVisibleIf(false)
         binding.searchBar.beVisibleIf(context.config.showSearchBar)
@@ -499,7 +528,7 @@ class AllAppsFragment(
 
         activity?.showHomeIconMenu(x, y, gridItem, true)
         ignoreTouches = true
-        if (selectionTargetFolder == null) {
+        if (selectionTargetFolder == null && selectionTargetTab == null) {
             folderDragHelper.armDrag(appLauncher)
         }
 
@@ -513,7 +542,7 @@ class AllAppsFragment(
     }
 
     fun onBackPressed(): Boolean {
-        if (selectionTargetFolder != null) {
+        if (selectionTargetFolder != null || selectionTargetTab != null) {
             exitFolderSelectionMode(commit = false)
             return true
         }
@@ -544,6 +573,17 @@ class AllAppsFragment(
         } else {
             filtered
         }
+        val targetTab = selectionTargetTab
+        if (targetTab != null) {
+            // picking apps for a tab: every app not already in it, flat (folders and the
+            // current tab filter would otherwise hide apps that can't be reached)
+            val pickable = items.filter { it.tabId != targetTab.id }
+            getAdapter()?.submitList(pickable.map { DrawerGridItem.App(it) }) {
+                showNoResultsPlaceholderIfNeeded()
+            }
+            return
+        }
+
         val membersByFolderId = inTab.filter { it.folderId != null }.groupBy { it.folderId }
         val topLevel = inTab.filter { it.folderId == null }
 

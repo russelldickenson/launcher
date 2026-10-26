@@ -1055,6 +1055,25 @@ class MainActivity : SimpleActivity(), FlingListener {
         )
     }
 
+    // must not be called on the UI thread - assigns every selected app to the tab in one pass
+    fun assignSelectedAppsToTab(selected: List<AppLauncher>, tabId: Long) {
+        if (selected.isEmpty()) {
+            return
+        }
+
+        ensureBackgroundThread {
+            selected.forEach { launchersDB.updateTabId(it.packageName, it.activityName, tabId) }
+            val identifiers = selected.map { it.getLauncherIdentifier() }.toSet()
+            IconCache.launchers = IconCache.launchers.map {
+                if (identifiers.contains(it.getLauncherIdentifier())) it.copy(tabId = tabId) else it
+            }
+
+            runOnUiThread {
+                binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+            }
+        }
+    }
+
     // called once the drawer's drag-to-folder gesture drops a dragged app onto an existing folder
     fun assignSelectedAppsToFolder(selected: List<AppLauncher>, folderId: Long) {
         if (selected.isEmpty()) {
@@ -1187,11 +1206,19 @@ class MainActivity : SimpleActivity(), FlingListener {
     }
 
     fun showTabMenu(tab: DrawerTab) {
-        val items = arrayOf(getString(R.string.rename_tab), getString(R.string.delete_tab))
+        val items = arrayOf(
+            getString(R.string.add_apps_to_tab),
+            getString(R.string.rename_tab),
+            getString(R.string.delete_tab)
+        )
         MaterialAlertDialogBuilder(this)
             .setTitle(tab.title)
             .setItems(items) { _, which ->
-                if (which == 0) renameTab(tab) else confirmDeleteTab(tab)
+                when (which) {
+                    0 -> binding.allAppsFragment.root.startTabSelectionMode(tab)
+                    1 -> renameTab(tab)
+                    else -> confirmDeleteTab(tab)
+                }
             }
             .setNegativeButton(R.string.cancel, null)
             .show()

@@ -33,6 +33,7 @@ class DrawerSettingsActivity : SimpleActivity() {
         setupTopAppBar(binding.drawerSettingsAppbar, NavigationIcon.Arrow)
 
         setupShowFavouritesDivider()
+        setupEnableDrawerTabs()
         setupDrawerSearchBar()
         setupOpenKeyboardOnAppDrawer()
         setupCloseAppDrawerOnOtherAppOpen()
@@ -48,6 +49,14 @@ class DrawerSettingsActivity : SimpleActivity() {
         binding.settingsShowFavouritesDividerHolder.setOnClickListener {
             binding.settingsShowFavouritesDivider.toggle()
             config.showFavouritesDivider = binding.settingsShowFavouritesDivider.isChecked
+        }
+    }
+
+    private fun setupEnableDrawerTabs() {
+        binding.settingsEnableDrawerTabs.isChecked = config.enableDrawerTabs
+        binding.settingsEnableDrawerTabsHolder.setOnClickListener {
+            binding.settingsEnableDrawerTabs.toggle()
+            config.enableDrawerTabs = binding.settingsEnableDrawerTabs.isChecked
         }
     }
 

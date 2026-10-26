@@ -67,6 +67,8 @@
     <string name="rename_folder">Rename folder</string>
     <string name="delete_folder">Delete folder</string>
     <string name="delete_folder_confirmation">Delete this folder? Its apps will move back to the main app drawer.</string>
+    <string name="enable_drawer_tabs">Enable tabs in the app drawer</string>
+    <string name="add_apps_to_tab">Add apps</string>
     <string name="move_to_tab">Move to tab</string>
     <string name="all_tab">All</string>
     <string name="new_tab">New tab</string>
