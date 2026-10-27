@@ -52,6 +52,7 @@ import com.russelldickenson.lelauncher.databinding.ActivityMainBinding
 import com.russelldickenson.lelauncher.databinding.AllAppsFragmentBinding
 import com.russelldickenson.lelauncher.databinding.WidgetsFragmentBinding
 import com.russelldickenson.lelauncher.dialogs.FolderContentsDialog
+import com.russelldickenson.lelauncher.dialogs.MoveToTabDialog
 import com.russelldickenson.lelauncher.dialogs.RenameItemDialog
 import com.russelldickenson.lelauncher.extensions.DARK_GREY
 import com.russelldickenson.lelauncher.extensions.beVisible
@@ -1153,20 +1154,13 @@ class MainActivity : SimpleActivity(), FlingListener {
             it.packageName == gridItem.packageName && it.activityName == gridItem.activityName
         } ?: return
 
-        val tabs = IconCache.tabs
-        val titles = (listOf(getString(R.string.all_tab)) + tabs.map { it.title } + getString(R.string.new_tab))
-            .toTypedArray()
-        MaterialAlertDialogBuilder(this)
-            .setTitle(R.string.move_to_tab)
-            .setItems(titles) { _, which ->
-                when (which) {
-                    0 -> ensureBackgroundThread { assignAppToTab(launcher, null) }
-                    titles.lastIndex -> createTabForApp(launcher)
-                    else -> ensureBackgroundThread { assignAppToTab(launcher, tabs[which - 1].id) }
-                }
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
+        MoveToTabDialog(
+            activity = this,
+            tabs = IconCache.tabs,
+            onAllSelected = { ensureBackgroundThread { assignAppToTab(launcher, null) } },
+            onTabSelected = { tab -> ensureBackgroundThread { assignAppToTab(launcher, tab.id) } },
+            onNewTabSelected = { createTabForApp(launcher) },
+        )
     }
 
     private fun createTabForApp(launcher: AppLauncher) = showNewTabDialog(launcher)

@@ -3,6 +3,10 @@ package com.russelldickenson.lelauncher.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.InsetDrawable
+import android.graphics.drawable.StateListDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.inputmethod.EditorInfo
@@ -53,6 +57,7 @@ class AllAppsFragment(
     private var lastLabelMaxLines = -1
     private var lastShowFavouritesDivider: Boolean? = null
     private var lastShowDrawerIconDropShadow: Boolean? = null
+    private var lastIncludeTabAppsInAll: Boolean? = null
 
     private var launchers = emptyList<AppLauncher>()
     private var folders = emptyList<DrawerFolder>()
@@ -139,6 +144,12 @@ class AllAppsFragment(
         lastLabelMaxLines = context.config.drawerLabelMaxLines
         lastShowFavouritesDivider = context.config.showFavouritesDivider
         lastShowDrawerIconDropShadow = context.config.showDrawerIconDropShadow
+
+        val includeTabAppsInAll = context.config.includeTabAppsInAll
+        if (lastIncludeTabAppsInAll != null && lastIncludeTabAppsInAll != includeTabAppsInAll) {
+            submitList(launchers)
+        }
+        lastIncludeTabAppsInAll = includeTabAppsInAll
     }
 
     fun onConfigurationChanged() {
@@ -148,12 +159,6 @@ class AllAppsFragment(
 
         val layoutManager = binding.allAppsGrid.layoutManager as SafeGridLayoutManager
         layoutManager.spanCount = context.config.drawerColumnCount
-        tabs = IconCache.tabs
-        if (tabs.none { it.id == selectedTabId }) {
-            selectedTabId = null
-        }
-        rebuildTabs()
-
         setupAdapter(launchers)
     }
 
@@ -186,7 +191,9 @@ class AllAppsFragment(
 
             val textColor = context.getAppDrawerTextColor()
             tabLayout.setTabTextColors(ColorUtils.setAlphaComponent(textColor, 150), textColor)
-            tabLayout.setSelectedTabIndicatorColor(context.getProperPrimaryColor())
+            for (i in 0 until tabLayout.tabCount) {
+                tabLayout.getTabAt(i)?.view?.background = createTabBackground()
+            }
             tabLayout.setBackgroundColor(context.getAppDrawerBackgroundColor())
             tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab) {
@@ -211,8 +218,35 @@ class AllAppsFragment(
         isBuildingTabs = false
     }
 
+    // each tab is its own tinted pill, inset so neighbouring pills never touch; the selected one is
+    // tinted more strongly, which replaces the indicator line
+    private fun createTabBackground(): Drawable {
+        val density = resources.displayMetrics.density
+        val primary = context.getProperPrimaryColor()
+        fun pill(alpha: Int) = InsetDrawable(
+            GradientDrawable().apply {
+                setColor(ColorUtils.setAlphaComponent(primary, alpha))
+                cornerRadius = TAB_CORNER_RADIUS_DP * density
+            },
+            (TAB_INSET_HORIZONTAL_DP * density).toInt(),
+            (TAB_INSET_VERTICAL_DP * density).toInt(),
+            (TAB_INSET_HORIZONTAL_DP * density).toInt(),
+            (TAB_INSET_VERTICAL_DP * density).toInt()
+        )
+
+        return StateListDrawable().apply {
+            addState(intArrayOf(android.R.attr.state_selected), pill(TAB_SELECTED_ALPHA))
+            addState(intArrayOf(), pill(TAB_UNSELECTED_ALPHA))
+        }
+    }
+
     companion object {
         private const val ADD_TAB_TAG = "add_tab"
+        private const val TAB_CORNER_RADIUS_DP = 16
+        private const val TAB_INSET_HORIZONTAL_DP = 4
+        private const val TAB_INSET_VERTICAL_DP = 6
+        private const val TAB_SELECTED_ALPHA = 90
+        private const val TAB_UNSELECTED_ALPHA = 36
     }
 
     override fun onTabLongPressed(tab: DrawerTab) {
@@ -272,6 +306,15 @@ class AllAppsFragment(
                 .thenBy { it.packageName }
         )
         folders = IconCache.folders.sortedBy { it.title.normalizeString().lowercase() }
+
+        // can be called from a background thread (refreshLaunchers), but the tab strip is a view
+        activity?.runOnUiThread {
+            tabs = IconCache.tabs
+            if (tabs.none { it.id == selectedTabId }) {
+                selectedTabId = null
+            }
+            rebuildTabs()
+        }
 
         setupAdapter(launchers)
     }
@@ -577,11 +620,13 @@ class AllAppsFragment(
             items
         }
 
-        // a search looks across every tab; otherwise only the selected tab's apps are shown
-        val inTab = if (searchQuery.isEmpty() && selectedTabId != null) {
-            filtered.filter { it.tabId == selectedTabId }
-        } else {
-            filtered
+        // a search looks across every tab; otherwise a tab shows its own apps, and All shows the
+        // untabbed ones unless the user opted to include tabbed apps there too
+        val inTab = when {
+            searchQuery.isNotEmpty() -> filtered
+            selectedTabId != null -> filtered.filter { it.tabId == selectedTabId }
+            context.config.includeTabAppsInAll -> filtered
+            else -> filtered.filter { it.tabId == null }
         }
         val targetTab = selectionTargetTab
         if (targetTab != null) {

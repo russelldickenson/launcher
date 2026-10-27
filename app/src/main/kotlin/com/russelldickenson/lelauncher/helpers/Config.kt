@@ -123,6 +123,10 @@ class Config(val context: Context) {
         get() = prefs.getBoolean(SHOW_NOTIFICATION_BADGES, true)
         set(showNotificationBadges) = prefs.edit().putBoolean(SHOW_NOTIFICATION_BADGES, showNotificationBadges).apply()
 
+    var includeTabAppsInAll: Boolean
+        get() = prefs.getBoolean(INCLUDE_TAB_APPS_IN_ALL, false)
+        set(includeTabAppsInAll) = prefs.edit().putBoolean(INCLUDE_TAB_APPS_IN_ALL, includeTabAppsInAll).apply()
+
     var showFavouritesDivider: Boolean
         get() = prefs.getBoolean(SHOW_FAVOURITES_DIVIDER, true)
         set(showFavouritesDivider) = prefs.edit().putBoolean(SHOW_FAVOURITES_DIVIDER, showFavouritesDivider).apply()

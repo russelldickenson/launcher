@@ -36,6 +36,7 @@ object SettingsBackup {
         NOTIFICATION_BADGE_SHAPE to Type.INT,
         SHOW_NOTIFICATION_COUNT to Type.BOOLEAN,
         SHOW_FAVOURITES_DIVIDER to Type.BOOLEAN,
+        INCLUDE_TAB_APPS_IN_ALL to Type.BOOLEAN,
         SHOW_DRAWER_ICON_DROP_SHADOW to Type.BOOLEAN,
     )
 

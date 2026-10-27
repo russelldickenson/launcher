@@ -58,6 +58,24 @@
             <include layout="@layout/divider_inset" />
 
             <RelativeLayout
+                android:id="@+id/settings_include_tab_apps_in_all_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/settings_include_tab_apps_in_all"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/include_tab_apps_in_all" />
+
+            </RelativeLayout>
+
+            <include layout="@layout/divider_inset" />
+
+            <RelativeLayout
                 android:id="@+id/settings_drawer_search_holder"
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
