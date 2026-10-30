@@ -10,6 +10,7 @@ import android.graphics.drawable.StateListDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.LinearLayout
 import android.view.inputmethod.EditorInfo
 import androidx.core.graphics.ColorUtils
@@ -46,6 +47,7 @@ import com.russelldickenson.lelauncher.models.DrawerTab
 import com.russelldickenson.lelauncher.models.DrawerGridItem
 import com.russelldickenson.lelauncher.models.HomeScreenGridItem
 import com.russelldickenson.lelauncher.views.SafeGridLayoutManager
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 class AllAppsFragment(
@@ -55,6 +57,7 @@ class AllAppsFragment(
 
     private var lastTouchCoords = Pair(0f, 0f)
     var touchDownY = -1
+    private var touchDownX = 0f
     var ignoreTouches = false
 
     private var lastIconScalePercent = -1
@@ -290,6 +293,7 @@ class AllAppsFragment(
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
                 touchDownY = event.y.toInt()
+                touchDownX = event.x
             }
 
             MotionEvent.ACTION_MOVE -> {
@@ -308,8 +312,10 @@ class AllAppsFragment(
                 // pull the whole fragment down if it is scrolled way to the top and the user pulls it even further
                 if (touchDownY != -1) {
                     val distance = event.y.toInt() - touchDownY
-                    shouldIntercept =
-                        distance > 0 && binding.allAppsGrid.computeVerticalScrollOffset() == 0
+                    // a mostly sideways drag (the favourites row) must not count as a pull
+                    val isMostlyVertical = distance > abs(event.x - touchDownX)
+                    shouldIntercept = distance > ViewConfiguration.get(context).scaledTouchSlop &&
+                        isMostlyVertical && binding.allAppsGrid.computeVerticalScrollOffset() == 0
                     if (shouldIntercept) {
                         // Hiding is expensive, only do it if focused
                         if (binding.searchBar.hasFocus()) {
