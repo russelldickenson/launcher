@@ -10,6 +10,7 @@ import android.graphics.drawable.StateListDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.widget.LinearLayout
 import android.view.inputmethod.EditorInfo
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
@@ -45,6 +46,7 @@ import com.russelldickenson.lelauncher.models.DrawerTab
 import com.russelldickenson.lelauncher.models.DrawerGridItem
 import com.russelldickenson.lelauncher.models.HomeScreenGridItem
 import com.russelldickenson.lelauncher.views.SafeGridLayoutManager
+import kotlin.math.roundToInt
 
 class AllAppsFragment(
     context: Context,
@@ -65,6 +67,7 @@ class AllAppsFragment(
     private var launchers = emptyList<AppLauncher>()
     private var folders = emptyList<DrawerFolder>()
     private var tabs = emptyList<DrawerTab>()
+    private var favouritesCount = 0
 
     // null is the implicit "All" tab
     private var selectedTabId: Long? = null
@@ -113,6 +116,12 @@ class AllAppsFragment(
         }
 
         folderDragHelper.attach()
+
+        binding.favouritesGrid.addOnScrollListener(object : OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                updateFavouritesDots()
+            }
+        })
     }
 
     override fun onAttachedToWindow() {
@@ -252,6 +261,12 @@ class AllAppsFragment(
     companion object {
         private const val ADD_TAB_TAG = "add_tab"
         private const val FAVOURITES_TAB_ID = -1L
+        private const val FAVOURITES_TINT_ALPHA = 40
+        private const val FAVOURITES_CORNER_RADIUS_DP = 20
+        private const val DOT_SIZE_DP = 6
+        private const val DOT_MARGIN_DP = 3
+        private const val DOT_ACTIVE_ALPHA = 255
+        private const val DOT_INACTIVE_ALPHA = 90
         private const val SEARCH_POPOUT_DURATION_MS = 180L
         private const val SEARCH_POPOUT_START_SCALE = 0.3f
         private const val TAB_CORNER_RADIUS_DP = 16
@@ -465,6 +480,10 @@ class AllAppsFragment(
 
         binding.searchButton.beVisibleIf(context.config.showSearchBar && !isSelecting())
         binding.searchButton.setColorFilter(context.getAppDrawerTextColor())
+        binding.favouritesSection.background = GradientDrawable().apply {
+            setColor(ColorUtils.setAlphaComponent(context.getProperPrimaryColor(), FAVOURITES_TINT_ALPHA))
+            cornerRadius = FAVOURITES_CORNER_RADIUS_DP * resources.displayMetrics.density
+        }
         binding.searchButton.setOnClickListener { openSearch() }
         binding.searchBar.setEndIconOnClickListener { closeSearch() }
         if (!context.config.showSearchBar) {
@@ -681,11 +700,52 @@ class AllAppsFragment(
         return false
     }
 
+    // a dot per screenful of favourites, shown only when the row overflows the screen's width, with
+    // the dot for the current scroll position filled in
+    private fun updateFavouritesDots() {
+        val columns = context.config.drawerColumnCount
+        val pages = (favouritesCount + columns - 1) / columns
+        val dots = binding.favouritesDots
+        dots.beVisibleIf(pages > 1)
+        if (pages <= 1) {
+            return
+        }
+
+        if (dots.childCount != pages) {
+            dots.removeAllViews()
+            val density = resources.displayMetrics.density
+            val size = (DOT_SIZE_DP * density).toInt()
+            val margin = (DOT_MARGIN_DP * density).toInt()
+            repeat(pages) {
+                dots.addView(
+                    View(context).apply {
+                        layoutParams = LinearLayout.LayoutParams(size, size).apply { setMargins(margin, 0, margin, 0) }
+                    }
+                )
+            }
+        }
+
+        val grid = binding.favouritesGrid
+        val scrollable = grid.computeHorizontalScrollRange() - grid.computeHorizontalScrollExtent()
+        val fraction = if (scrollable > 0) grid.computeHorizontalScrollOffset().toFloat() / scrollable else 0f
+        val current = (fraction * (pages - 1)).roundToInt()
+        val textColor = context.getAppDrawerTextColor()
+        for (i in 0 until dots.childCount) {
+            val alpha = if (i == current) DOT_ACTIVE_ALPHA else DOT_INACTIVE_ALPHA
+            dots.getChildAt(i).background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(ColorUtils.setAlphaComponent(textColor, alpha))
+            }
+        }
+    }
+
     private fun submitFavourites(favourites: List<AppLauncher>) {
         val margin = resources.getDimensionPixelSize(R.dimen.smaller_margin)
         getFavouritesAdapter()?.itemWidth =
             (resources.displayMetrics.widthPixels - 2 * margin) / context.config.drawerColumnCount
-        binding.favouritesGrid.beVisibleIf(favourites.isNotEmpty())
+        favouritesCount = favourites.size
+        binding.favouritesSection.beVisibleIf(favourites.isNotEmpty())
+        binding.favouritesGrid.post { updateFavouritesDots() }
         getFavouritesAdapter()?.submitList(favourites.map<AppLauncher, DrawerGridItem> { DrawerGridItem.App(it) }.toMutableList())
     }
 

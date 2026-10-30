@@ -61,24 +61,43 @@
 
     </FrameLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/favourites_grid"
+    <LinearLayout
+        android:id="@+id/favourites_section"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/search_bar_slot"
         android:layout_marginStart="@dimen/smaller_margin"
+        android:layout_marginTop="@dimen/small_margin"
         android:layout_marginEnd="@dimen/smaller_margin"
-        android:orientation="horizontal"
-        android:overScrollMode="never"
-        android:visibility="gone"
-        app:layoutManager="com.russelldickenson.lelauncher.views.SafeGridLayoutManager"
-        app:spanCount="1" />
+        android:orientation="vertical"
+        android:paddingTop="@dimen/small_margin"
+        android:paddingBottom="@dimen/small_margin"
+        android:visibility="gone">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/favourites_grid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:overScrollMode="never"
+            app:layoutManager="com.russelldickenson.lelauncher.views.SafeGridLayoutManager"
+            app:spanCount="1" />
+
+        <LinearLayout
+            android:id="@+id/favourites_dots"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/drawer_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/favourites_grid"
+        android:layout_below="@+id/favourites_section"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
