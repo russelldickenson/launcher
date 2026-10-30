@@ -127,9 +127,9 @@ class Config(val context: Context) {
         get() = prefs.getBoolean(INCLUDE_TAB_APPS_IN_ALL, false)
         set(includeTabAppsInAll) = prefs.edit().putBoolean(INCLUDE_TAB_APPS_IN_ALL, includeTabAppsInAll).apply()
 
-    var showFavouritesDivider: Boolean
-        get() = prefs.getBoolean(SHOW_FAVOURITES_DIVIDER, true)
-        set(showFavouritesDivider) = prefs.edit().putBoolean(SHOW_FAVOURITES_DIVIDER, showFavouritesDivider).apply()
+    var favouritesPlacement: Int
+        get() = prefs.getInt(FAVOURITES_PLACEMENT, FAVOURITES_PLACEMENT_ROW)
+        set(favouritesPlacement) = prefs.edit().putInt(FAVOURITES_PLACEMENT, favouritesPlacement).apply()
 
     // drawer-only - the drawer and home screen share the same underlying icon bitmap, so this
     // is applied at drawer-bind time rather than baked into that shared bitmap

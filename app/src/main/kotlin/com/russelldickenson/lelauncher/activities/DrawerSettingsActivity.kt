@@ -9,6 +9,8 @@ import com.russelldickenson.lelauncher.extensions.config
 import com.russelldickenson.lelauncher.extensions.showRadioGroupDialog
 import com.russelldickenson.lelauncher.extensions.viewBinding
 import com.russelldickenson.lelauncher.helpers.DRAWER_ICON_SCALE_PERCENT_STEP
+import com.russelldickenson.lelauncher.helpers.FAVOURITES_PLACEMENT_ROW
+import com.russelldickenson.lelauncher.helpers.FAVOURITES_PLACEMENT_TAB
 import com.russelldickenson.lelauncher.helpers.MAX_DRAWER_COLUMN_COUNT
 import com.russelldickenson.lelauncher.helpers.MAX_DRAWER_ICON_SCALE_PERCENT
 import com.russelldickenson.lelauncher.helpers.MIN_DRAWER_COLUMN_COUNT
@@ -32,7 +34,7 @@ class DrawerSettingsActivity : SimpleActivity() {
         super.onResume()
         setupTopAppBar(binding.drawerSettingsAppbar, NavigationIcon.Arrow)
 
-        setupShowFavouritesDivider()
+        setupFavouritesPlacement()
         setupIncludeTabAppsInAll()
         setupDrawerSearchBar()
         setupOpenKeyboardOnAppDrawer()
@@ -44,11 +46,20 @@ class DrawerSettingsActivity : SimpleActivity() {
         setupManageHiddenIcons()
     }
 
-    private fun setupShowFavouritesDivider() {
-        binding.settingsShowFavouritesDivider.isChecked = config.showFavouritesDivider
-        binding.settingsShowFavouritesDividerHolder.setOnClickListener {
-            binding.settingsShowFavouritesDivider.toggle()
-            config.showFavouritesDivider = binding.settingsShowFavouritesDivider.isChecked
+    private fun setupFavouritesPlacement() {
+        val current = config.favouritesPlacement
+        binding.settingsFavouritesPlacement.text = getString(
+            if (current == FAVOURITES_PLACEMENT_TAB) R.string.favourites_placement_tab else R.string.favourites_placement_row
+        )
+        binding.settingsFavouritesPlacementHolder.setOnClickListener {
+            val items = arrayListOf(
+                RadioItem(FAVOURITES_PLACEMENT_ROW, getString(R.string.favourites_placement_row)),
+                RadioItem(FAVOURITES_PLACEMENT_TAB, getString(R.string.favourites_placement_tab))
+            )
+            showRadioGroupDialog(items = items, checkedItemId = current) {
+                config.favouritesPlacement = it as Int
+                setupFavouritesPlacement()
+            }
         }
     }
 

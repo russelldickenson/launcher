@@ -68,11 +68,11 @@
         android:layout_below="@+id/search_bar_slot"
         android:layout_marginStart="@dimen/smaller_margin"
         android:layout_marginEnd="@dimen/smaller_margin"
-        android:nestedScrollingEnabled="false"
+        android:orientation="horizontal"
         android:overScrollMode="never"
         android:visibility="gone"
         app:layoutManager="com.russelldickenson.lelauncher.views.SafeGridLayoutManager"
-        app:spanCount="@integer/portrait_column_count" />
+        app:spanCount="1" />
 
     <LinearLayout
         android:id="@+id/drawer_header"

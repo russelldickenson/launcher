@@ -33,6 +33,7 @@ import com.russelldickenson.lelauncher.extensions.launchApp
 import com.russelldickenson.lelauncher.extensions.normalizeString
 import com.russelldickenson.lelauncher.extensions.setupDrawerBackground
 import com.russelldickenson.lelauncher.extensions.showKeyboard
+import com.russelldickenson.lelauncher.helpers.FAVOURITES_PLACEMENT_TAB
 import com.russelldickenson.lelauncher.helpers.FolderDragHelper
 import com.russelldickenson.lelauncher.helpers.ITEM_TYPE_ICON
 import com.russelldickenson.lelauncher.helpers.IconCache
@@ -57,7 +58,7 @@ class AllAppsFragment(
     private var lastIconScalePercent = -1
     private var lastLabelFontSize = -1
     private var lastLabelMaxLines = -1
-    private var lastShowFavouritesDivider: Boolean? = null
+    private var lastFavouritesPlacement: Int? = null
     private var lastShowDrawerIconDropShadow: Boolean? = null
     private var lastIncludeTabAppsInAll: Boolean? = null
 
@@ -126,9 +127,8 @@ class AllAppsFragment(
         }
 
         val layoutManager = binding.allAppsGrid.layoutManager as SafeGridLayoutManager
-        val showFavouritesDividerChanged = lastShowFavouritesDivider != null && lastShowFavouritesDivider != context.config.showFavouritesDivider
-        if (layoutManager.spanCount != context.config.drawerColumnCount || showFavouritesDividerChanged) {
-            lastShowFavouritesDivider = context.config.showFavouritesDivider
+        val favouritesPlacementChanged = lastFavouritesPlacement != null && lastFavouritesPlacement != context.config.favouritesPlacement
+        if (layoutManager.spanCount != context.config.drawerColumnCount || favouritesPlacementChanged) {
             onConfigurationChanged()
             // Force redraw due to changed item size
             (binding.allAppsGrid.adapter as LaunchersAdapter).notifyDataSetChanged()
@@ -145,7 +145,7 @@ class AllAppsFragment(
         lastIconScalePercent = context.config.drawerIconScalePercent
         lastLabelFontSize = context.config.drawerLabelFontSize
         lastLabelMaxLines = context.config.drawerLabelMaxLines
-        lastShowFavouritesDivider = context.config.showFavouritesDivider
+        lastFavouritesPlacement = context.config.favouritesPlacement
         lastShowDrawerIconDropShadow = context.config.showDrawerIconDropShadow
 
         val includeTabAppsInAll = context.config.includeTabAppsInAll
@@ -178,6 +178,12 @@ class AllAppsFragment(
         tabLayout.removeAllTabs()
         tabLayout.clearOnTabSelectedListeners()
         run {
+            if (isFavouritesTabMode()) {
+                tabLayout.addTab(
+                    tabLayout.newTab().setText(R.string.favourites_header).setTag(FAVOURITES_TAB_ID),
+                    selectedTabId == FAVOURITES_TAB_ID
+                )
+            }
             tabLayout.addTab(tabLayout.newTab().setText(R.string.all_tab).setTag(null), selectedTabId == null)
             tabs.forEach { tab ->
                 tabLayout.addTab(tabLayout.newTab().setText(tab.title).setTag(tab.id), selectedTabId == tab.id)
@@ -245,6 +251,7 @@ class AllAppsFragment(
 
     companion object {
         private const val ADD_TAB_TAG = "add_tab"
+        private const val FAVOURITES_TAB_ID = -1L
         private const val SEARCH_POPOUT_DURATION_MS = 180L
         private const val SEARCH_POPOUT_START_SCALE = 0.3f
         private const val TAB_CORNER_RADIUS_DP = 16
@@ -315,7 +322,8 @@ class AllAppsFragment(
         // can be called from a background thread (refreshLaunchers), but the tab strip is a view
         activity?.runOnUiThread {
             tabs = IconCache.tabs
-            if (tabs.none { it.id == selectedTabId }) {
+            val favouritesTabSelected = selectedTabId == FAVOURITES_TAB_ID && isFavouritesTabMode()
+            if (!favouritesTabSelected && tabs.none { it.id == selectedTabId }) {
                 selectedTabId = null
             }
             rebuildTabs()
@@ -362,9 +370,6 @@ class AllAppsFragment(
             val layoutManager = binding.allAppsGrid.layoutManager as SafeGridLayoutManager
             layoutManager.spanCount = context.config.drawerColumnCount
 
-            val favouritesLayoutManager = binding.favouritesGrid.layoutManager as SafeGridLayoutManager
-            favouritesLayoutManager.spanCount = context.config.drawerColumnCount
-
             if (getAdapter() == null) {
                 createAdapter(this).apply {
                     binding.allAppsGrid.itemAnimator = null
@@ -383,8 +388,6 @@ class AllAppsFragment(
                     binding.favouritesGrid.adapter = this
                     updateTextColor(context.getAppDrawerTextColor())
                 }
-                favouritesLayoutManager.spanSizeLookup =
-                    fullWidthRowsSpanSizeLookup(favouritesLayoutManager) { getFavouritesAdapter() }
             }
 
             submitList(launchers)
@@ -513,6 +516,8 @@ class AllAppsFragment(
         binding.searchPopout.animate().cancel()
         binding.searchPopout.visibility = View.GONE
     }
+
+    private fun isFavouritesTabMode() = context.config.favouritesPlacement == FAVOURITES_PLACEMENT_TAB
 
     private fun isSelecting() = selectionTargetFolder != null || selectionTargetTab != null
 
@@ -677,20 +682,11 @@ class AllAppsFragment(
     }
 
     private fun submitFavourites(favourites: List<AppLauncher>) {
-        val items = mutableListOf<DrawerGridItem>()
-        if (favourites.isNotEmpty()) {
-            val divided = context.config.showFavouritesDivider
-            if (divided) {
-                items.add(DrawerGridItem.Header(R.string.favourites_header))
-            }
-            favourites.forEach { items.add(DrawerGridItem.App(it)) }
-            if (divided) {
-                items.add(DrawerGridItem.Divider)
-            }
-        }
-
-        binding.favouritesGrid.beVisibleIf(items.isNotEmpty())
-        getFavouritesAdapter()?.submitList(items)
+        val margin = resources.getDimensionPixelSize(R.dimen.smaller_margin)
+        getFavouritesAdapter()?.itemWidth =
+            (resources.displayMetrics.widthPixels - 2 * margin) / context.config.drawerColumnCount
+        binding.favouritesGrid.beVisibleIf(favourites.isNotEmpty())
+        getFavouritesAdapter()?.submitList(favourites.map<AppLauncher, DrawerGridItem> { DrawerGridItem.App(it) }.toMutableList())
     }
 
     private fun submitList(items: List<AppLauncher>) {
@@ -706,11 +702,9 @@ class AllAppsFragment(
 
         // favourites sit above the tabs, independent of the selected one; while searching or picking
         // apps they stay in the main list instead, so they remain findable and selectable
-        val favourites = if (searchQuery.isEmpty() && !isSelecting()) {
-            filtered.filter { it.pinned && it.folderId == null }
-        } else {
-            emptyList()
-        }
+        val pinned = filtered.filter { it.pinned && it.folderId == null }
+        val showFavouritesRow = searchQuery.isEmpty() && !isSelecting() && !isFavouritesTabMode()
+        val favourites = if (showFavouritesRow) pinned else emptyList()
         submitFavourites(favourites)
         val favouriteIds = favourites.map { it.getLauncherIdentifier() }.toSet()
         val candidates = filtered.filter { it.getLauncherIdentifier() !in favouriteIds }
@@ -719,6 +713,7 @@ class AllAppsFragment(
         // untabbed ones unless the user opted to include tabbed apps there too
         val inTab = when {
             searchQuery.isNotEmpty() -> candidates
+            selectedTabId == FAVOURITES_TAB_ID -> pinned
             selectedTabId != null -> candidates.filter { it.tabId == selectedTabId }
             context.config.includeTabAppsInAll -> candidates
             else -> candidates.filter { it.tabId == null }
@@ -744,7 +739,7 @@ class AllAppsFragment(
         // there's nothing to do with one while picking apps for another folder, and topLevel
         // above already excludes every folder's members (including the target folder's own),
         // which is exactly the set of apps that should be pickable
-        val folderItems = if (selectionTargetFolder != null) {
+        val folderItems = if (selectionTargetFolder != null || selectedTabId == FAVOURITES_TAB_ID) {
             emptyList()
         } else {
             folders.mapNotNull { folder ->

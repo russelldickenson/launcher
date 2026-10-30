@@ -40,18 +40,26 @@
             android:paddingBottom="@dimen/settings_page_padding">
 
             <RelativeLayout
-                android:id="@+id/settings_show_favourites_divider_holder"
-                style="@style/SettingsHolderSwitchStyle"
+                android:id="@+id/settings_favourites_placement_holder"
+                style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/ripple_background">
 
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:id="@+id/settings_show_favourites_divider"
-                    style="@style/SettingsSwitchStyle"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/settings_favourites_placement_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/show_favourites_divider" />
+                    android:text="@string/favourites_placement" />
+
+                <TextView
+                    android:id="@+id/settings_favourites_placement"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_favourites_placement_label"
+                    tools:text="Row above the tabs" />
 
             </RelativeLayout>
 

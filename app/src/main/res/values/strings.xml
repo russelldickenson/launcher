@@ -30,7 +30,9 @@
     <string name="drawer_background_color">Background colour</string>
     <string name="drawer_text_color">Label colour</string>
     <string name="icon_pack">Icon pack</string>
-    <string name="show_favourites_divider">Divide favourites from other apps</string>
+    <string name="favourites_placement">Favourites</string>
+    <string name="favourites_placement_row">Row above the tabs</string>
+    <string name="favourites_placement_tab">First tab</string>
     <string name="show_drawer_icon_drop_shadow">Icon drop shadow</string>
     <string name="icons_subsection">Icons</string>
     <string name="icons_subsection_description">Icon packs, shape, reshaping</string>

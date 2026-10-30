@@ -62,6 +62,17 @@ class LaunchersAdapter(
 
     // driven by AllAppsFragment's folder "Add" flow - while active, app taps toggle selection
     // instead of launching, and AppViewHolder shows a checkmark overlay for selected identifiers
+    // 0 lets the cell decide (the grid); the favourites row sets it so its icons line up with the
+    // grid's columns even though a horizontal row has no column width of its own
+    var itemWidth = 0
+        @SuppressLint("NotifyDataSetChanged")
+        set(value) {
+            if (field != value) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
+
     private var isSelectionMode = false
     private var selectedIdentifiers: Set<String> = emptySet()
 
@@ -204,6 +215,9 @@ class LaunchersAdapter(
         @SuppressLint("ClickableViewAccessibility")
         fun bindView(launcher: AppLauncher): View {
             val binding = ItemLauncherLabelBinding.bind(itemView)
+            if (itemWidth > 0) {
+                itemView.layoutParams = itemView.layoutParams.apply { width = itemWidth }
+            }
             itemView.apply {
                 binding.launcherLabel.text = launcher.title
                 binding.launcherLabel.setTextColor(textColor)
