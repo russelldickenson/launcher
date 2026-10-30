@@ -139,6 +139,7 @@ class AllAppsFragment(
             lastShowDrawerIconDropShadow != context.config.showDrawerIconDropShadow
         ) {
             getAdapter()?.refreshIconAndLabelSettings()
+            getFavouritesAdapter()?.refreshIconAndLabelSettings()
         }
 
         lastIconScalePercent = context.config.drawerIconScalePercent
@@ -325,9 +326,35 @@ class AllAppsFragment(
 
     private fun getAdapter() = binding.allAppsGrid.adapter as? LaunchersAdapter
 
+    private fun getFavouritesAdapter() = binding.favouritesGrid.adapter as? LaunchersAdapter
+
+    private fun createAdapter(listener: AllAppsListener) = LaunchersAdapter(activity!!, listener) {
+        activity?.launchApp((it as AppLauncher).packageName, it.activityName)
+        if (activity?.config?.closeAppDrawer == true) {
+            activity?.closeAppDrawer(delayed = true)
+        }
+        ignoreTouches = false
+        touchDownY = -1
+    }
+
+    private fun fullWidthRowsSpanSizeLookup(
+        layoutManager: GridLayoutManager,
+        adapter: () -> LaunchersAdapter?
+    ) = object : GridLayoutManager.SpanSizeLookup() {
+        override fun getSpanSize(position: Int): Int {
+            val viewType = adapter()?.getItemViewType(position)
+            return if (viewType == LaunchersAdapter.VIEW_TYPE_DIVIDER || viewType == LaunchersAdapter.VIEW_TYPE_HEADER) {
+                layoutManager.spanCount
+            } else {
+                1
+            }
+        }
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun refreshNotificationBadges() {
         getAdapter()?.notifyDataSetChanged()
+        getFavouritesAdapter()?.notifyDataSetChanged()
     }
 
     private fun setupAdapter(launchers: List<AppLauncher>) {
@@ -335,29 +362,29 @@ class AllAppsFragment(
             val layoutManager = binding.allAppsGrid.layoutManager as SafeGridLayoutManager
             layoutManager.spanCount = context.config.drawerColumnCount
 
+            val favouritesLayoutManager = binding.favouritesGrid.layoutManager as SafeGridLayoutManager
+            favouritesLayoutManager.spanCount = context.config.drawerColumnCount
+
             if (getAdapter() == null) {
-                LaunchersAdapter(activity!!, this) {
-                    activity?.launchApp((it as AppLauncher).packageName, it.activityName)
-                    if (activity?.config?.closeAppDrawer == true) {
-                        activity?.closeAppDrawer(delayed = true)
-                    }
-                    ignoreTouches = false
-                    touchDownY = -1
-                }.apply {
+                createAdapter(this).apply {
                     binding.allAppsGrid.itemAnimator = null
                     binding.allAppsGrid.adapter = this
                 }
+                layoutManager.spanSizeLookup = fullWidthRowsSpanSizeLookup(layoutManager) { getAdapter() }
 
-                layoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                    override fun getSpanSize(position: Int): Int {
-                        val viewType = getAdapter()?.getItemViewType(position)
-                        return if (viewType == LaunchersAdapter.VIEW_TYPE_DIVIDER || viewType == LaunchersAdapter.VIEW_TYPE_HEADER) {
-                            layoutManager.spanCount
-                        } else {
-                            1
-                        }
+                // favourites live outside the tabbed grid so they stay put when a tab changes; a
+                // drag-to-folder gesture only listens to the main grid, so it is never armed here
+                createAdapter(object : AllAppsListener by this {
+                    override fun onAppLauncherLongPressed(x: Float, y: Float, appLauncher: AppLauncher) {
+                        showAppMenu(x, y, appLauncher, armDrag = false)
                     }
+                }).apply {
+                    binding.favouritesGrid.itemAnimator = null
+                    binding.favouritesGrid.adapter = this
+                    updateTextColor(context.getAppDrawerTextColor())
                 }
+                favouritesLayoutManager.spanSizeLookup =
+                    fullWidthRowsSpanSizeLookup(favouritesLayoutManager) { getFavouritesAdapter() }
             }
 
             submitList(launchers)
@@ -431,6 +458,7 @@ class AllAppsFragment(
 
         setupDrawerBackground(context.getAppDrawerBackgroundColor())
         getAdapter()?.updateTextColor(context.getAppDrawerTextColor())
+        getFavouritesAdapter()?.updateTextColor(context.getAppDrawerTextColor())
 
         binding.searchButton.beVisibleIf(context.config.showSearchBar && !isSelecting())
         binding.searchButton.setColorFilter(context.getAppDrawerTextColor())
@@ -592,6 +620,10 @@ class AllAppsFragment(
     }
 
     override fun onAppLauncherLongPressed(x: Float, y: Float, appLauncher: AppLauncher) {
+        showAppMenu(x, y, appLauncher, armDrag = true)
+    }
+
+    private fun showAppMenu(x: Float, y: Float, appLauncher: AppLauncher, armDrag: Boolean) {
         val gridItem = HomeScreenGridItem(
             id = null,
             left = -1,
@@ -614,7 +646,7 @@ class AllAppsFragment(
 
         activity?.showHomeIconMenu(x, y, gridItem, true)
         ignoreTouches = true
-        if (selectionTargetFolder == null && selectionTargetTab == null) {
+        if (armDrag && !isSelecting()) {
             folderDragHelper.armDrag(appLauncher)
         }
 
@@ -644,6 +676,23 @@ class AllAppsFragment(
         return false
     }
 
+    private fun submitFavourites(favourites: List<AppLauncher>) {
+        val items = mutableListOf<DrawerGridItem>()
+        if (favourites.isNotEmpty()) {
+            val divided = context.config.showFavouritesDivider
+            if (divided) {
+                items.add(DrawerGridItem.Header(R.string.favourites_header))
+            }
+            favourites.forEach { items.add(DrawerGridItem.App(it)) }
+            if (divided) {
+                items.add(DrawerGridItem.Divider)
+            }
+        }
+
+        binding.favouritesGrid.beVisibleIf(items.isNotEmpty())
+        getFavouritesAdapter()?.submitList(items)
+    }
+
     private fun submitList(items: List<AppLauncher>) {
         val searchQuery = binding.searchEditText.text?.toString().orEmpty()
         val filtered = if (searchQuery.isNotEmpty()) {
@@ -655,13 +704,24 @@ class AllAppsFragment(
             items
         }
 
+        // favourites sit above the tabs, independent of the selected one; while searching or picking
+        // apps they stay in the main list instead, so they remain findable and selectable
+        val favourites = if (searchQuery.isEmpty() && !isSelecting()) {
+            filtered.filter { it.pinned && it.folderId == null }
+        } else {
+            emptyList()
+        }
+        submitFavourites(favourites)
+        val favouriteIds = favourites.map { it.getLauncherIdentifier() }.toSet()
+        val candidates = filtered.filter { it.getLauncherIdentifier() !in favouriteIds }
+
         // a search looks across every tab; otherwise a tab shows its own apps, and All shows the
         // untabbed ones unless the user opted to include tabbed apps there too
         val inTab = when {
-            searchQuery.isNotEmpty() -> filtered
-            selectedTabId != null -> filtered.filter { it.tabId == selectedTabId }
-            context.config.includeTabAppsInAll -> filtered
-            else -> filtered.filter { it.tabId == null }
+            searchQuery.isNotEmpty() -> candidates
+            selectedTabId != null -> candidates.filter { it.tabId == selectedTabId }
+            context.config.includeTabAppsInAll -> candidates
+            else -> candidates.filter { it.tabId == null }
         }
         val targetTab = selectionTargetTab
         if (targetTab != null) {
@@ -697,25 +757,8 @@ class AllAppsFragment(
             }
         }
 
-        if (context.config.showFavouritesDivider) {
-            val pinned = topLevel.filter { it.pinned }
-            val unpinned = topLevel.filter { !it.pinned }
-            if (pinned.isNotEmpty()) {
-                drawerItems.add(DrawerGridItem.Header(R.string.favourites_header))
-                pinned.forEach { drawerItems.add(DrawerGridItem.App(it)) }
-                if (folderItems.isNotEmpty() || unpinned.isNotEmpty()) {
-                    drawerItems.add(DrawerGridItem.Divider)
-                    drawerItems.addAll(folderItems)
-                    unpinned.forEach { drawerItems.add(DrawerGridItem.App(it)) }
-                }
-            } else {
-                drawerItems.addAll(folderItems)
-                topLevel.forEach { drawerItems.add(DrawerGridItem.App(it)) }
-            }
-        } else {
-            drawerItems.addAll(folderItems)
-            topLevel.forEach { drawerItems.add(DrawerGridItem.App(it)) }
-        }
+        drawerItems.addAll(folderItems)
+        topLevel.forEach { drawerItems.add(DrawerGridItem.App(it)) }
 
         getAdapter()?.submitList(drawerItems) {
             showNoResultsPlaceholderIfNeeded()

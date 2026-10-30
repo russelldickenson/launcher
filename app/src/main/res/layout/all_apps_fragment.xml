@@ -61,11 +61,24 @@
 
     </FrameLayout>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/favourites_grid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/search_bar_slot"
+        android:layout_marginStart="@dimen/smaller_margin"
+        android:layout_marginEnd="@dimen/smaller_margin"
+        android:nestedScrollingEnabled="false"
+        android:overScrollMode="never"
+        android:visibility="gone"
+        app:layoutManager="com.russelldickenson.lelauncher.views.SafeGridLayoutManager"
+        app:spanCount="@integer/portrait_column_count" />
+
     <LinearLayout
         android:id="@+id/drawer_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/search_bar_slot"
+        android:layout_below="@+id/favourites_grid"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
