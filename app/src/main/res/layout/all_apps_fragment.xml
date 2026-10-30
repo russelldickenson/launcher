@@ -11,35 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/search_bar"
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_margin"
-            android:layout_marginEnd="@dimen/activity_margin"
-            app:boxCornerRadiusBottomEnd="24dp"
-            app:boxCornerRadiusBottomStart="24dp"
-            app:boxCornerRadiusTopEnd="24dp"
-            app:boxCornerRadiusTopStart="24dp"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
-            app:hintEnabled="false"
-            app:startIconDrawable="@drawable/ic_search_vector"
-            app:startIconContentDescription="@string/search">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/search_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/search"
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:maxLines="1"
-                android:singleLine="true" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/selection_mode_bar"
             android:layout_width="match_parent"
@@ -71,7 +42,7 @@
                     android:id="@+id/selection_count_label"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+            android:layout_weight="1"
                     android:gravity="center"
                     android:textSize="16sp" />
 
@@ -90,24 +61,43 @@
 
     </FrameLayout>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/drawer_tabs"
+    <LinearLayout
+        android:id="@+id/drawer_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/search_bar_slot"
-        android:visibility="gone"
-        app:tabGravity="start"
-        app:tabIndicatorHeight="0dp"
-        app:tabMinWidth="0dp"
-        app:tabMode="scrollable"
-        app:tabPaddingEnd="@dimen/activity_margin"
-        app:tabPaddingStart="@dimen/activity_margin" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/drawer_tabs"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            app:tabGravity="start"
+            app:tabIndicatorHeight="0dp"
+            app:tabMinWidth="0dp"
+            app:tabMode="scrollable"
+            app:tabPaddingEnd="@dimen/activity_margin"
+            app:tabPaddingStart="@dimen/activity_margin" />
+
+        <ImageView
+            android:id="@+id/search_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="@dimen/small_margin"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/search"
+            android:padding="12dp"
+            android:src="@drawable/ic_search_vector" />
+
+    </LinearLayout>
 
     <com.qtalk.recyclerviewfastscroller.RecyclerViewFastScroller
         android:id="@+id/all_apps_fastscroller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/drawer_tabs"
+        android:layout_below="@+id/drawer_header"
         app:fastScrollEnabled="true">
 
         <androidx.recyclerview.widget.RecyclerView
@@ -127,7 +117,7 @@
         style="@style/TextAppearance.Material3.BodyLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/drawer_tabs"
+        android:layout_below="@+id/drawer_header"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/bigger_margin"
         android:alpha="0.8"
@@ -137,6 +127,52 @@
         android:text="@string/no_items_found"
         android:textStyle="italic"
         android:visibility="gone" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/search_popout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="@dimen/activity_margin"
+        android:layout_marginTop="@dimen/small_margin"
+        android:layout_marginEnd="@dimen/activity_margin"
+        android:elevation="10dp"
+        android:visibility="gone"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="8dp"
+        app:strokeWidth="0dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/search_bar"
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxCornerRadiusBottomEnd="24dp"
+            app:boxCornerRadiusBottomStart="24dp"
+            app:boxCornerRadiusTopEnd="24dp"
+            app:boxCornerRadiusTopStart="24dp"
+            app:boxStrokeWidth="0dp"
+            app:boxStrokeWidthFocused="0dp"
+            app:hintEnabled="false"
+            app:startIconDrawable="@drawable/ic_search_vector"
+            app:endIconContentDescription="@string/close"
+            app:endIconDrawable="@drawable/ic_cross_vector"
+            app:endIconMode="custom"
+            app:startIconContentDescription="@string/search">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/search_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/search"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <FrameLayout
         android:id="@+id/drag_shadow_container"

@@ -9,8 +9,10 @@ import android.graphics.drawable.InsetDrawable
 import android.graphics.drawable.StateListDrawable
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -242,6 +244,8 @@ class AllAppsFragment(
 
     companion object {
         private const val ADD_TAB_TAG = "add_tab"
+        private const val SEARCH_POPOUT_DURATION_MS = 180L
+        private const val SEARCH_POPOUT_START_SCALE = 0.3f
         private const val TAB_CORNER_RADIUS_DP = 16
         private const val TAB_INSET_HORIZONTAL_DP = 4
         private const val TAB_INSET_VERTICAL_DP = 6
@@ -428,7 +432,13 @@ class AllAppsFragment(
         setupDrawerBackground(context.getAppDrawerBackgroundColor())
         getAdapter()?.updateTextColor(context.getAppDrawerTextColor())
 
-        binding.searchBar.beVisibleIf(context.config.showSearchBar)
+        binding.searchButton.beVisibleIf(context.config.showSearchBar && !isSelecting())
+        binding.searchButton.setColorFilter(context.getAppDrawerTextColor())
+        binding.searchButton.setOnClickListener { openSearch() }
+        binding.searchBar.setEndIconOnClickListener { closeSearch() }
+        if (!context.config.showSearchBar) {
+            hideSearchPopout()
+        }
         setupSearchBarColors()
 
         binding.selectionCloseButton.setOnClickListener { exitFolderSelectionMode(commit = false) }
@@ -451,10 +461,32 @@ class AllAppsFragment(
 
     // the field is always visible - this just focuses it and raises the keyboard, for
     // MainActivity's auto-show-keyboard-on-drawer-open path
-    fun focusSearchBar() {
+    fun focusSearchBar() = openSearch()
+
+    // the field "pops out" of the search icon on the right and overlaps whatever is at the top of
+    // the drawer (the tab row); closeSearch() tucks it away again
+    fun openSearch() {
+        val popout = binding.searchPopout
+        if (!popout.isVisible) {
+            val margin = resources.getDimension(R.dimen.activity_margin)
+            popout.pivotX = width - 2 * margin
+            popout.pivotY = popout.height / 2f
+            popout.alpha = 0f
+            popout.scaleX = SEARCH_POPOUT_START_SCALE
+            popout.visibility = View.VISIBLE
+            popout.animate().alpha(1f).scaleX(1f).setDuration(SEARCH_POPOUT_DURATION_MS).start()
+        }
+
         binding.searchEditText.requestFocus()
         activity?.showKeyboard(binding.searchEditText)
     }
+
+    private fun hideSearchPopout() {
+        binding.searchPopout.animate().cancel()
+        binding.searchPopout.visibility = View.GONE
+    }
+
+    private fun isSelecting() = selectionTargetFolder != null || selectionTargetTab != null
 
     // a real Material3 TextInputLayout themes itself from the app's own M3 attrs already, unlike
     // MySearchMenu (which pulled from the theme's primary color and needed hand-drawn overrides
@@ -468,7 +500,8 @@ class AllAppsFragment(
 
         // the TextInputLayout's own background sits behind its box padding, independent of the
         // box fill itself - match it to the drawer so no light strip shows around the field
-        binding.searchBar.setBackgroundColor(context.getAppDrawerBackgroundColor())
+        binding.searchPopout.setCardBackgroundColor(fillColor)
+        binding.searchBar.setBackgroundColor(fillColor)
         binding.searchBar.setBoxBackgroundColor(fillColor)
         binding.searchBar.setStartIconTintList(ColorStateList.valueOf(textColor))
 
@@ -505,7 +538,7 @@ class AllAppsFragment(
         selectedForFolder = mutableSetOf()
         closeSearch()
         setupSelectionModeBarColors()
-        binding.searchBar.beVisibleIf(false)
+        binding.searchButton.beVisibleIf(false)
         binding.selectionModeBar.beVisibleIf(true)
         updateSelectionCountLabel()
         getAdapter()?.setSelectionState(active = true, selected = selectedForFolder)
@@ -517,7 +550,7 @@ class AllAppsFragment(
         selectedForFolder = mutableSetOf()
         closeSearch()
         setupSelectionModeBarColors()
-        binding.searchBar.beVisibleIf(false)
+        binding.searchButton.beVisibleIf(false)
         binding.selectionModeBar.beVisibleIf(true)
         updateSelectionCountLabel()
         getAdapter()?.setSelectionState(active = true, selected = selectedForFolder)
@@ -541,7 +574,7 @@ class AllAppsFragment(
         selectionTargetTab = null
         selectedForFolder = mutableSetOf()
         binding.selectionModeBar.beVisibleIf(false)
-        binding.searchBar.beVisibleIf(context.config.showSearchBar)
+        binding.searchButton.beVisibleIf(context.config.showSearchBar)
         getAdapter()?.setSelectionState(active = false, selected = emptySet())
         submitList(launchers)
     }
@@ -589,9 +622,11 @@ class AllAppsFragment(
     }
 
     fun closeSearch() {
+        // hide while the field still has focus - hideKeyboard() needs the focused view's window token
+        activity?.hideKeyboard()
         binding.searchEditText.text = null
         binding.searchEditText.clearFocus()
-        activity?.hideKeyboard()
+        hideSearchPopout()
     }
 
     fun onBackPressed(): Boolean {
@@ -601,7 +636,7 @@ class AllAppsFragment(
         }
 
         val query = binding.searchEditText.text
-        if (!query.isNullOrEmpty() || binding.searchEditText.hasFocus()) {
+        if (!query.isNullOrEmpty() || binding.searchEditText.hasFocus() || binding.searchPopout.isVisible) {
             closeSearch()
             return true
         }
