@@ -75,13 +75,12 @@
         android:visibility="gone">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/favourites_grid"
+            android:id="@+id/favourites_pager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:overScrollMode="never"
-            app:layoutManager="com.russelldickenson.lelauncher.views.SafeGridLayoutManager"
-            app:spanCount="1" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
         <LinearLayout
             android:id="@+id/favourites_dots"

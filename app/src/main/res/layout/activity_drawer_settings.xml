@@ -63,6 +63,30 @@
 
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/settings_favourites_max_rows_holder"
+                style="@style/SettingsHolderTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_background">
+
+                <TextView
+                    android:id="@+id/settings_favourites_max_rows_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/favourites_max_rows" />
+
+                <TextView
+                    android:id="@+id/settings_favourites_max_rows"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_favourites_max_rows_label"
+                    tools:text="As many as needed" />
+
+            </RelativeLayout>
+
             <include layout="@layout/divider_inset" />
 
             <RelativeLayout

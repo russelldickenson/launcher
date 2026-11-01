@@ -127,6 +127,10 @@ class Config(val context: Context) {
         get() = prefs.getBoolean(INCLUDE_TAB_APPS_IN_ALL, false)
         set(includeTabAppsInAll) = prefs.edit().putBoolean(INCLUDE_TAB_APPS_IN_ALL, includeTabAppsInAll).apply()
 
+    var favouritesMaxRows: Int
+        get() = prefs.getInt(FAVOURITES_MAX_ROWS, FAVOURITES_ROWS_UNLIMITED)
+        set(favouritesMaxRows) = prefs.edit().putInt(FAVOURITES_MAX_ROWS, favouritesMaxRows).apply()
+
     var favouritesPlacement: Int
         get() = prefs.getInt(FAVOURITES_PLACEMENT, FAVOURITES_PLACEMENT_ROW)
         set(favouritesPlacement) = prefs.edit().putInt(FAVOURITES_PLACEMENT, favouritesPlacement).apply()

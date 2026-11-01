@@ -11,8 +11,10 @@ import com.russelldickenson.lelauncher.extensions.viewBinding
 import com.russelldickenson.lelauncher.helpers.DRAWER_ICON_SCALE_PERCENT_STEP
 import com.russelldickenson.lelauncher.helpers.FAVOURITES_PLACEMENT_ROW
 import com.russelldickenson.lelauncher.helpers.FAVOURITES_PLACEMENT_TAB
+import com.russelldickenson.lelauncher.helpers.FAVOURITES_ROWS_UNLIMITED
 import com.russelldickenson.lelauncher.helpers.MAX_DRAWER_COLUMN_COUNT
 import com.russelldickenson.lelauncher.helpers.MAX_DRAWER_ICON_SCALE_PERCENT
+import com.russelldickenson.lelauncher.helpers.MAX_FAVOURITES_ROWS
 import com.russelldickenson.lelauncher.helpers.MIN_DRAWER_COLUMN_COUNT
 import com.russelldickenson.lelauncher.helpers.MIN_DRAWER_ICON_SCALE_PERCENT
 import com.russelldickenson.lelauncher.helpers.NavigationIcon
@@ -61,6 +63,33 @@ class DrawerSettingsActivity : SimpleActivity() {
                 setupFavouritesPlacement()
             }
         }
+
+        // the row limit only applies to the favourites section above the tabs
+        binding.settingsFavouritesMaxRowsHolder.beVisibleIf(current == FAVOURITES_PLACEMENT_ROW)
+        setupFavouritesMaxRows()
+    }
+
+    private fun setupFavouritesMaxRows() {
+        val current = config.favouritesMaxRows
+        binding.settingsFavouritesMaxRows.text = favouritesRowsLabel(current)
+        binding.settingsFavouritesMaxRowsHolder.setOnClickListener {
+            val items = ArrayList<RadioItem>()
+            items.add(RadioItem(FAVOURITES_ROWS_UNLIMITED, favouritesRowsLabel(FAVOURITES_ROWS_UNLIMITED)))
+            for (i in 1..MAX_FAVOURITES_ROWS) {
+                items.add(RadioItem(i, favouritesRowsLabel(i)))
+            }
+
+            showRadioGroupDialog(items = items, checkedItemId = current) {
+                config.favouritesMaxRows = it as Int
+                setupFavouritesMaxRows()
+            }
+        }
+    }
+
+    private fun favouritesRowsLabel(rows: Int) = if (rows == FAVOURITES_ROWS_UNLIMITED) {
+        getString(R.string.favourites_rows_unlimited)
+    } else {
+        resources.getQuantityString(R.plurals.row_counts, rows, rows)
     }
 
     private fun setupIncludeTabAppsInAll() {

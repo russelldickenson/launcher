@@ -31,6 +31,8 @@
     <string name="drawer_text_color">Label colour</string>
     <string name="icon_pack">Icon pack</string>
     <string name="favourites_placement">Favourites</string>
+    <string name="favourites_max_rows">Maximum favourites rows</string>
+    <string name="favourites_rows_unlimited">As many as needed</string>
     <string name="favourites_placement_row">Row above the tabs</string>
     <string name="favourites_placement_tab">First tab</string>
     <string name="show_drawer_icon_drop_shadow">Icon drop shadow</string>
@@ -112,6 +114,10 @@
     <string name="back">Back</string>
     <string name="folder">Folder</string>
     <string name="value_cannot_be_empty">Value cannot be empty</string>
+    <plurals name="row_counts">
+        <item quantity="one">%d row</item>
+        <item quantity="other">%d rows</item>
+    </plurals>
     <plurals name="column_counts">
         <item quantity="one">%d column</item>
         <item quantity="other">%d columns</item>

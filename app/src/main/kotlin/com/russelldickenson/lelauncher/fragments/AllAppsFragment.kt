@@ -17,11 +17,13 @@ import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener
 import com.google.android.material.tabs.TabLayout
 import com.russelldickenson.lelauncher.R
 import com.russelldickenson.lelauncher.activities.MainActivity
+import com.russelldickenson.lelauncher.adapters.FavouritesPagerAdapter
 import com.russelldickenson.lelauncher.adapters.LaunchersAdapter
 import com.russelldickenson.lelauncher.databinding.AllAppsFragmentBinding
 import com.russelldickenson.lelauncher.extensions.beVisibleIf
@@ -36,6 +38,7 @@ import com.russelldickenson.lelauncher.extensions.normalizeString
 import com.russelldickenson.lelauncher.extensions.setupDrawerBackground
 import com.russelldickenson.lelauncher.extensions.showKeyboard
 import com.russelldickenson.lelauncher.helpers.FAVOURITES_PLACEMENT_TAB
+import com.russelldickenson.lelauncher.helpers.FAVOURITES_ROWS_UNLIMITED
 import com.russelldickenson.lelauncher.helpers.FolderDragHelper
 import com.russelldickenson.lelauncher.helpers.ITEM_TYPE_ICON
 import com.russelldickenson.lelauncher.helpers.IconCache
@@ -64,13 +67,16 @@ class AllAppsFragment(
     private var lastLabelFontSize = -1
     private var lastLabelMaxLines = -1
     private var lastFavouritesPlacement: Int? = null
+    private var lastFavouritesMaxRows: Int? = null
     private var lastShowDrawerIconDropShadow: Boolean? = null
     private var lastIncludeTabAppsInAll: Boolean? = null
 
     private var launchers = emptyList<AppLauncher>()
     private var folders = emptyList<DrawerFolder>()
     private var tabs = emptyList<DrawerTab>()
-    private var favouritesCount = 0
+    private var favouritesPageCount = 0
+    private var favouritesFirstPageRows = 0
+    private var favouritesPagerAdapter: FavouritesPagerAdapter? = null
 
     // null is the implicit "All" tab
     private var selectedTabId: Long? = null
@@ -120,7 +126,8 @@ class AllAppsFragment(
 
         folderDragHelper.attach()
 
-        binding.favouritesGrid.addOnScrollListener(object : OnScrollListener() {
+        PagerSnapHelper().attachToRecyclerView(binding.favouritesPager)
+        binding.favouritesPager.addOnScrollListener(object : OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 updateFavouritesDots()
             }
@@ -151,7 +158,7 @@ class AllAppsFragment(
             lastShowDrawerIconDropShadow != context.config.showDrawerIconDropShadow
         ) {
             getAdapter()?.refreshIconAndLabelSettings()
-            getFavouritesAdapter()?.refreshIconAndLabelSettings()
+            favouritesPagerAdapter?.notifyDataSetChanged()
         }
 
         lastIconScalePercent = context.config.drawerIconScalePercent
@@ -159,6 +166,12 @@ class AllAppsFragment(
         lastLabelMaxLines = context.config.drawerLabelMaxLines
         lastFavouritesPlacement = context.config.favouritesPlacement
         lastShowDrawerIconDropShadow = context.config.showDrawerIconDropShadow
+
+        val favouritesMaxRows = context.config.favouritesMaxRows
+        if (lastFavouritesMaxRows != null && lastFavouritesMaxRows != favouritesMaxRows) {
+            submitList(launchers)
+        }
+        lastFavouritesMaxRows = favouritesMaxRows
 
         val includeTabAppsInAll = context.config.includeTabAppsInAll
         if (lastIncludeTabAppsInAll != null && lastIncludeTabAppsInAll != includeTabAppsInAll) {
@@ -355,8 +368,6 @@ class AllAppsFragment(
 
     private fun getAdapter() = binding.allAppsGrid.adapter as? LaunchersAdapter
 
-    private fun getFavouritesAdapter() = binding.favouritesGrid.adapter as? LaunchersAdapter
-
     private fun createAdapter(listener: AllAppsListener) = LaunchersAdapter(activity!!, listener) {
         activity?.launchApp((it as AppLauncher).packageName, it.activityName)
         if (activity?.config?.closeAppDrawer == true) {
@@ -383,7 +394,7 @@ class AllAppsFragment(
     @SuppressLint("NotifyDataSetChanged")
     fun refreshNotificationBadges() {
         getAdapter()?.notifyDataSetChanged()
-        getFavouritesAdapter()?.notifyDataSetChanged()
+        favouritesPagerAdapter?.notifyDataSetChanged()
     }
 
     private fun setupAdapter(launchers: List<AppLauncher>) {
@@ -400,15 +411,17 @@ class AllAppsFragment(
 
                 // favourites live outside the tabbed grid so they stay put when a tab changes; a
                 // drag-to-folder gesture only listens to the main grid, so it is never armed here
-                createAdapter(object : AllAppsListener by this {
+                val favouritesListener = object : AllAppsListener by this {
                     override fun onAppLauncherLongPressed(x: Float, y: Float, appLauncher: AppLauncher) {
                         showAppMenu(x, y, appLauncher, armDrag = false)
                     }
-                }).apply {
-                    binding.favouritesGrid.itemAnimator = null
-                    binding.favouritesGrid.adapter = this
-                    updateTextColor(context.getAppDrawerTextColor())
                 }
+                favouritesPagerAdapter = FavouritesPagerAdapter(
+                    createPageAdapter = {
+                        createAdapter(favouritesListener).apply { updateTextColor(context.getAppDrawerTextColor()) }
+                    },
+                    onPageHeight = ::onFavouritesPageHeight
+                ).also { binding.favouritesPager.adapter = it }
             }
 
             submitList(launchers)
@@ -482,7 +495,7 @@ class AllAppsFragment(
 
         setupDrawerBackground(context.getAppDrawerBackgroundColor())
         getAdapter()?.updateTextColor(context.getAppDrawerTextColor())
-        getFavouritesAdapter()?.updateTextColor(context.getAppDrawerTextColor())
+        favouritesPagerAdapter?.notifyDataSetChanged()
 
         binding.searchButton.beVisibleIf(context.config.showSearchBar && !isSelecting())
         binding.searchButton.setColorFilter(context.getAppDrawerTextColor())
@@ -706,11 +719,10 @@ class AllAppsFragment(
         return false
     }
 
-    // a dot per screenful of favourites, shown only when the row overflows the screen's width, with
-    // the dot for the current scroll position filled in
+    // a dot per page of favourites, shown only when there is more than one page, with the dot for
+    // the page currently in view filled in
     private fun updateFavouritesDots() {
-        val columns = context.config.drawerColumnCount
-        val pages = (favouritesCount + columns - 1) / columns
+        val pages = favouritesPageCount
         val dots = binding.favouritesDots
         dots.beVisibleIf(pages > 1)
         if (pages <= 1) {
@@ -731,10 +743,12 @@ class AllAppsFragment(
             }
         }
 
-        val grid = binding.favouritesGrid
-        val scrollable = grid.computeHorizontalScrollRange() - grid.computeHorizontalScrollExtent()
-        val fraction = if (scrollable > 0) grid.computeHorizontalScrollOffset().toFloat() / scrollable else 0f
-        val current = (fraction * (pages - 1)).roundToInt()
+        val pager = binding.favouritesPager
+        val current = if (pager.width > 0) {
+            (pager.computeHorizontalScrollOffset().toFloat() / pager.width).roundToInt().coerceIn(0, pages - 1)
+        } else {
+            0
+        }
         val textColor = context.getAppDrawerTextColor()
         for (i in 0 until dots.childCount) {
             val alpha = if (i == current) DOT_ACTIVE_ALPHA else DOT_INACTIVE_ALPHA
@@ -745,14 +759,30 @@ class AllAppsFragment(
         }
     }
 
+    // pages are as tall as their rows need, so the fullest page sets the pager's minimum height -
+    // otherwise it would resize while swiping onto a shorter last page
+    private fun onFavouritesPageHeight(height: Int) {
+        if (height > binding.favouritesPager.minimumHeight) {
+            binding.favouritesPager.minimumHeight = height
+        }
+    }
+
     private fun submitFavourites(favourites: List<AppLauncher>) {
-        val margin = resources.getDimensionPixelSize(R.dimen.smaller_margin)
-        getFavouritesAdapter()?.itemWidth =
-            (resources.displayMetrics.widthPixels - 2 * margin) / context.config.drawerColumnCount
-        favouritesCount = favourites.size
+        val columns = context.config.drawerColumnCount
+        val maxRows = context.config.favouritesMaxRows
+        val perPage = if (maxRows == FAVOURITES_ROWS_UNLIMITED) favourites.size else maxRows * columns
+        val pages = if (favourites.isEmpty()) emptyList() else favourites.chunked(perPage)
+
+        val firstPageRows = ((pages.firstOrNull()?.size ?: 0) + columns - 1) / columns
+        if (firstPageRows != favouritesFirstPageRows) {
+            favouritesFirstPageRows = firstPageRows
+            binding.favouritesPager.minimumHeight = 0
+        }
+
+        favouritesPageCount = pages.size
         binding.favouritesSection.beVisibleIf(favourites.isNotEmpty())
-        binding.favouritesGrid.post { updateFavouritesDots() }
-        getFavouritesAdapter()?.submitList(favourites.map<AppLauncher, DrawerGridItem> { DrawerGridItem.App(it) }.toMutableList())
+        favouritesPagerAdapter?.submitPages(pages, columns)
+        binding.favouritesPager.post { updateFavouritesDots() }
     }
 
     private fun submitList(items: List<AppLauncher>) {

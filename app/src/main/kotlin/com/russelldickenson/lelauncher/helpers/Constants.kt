@@ -28,6 +28,7 @@ const val NOTIFICATION_BADGE_COLOR = "notification_badge_color"
 const val NOTIFICATION_BADGE_SHAPE = "notification_badge_shape"
 const val SHOW_NOTIFICATION_COUNT = "show_notification_count"
 const val FAVOURITES_PLACEMENT = "favourites_placement"
+const val FAVOURITES_MAX_ROWS = "favourites_max_rows"
 const val INCLUDE_TAB_APPS_IN_ALL = "include_tab_apps_in_all"
 const val SHOW_DRAWER_ICON_DROP_SHADOW = "show_drawer_icon_drop_shadow"
 
@@ -37,6 +38,9 @@ const val NOTIFICATION_BADGE_SHAPE_SHARP_SQUARE = 2
 
 const val FAVOURITES_PLACEMENT_ROW = 0
 const val FAVOURITES_PLACEMENT_TAB = 1
+
+const val FAVOURITES_ROWS_UNLIMITED = 0
+const val MAX_FAVOURITES_ROWS = 4
 
 const val ICON_SHAPE = "icon_shape"
 
