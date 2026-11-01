@@ -75,6 +75,7 @@ class AllAppsFragment(
     private var folders = emptyList<DrawerFolder>()
     private var tabs = emptyList<DrawerTab>()
     private var favouritesPageCount = 0
+    private var favouritesSignature: List<Any?>? = null
     private var favouritesFirstPageRows = 0
     private var favouritesPagerAdapter: FavouritesPagerAdapter? = null
 
@@ -772,6 +773,11 @@ class AllAppsFragment(
         val maxRows = context.config.favouritesMaxRows
         val perPage = if (maxRows == FAVOURITES_ROWS_UNLIMITED) favourites.size else maxRows * columns
         val pages = if (favourites.isEmpty()) emptyList() else favourites.chunked(perPage)
+
+        // tab switches resubmit the same favourites; rebinding them would make the row flicker
+        val signature = listOf(columns, perPage) + favourites.map { listOf(it.getLauncherIdentifier(), it.title, it.customTitle, it.drawable) }
+        if (signature == favouritesSignature) return
+        favouritesSignature = signature
 
         val firstPageRows = ((pages.firstOrNull()?.size ?: 0) + columns - 1) / columns
         if (firstPageRows != favouritesFirstPageRows) {
