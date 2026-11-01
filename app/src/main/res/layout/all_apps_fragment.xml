@@ -109,8 +109,8 @@
             app:tabIndicatorHeight="0dp"
             app:tabMinWidth="0dp"
             app:tabMode="scrollable"
-            app:tabPaddingEnd="@dimen/activity_margin"
-            app:tabPaddingStart="@dimen/activity_margin" />
+            app:tabPaddingEnd="@dimen/bigger_margin"
+            app:tabPaddingStart="@dimen/bigger_margin" />
 
         <ImageView
             android:id="@+id/search_button"
