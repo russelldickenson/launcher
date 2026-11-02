@@ -1156,6 +1156,9 @@ class MainActivity : SimpleActivity(), FlingListener {
             onAllSelected = { assignSelectedAppsToTab(selected, null) },
             onTabSelected = { tab -> assignSelectedAppsToTab(selected, tab.id) },
             onNewTabSelected = { showNewTabDialog(selected) },
+            folders = IconCache.folders,
+            onFolderSelected = { folder -> assignSelectedAppsToFolder(selected, folder.id!!) },
+            onNewFolderSelected = { createFolderWithApps(selected) },
         )
     }
 
