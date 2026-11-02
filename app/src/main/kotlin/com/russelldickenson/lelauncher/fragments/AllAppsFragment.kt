@@ -538,13 +538,13 @@ class AllAppsFragment(
     // MainActivity's auto-show-keyboard-on-drawer-open path
     fun focusSearchBar() = openSearch()
 
-    // the field "pops out" of the search icon on the right and overlaps whatever is at the top of
+    // the field "pops out" of the search icon on the left and overlaps whatever is at the top of
     // the drawer (the tab row); closeSearch() tucks it away again
     fun openSearch() {
         val popout = binding.searchPopout
         if (!popout.isVisible) {
             val margin = resources.getDimension(R.dimen.activity_margin)
-            popout.pivotX = width - 2 * margin
+            popout.pivotX = 2 * margin
             popout.pivotY = popout.height / 2f
             popout.alpha = 0f
             popout.scaleX = SEARCH_POPOUT_START_SCALE
