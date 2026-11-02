@@ -69,8 +69,10 @@
     </style>
 
     <!-- the few broad topic headings within a settings sub-screen, e.g. "Search"/"Layout" -->
-    <style name="SettingsChapterHeadingStyle" parent="TextAppearance.Material3.TitleLarge">
-        <item name="android:textColor">?attr/colorOnSurface</item>
+    <style name="SettingsChapterHeadingStyle" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.08</item>
     </style>
 
     <!-- one per individual setting within a chapter, sitting above its own control -->
@@ -89,26 +91,26 @@
          0dp here - the page itself now supplies the 20dp side inset (settings_page_padding), so
          rows don't double up on it -->
     <style name="SettingsHolderSwitchStyle">
-        <item name="android:background">@drawable/ripple_background</item>
+        <item name="android:background">@drawable/settings_card_background</item>
         <item name="android:minHeight">64dp</item>
-        <item name="android:paddingStart">0dp</item>
-        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingStart">@dimen/settings_card_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_card_padding</item>
     </style>
 
     <style name="SettingsHolderTextViewStyle">
-        <item name="android:background">@drawable/ripple_background</item>
+        <item name="android:background">@drawable/settings_card_background</item>
         <item name="android:minHeight">48dp</item>
-        <item name="android:paddingStart">0dp</item>
-        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingStart">@dimen/settings_card_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_card_padding</item>
         <item name="android:paddingTop">20dp</item>
         <item name="android:paddingBottom">20dp</item>
     </style>
 
     <style name="SettingsHolderTextViewOneLinerStyle">
-        <item name="android:background">@drawable/ripple_background</item>
+        <item name="android:background">@drawable/settings_card_background</item>
         <item name="android:minHeight">48dp</item>
-        <item name="android:paddingStart">0dp</item>
-        <item name="android:paddingEnd">0dp</item>
+        <item name="android:paddingStart">@dimen/settings_card_padding</item>
+        <item name="android:paddingEnd">@dimen/settings_card_padding</item>
         <item name="android:paddingTop">14dp</item>
         <item name="android:paddingBottom">14dp</item>
     </style>

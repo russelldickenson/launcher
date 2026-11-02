@@ -44,7 +44,7 @@
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_show_drawer_app_labels"
@@ -62,7 +62,7 @@
                 style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <TextView
                     android:id="@+id/settings_drawer_label_font_size_label"
@@ -88,7 +88,7 @@
                 style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <TextView
                     android:id="@+id/settings_drawer_label_max_lines_label"
@@ -114,7 +114,7 @@
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_use_default_drawer_colors"
@@ -134,7 +134,7 @@
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <TextView
                     android:id="@+id/settings_drawer_text_color_label"
@@ -163,7 +163,7 @@
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <TextView
                     android:id="@+id/settings_drawer_background_color_label"

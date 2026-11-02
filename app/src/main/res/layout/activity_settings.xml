@@ -44,7 +44,7 @@
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <ImageView
                     android:id="@+id/settings_icon_settings_icon"
@@ -88,7 +88,7 @@
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <ImageView
                     android:id="@+id/settings_notification_badge_settings_icon"
@@ -132,7 +132,7 @@
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <ImageView
                     android:id="@+id/settings_drawer_settings_icon"
@@ -176,7 +176,7 @@
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <ImageView
                     android:id="@+id/settings_home_screen_settings_icon"
@@ -220,7 +220,7 @@
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <ImageView
                     android:id="@+id/settings_export_icon"
@@ -264,7 +264,7 @@
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <ImageView
                     android:id="@+id/settings_import_icon"

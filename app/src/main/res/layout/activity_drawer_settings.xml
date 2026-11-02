@@ -44,7 +44,7 @@
                 style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <TextView
                     android:id="@+id/settings_favourites_placement_label"
@@ -68,7 +68,7 @@
                 style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <TextView
                     android:id="@+id/settings_favourites_max_rows_label"
@@ -94,7 +94,7 @@
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_include_tab_apps_in_all"
@@ -112,7 +112,7 @@
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_show_search_bar"
@@ -130,7 +130,7 @@
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_open_keyboard_on_app_drawer"
@@ -148,7 +148,7 @@
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_close_app_drawer_on_other_app"
@@ -166,7 +166,7 @@
                 style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <TextView
                     android:id="@+id/settings_column_count_label"
@@ -192,7 +192,7 @@
                 style="@style/SettingsHolderTextViewStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <TextView
                     android:id="@+id/settings_drawer_icon_scale_label"
@@ -218,7 +218,7 @@
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/settings_show_drawer_icon_drop_shadow"
@@ -236,7 +236,7 @@
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <TextView
                     android:id="@+id/settings_drawer_labels"
@@ -265,7 +265,7 @@
                 style="@style/SettingsHolderTextViewOneLinerStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ripple_background">
+                android:background="@drawable/settings_card_background">
 
                 <TextView
                     android:id="@+id/settings_manage_hidden_icons"
