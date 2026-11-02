@@ -22,6 +22,10 @@
             android:icon="@drawable/ic_folder_vector"
             android:title="@string/move_to_tab" />
         <item
+            android:id="@+id/select_multiple"
+            android:icon="@drawable/ic_check_circle_vector"
+            android:title="@string/select_multiple" />
+        <item
             android:id="@+id/remove_from_folder"
             android:icon="@drawable/ic_cross_vector"
             android:title="@string/remove_from_folder" />

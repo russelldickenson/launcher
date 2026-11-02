@@ -74,6 +74,7 @@
     <string name="include_tab_apps_in_all">Show apps from other tabs in All</string>
     <string name="add_apps_to_tab">Add apps</string>
     <string name="move_to_tab">Move to tab</string>
+    <string name="select_multiple">Select multiple</string>
     <string name="all_tab">All</string>
     <string name="new_tab">New tab</string>
     <string name="rename_tab">Rename tab</string>

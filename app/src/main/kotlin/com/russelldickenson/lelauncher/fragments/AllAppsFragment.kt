@@ -94,6 +94,9 @@ class AllAppsFragment(
     // bar with the folder flow, and never overlaps with it
     private var selectionTargetTab: DrawerTab? = null
 
+    // set while picking several apps to move to a tab chosen afterwards (started from an app's menu)
+    private var selectionMovingToTab = false
+
     private val folderDragHelper by lazy {
         FolderDragHelper(
             recyclerView = binding.allAppsGrid,
@@ -560,7 +563,7 @@ class AllAppsFragment(
 
     private fun isFavouritesTabMode() = context.config.favouritesPlacement == FAVOURITES_PLACEMENT_TAB
 
-    private fun isSelecting() = selectionTargetFolder != null || selectionTargetTab != null
+    private fun isSelecting() = selectionTargetFolder != null || selectionTargetTab != null || selectionMovingToTab
 
     // a real Material3 TextInputLayout themes itself from the app's own M3 attrs already, unlike
     // MySearchMenu (which pulled from the theme's primary color and needed hand-drawn overrides
@@ -631,20 +634,36 @@ class AllAppsFragment(
         submitList(launchers)
     }
 
+    fun startMoveSelectionMode(first: AppLauncher) {
+        selectionMovingToTab = true
+        selectedForFolder = mutableSetOf(first.getLauncherIdentifier())
+        closeSearch()
+        setupSelectionModeBarColors()
+        binding.searchButton.beVisibleIf(false)
+        binding.selectionModeBar.beVisibleIf(true)
+        updateSelectionCountLabel()
+        getAdapter()?.setSelectionState(active = true, selected = selectedForFolder)
+        submitList(launchers)
+    }
+
     private fun exitFolderSelectionMode(commit: Boolean) {
         val folderId = selectionTargetFolder?.id
         val tabId = selectionTargetTab?.id
         val selected = selectedForFolder.toSet()
+        val moving = selectionMovingToTab
         if (commit && selected.isNotEmpty()) {
             val selectedLaunchers = launchers.filter { it.getLauncherIdentifier() in selected }
             if (folderId != null) {
                 activity?.assignSelectedAppsToFolder(selectedLaunchers, folderId)
             } else if (tabId != null) {
                 activity?.assignSelectedAppsToTab(selectedLaunchers, tabId)
+            } else if (moving) {
+                activity?.showMoveSelectedToTabDialog(selectedLaunchers)
             }
         }
 
         selectionTargetFolder = null
+        selectionMovingToTab = false
         selectionTargetTab = null
         selectedForFolder = mutableSetOf()
         binding.selectionModeBar.beVisibleIf(false)
@@ -708,7 +727,7 @@ class AllAppsFragment(
     }
 
     fun onBackPressed(): Boolean {
-        if (selectionTargetFolder != null || selectionTargetTab != null) {
+        if (isSelecting()) {
             exitFolderSelectionMode(commit = false)
             return true
         }
@@ -854,7 +873,7 @@ class AllAppsFragment(
         // there's nothing to do with one while picking apps for another folder, and topLevel
         // above already excludes every folder's members (including the target folder's own),
         // which is exactly the set of apps that should be pickable
-        val folderItems = if (selectionTargetFolder != null || selectedTabId == FAVOURITES_TAB_ID) {
+        val folderItems = if (selectionTargetFolder != null || selectionMovingToTab || selectedTabId == FAVOURITES_TAB_ID) {
             emptyList()
         } else {
             folders.mapNotNull { folder ->

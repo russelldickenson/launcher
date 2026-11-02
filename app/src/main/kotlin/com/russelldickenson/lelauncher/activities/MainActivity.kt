@@ -1057,7 +1057,7 @@ class MainActivity : SimpleActivity(), FlingListener {
     }
 
     // must not be called on the UI thread - assigns every selected app to the tab in one pass
-    fun assignSelectedAppsToTab(selected: List<AppLauncher>, tabId: Long) {
+    fun assignSelectedAppsToTab(selected: List<AppLauncher>, tabId: Long?) {
         if (selected.isEmpty()) {
             return
         }
@@ -1149,6 +1149,16 @@ class MainActivity : SimpleActivity(), FlingListener {
         }
     }
 
+    fun showMoveSelectedToTabDialog(selected: List<AppLauncher>) {
+        MoveToTabDialog(
+            activity = this,
+            tabs = IconCache.tabs,
+            onAllSelected = { assignSelectedAppsToTab(selected, null) },
+            onTabSelected = { tab -> assignSelectedAppsToTab(selected, tab.id) },
+            onNewTabSelected = { showNewTabDialog(selected) },
+        )
+    }
+
     private fun showMoveToTabDialog(gridItem: HomeScreenGridItem) {
         val launcher = IconCache.launchers.firstOrNull {
             it.packageName == gridItem.packageName && it.activityName == gridItem.activityName
@@ -1163,9 +1173,9 @@ class MainActivity : SimpleActivity(), FlingListener {
         )
     }
 
-    private fun createTabForApp(launcher: AppLauncher) = showNewTabDialog(launcher)
+    private fun createTabForApp(launcher: AppLauncher) = showNewTabDialog(listOf(launcher))
 
-    fun showNewTabDialog(launcher: AppLauncher? = null) {
+    fun showNewTabDialog(launchers: List<AppLauncher> = emptyList()) {
         RenameItemDialog(this, "", titleRes = R.string.new_tab) { title, dialog ->
             if (isDrawerTabNameTaken(title)) {
                 toast(R.string.rename_tab_exists)
@@ -1176,9 +1186,7 @@ class MainActivity : SimpleActivity(), FlingListener {
                 val order = (IconCache.tabs.maxOfOrNull { it.order } ?: 0) + 1
                 val tabId = drawerTabsDB.insert(DrawerTab(id = null, title = title, order = order))
                 IconCache.tabs = IconCache.tabs + DrawerTab(tabId, title, order)
-                if (launcher != null) {
-                    assignAppToTab(launcher, tabId)
-                }
+                launchers.forEach { assignAppToTab(it, tabId) }
                 runOnUiThread {
                     binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
                     binding.allAppsFragment.root.selectTab(tabId)
@@ -1458,6 +1466,13 @@ class MainActivity : SimpleActivity(), FlingListener {
 
         override fun moveToTab(gridItem: HomeScreenGridItem) {
             showMoveToTabDialog(gridItem)
+        }
+
+        override fun selectMultiple(gridItem: HomeScreenGridItem) {
+            val launcher = IconCache.launchers.firstOrNull {
+                it.packageName == gridItem.packageName && it.activityName == gridItem.activityName
+            } ?: return
+            binding.allAppsFragment.root.startMoveSelectionMode(launcher)
         }
 
         override fun onDismiss() {
