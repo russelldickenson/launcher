@@ -3,6 +3,7 @@ package com.russelldickenson.lelauncher.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.InsetDrawable
@@ -32,6 +33,7 @@ import com.russelldickenson.lelauncher.extensions.getAppDrawerBackgroundColor
 import com.russelldickenson.lelauncher.extensions.getAppDrawerSearchFillColor
 import com.russelldickenson.lelauncher.extensions.getAppDrawerTextColor
 import com.russelldickenson.lelauncher.extensions.getProperPrimaryColor
+import com.russelldickenson.lelauncher.extensions.isSystemInLightMode
 import com.russelldickenson.lelauncher.extensions.hideKeyboard
 import com.russelldickenson.lelauncher.extensions.launchApp
 import com.russelldickenson.lelauncher.extensions.normalizeString
@@ -280,6 +282,9 @@ class AllAppsFragment(
         private const val FAVOURITES_TAB_ID = -1L
         private const val FAVOURITES_TINT_ALPHA = 40
         private const val FAVOURITES_CORNER_RADIUS_DP = 20
+        private const val FAVOURITES_DARK_SURFACE = 0xFF3A3940.toInt()
+        private const val FAVOURITES_LIGHT_TEXT = 0xFF1C1B1F.toInt()
+        private const val FAVOURITES_LIGHT_SURFACE = 0xFFE2E1E8.toInt()
         private const val DOT_SIZE_DP = 6
         private const val DOT_MARGIN_DP = 3
         private const val DOT_ACTIVE_ALPHA = 255
@@ -419,7 +424,7 @@ class AllAppsFragment(
                 }
                 favouritesPagerAdapter = FavouritesPagerAdapter(
                     createPageAdapter = {
-                        createAdapter(favouritesListener).apply { updateTextColor(context.getAppDrawerTextColor()) }
+                        createAdapter(favouritesListener).apply { updateTextColor(favouritesTextColor()) }
                     },
                     onPageHeight = ::onFavouritesPageHeight
                 ).also { binding.favouritesPager.adapter = it }
@@ -500,10 +505,7 @@ class AllAppsFragment(
 
         binding.searchButton.beVisibleIf(context.config.showSearchBar && !isSelecting())
         binding.searchButton.setColorFilter(context.getAppDrawerTextColor())
-        binding.favouritesSection.background = GradientDrawable().apply {
-            setColor(ColorUtils.setAlphaComponent(context.getProperPrimaryColor(), FAVOURITES_TINT_ALPHA))
-            cornerRadius = FAVOURITES_CORNER_RADIUS_DP * resources.displayMetrics.density
-        }
+        setupFavouritesBackground()
         binding.searchButton.setOnClickListener { openSearch() }
         binding.searchBar.setEndIconOnClickListener { closeSearch() }
         if (!context.config.showSearchBar) {
@@ -750,7 +752,7 @@ class AllAppsFragment(
         } else {
             0
         }
-        val textColor = context.getAppDrawerTextColor()
+        val textColor = favouritesTextColor()
         for (i in 0 until dots.childCount) {
             val alpha = if (i == current) DOT_ACTIVE_ALPHA else DOT_INACTIVE_ALPHA
             dots.getChildAt(i).background = GradientDrawable().apply {
@@ -765,6 +767,17 @@ class AllAppsFragment(
     private fun onFavouritesPageHeight(height: Int) {
         if (height > binding.favouritesPager.minimumHeight) {
             binding.favouritesPager.minimumHeight = height
+        }
+    }
+
+    // the favourites panel uses the opposite of the system theme so it stands out from the drawer
+    private fun favouritesTextColor() = if (context.isSystemInLightMode()) Color.WHITE else FAVOURITES_LIGHT_TEXT
+
+    private fun setupFavouritesBackground() {
+        val base = if (context.isSystemInLightMode()) FAVOURITES_DARK_SURFACE else FAVOURITES_LIGHT_SURFACE
+        binding.favouritesSection.background = GradientDrawable().apply {
+            setColor(ColorUtils.compositeColors(ColorUtils.setAlphaComponent(context.getProperPrimaryColor(), FAVOURITES_TINT_ALPHA), base))
+            cornerRadius = FAVOURITES_CORNER_RADIUS_DP * resources.displayMetrics.density
         }
     }
 
