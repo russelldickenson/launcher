@@ -16,6 +16,12 @@ to match your style with easy-to-use tools that let you create a truly unique se
 Integrate fully resizable widgets with ease. Whether you need clocks, calendars, or other handy
 tools, Le Launcher ensures they blend seamlessly into your home screen design.
 
+**🗂️ A DRAWER THAT FITS HOW YOU USE IT:**  
+Sort your apps into tabs and folders in the app drawer. Pick several apps at once with Select
+multiple, then move them to a tab or folder in one go, and swipe sideways to flip between tabs.
+Keep your favourites on show, either as a panel above the tabs (with an optional row limit and
+swipeable pages) or as the first tab.
+
 **📱 NO UNWANTED CLUTTER:**  
 Effortlessly manage your apps by hiding or uninstalling them in just a few taps, keeping your home
 screen organized and clutter-free.
