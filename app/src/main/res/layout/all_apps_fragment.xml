@@ -74,6 +74,18 @@
         android:paddingBottom="@dimen/small_margin"
         android:visibility="gone">
 
+        <TextView
+            android:id="@+id/favourites_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/small_margin"
+            android:layout_marginBottom="@dimen/tiny_margin"
+            android:letterSpacing="0.08"
+            android:text="@string/favourites_header"
+            android:textAllCaps="true"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/favourites_pager"
             android:layout_width="match_parent"
@@ -89,6 +101,12 @@
             android:gravity="center"
             android:orientation="horizontal"
             android:visibility="gone" />
+
+        <View
+            android:id="@+id/favourites_divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/small_margin" />
 
     </LinearLayout>
 

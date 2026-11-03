@@ -3,7 +3,6 @@ package com.russelldickenson.lelauncher.fragments
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
@@ -35,7 +34,6 @@ import com.russelldickenson.lelauncher.extensions.getAppDrawerBackgroundColor
 import com.russelldickenson.lelauncher.extensions.getAppDrawerSearchFillColor
 import com.russelldickenson.lelauncher.extensions.getAppDrawerTextColor
 import com.russelldickenson.lelauncher.extensions.getProperPrimaryColor
-import com.russelldickenson.lelauncher.extensions.isSystemInLightMode
 import com.russelldickenson.lelauncher.extensions.hideKeyboard
 import com.russelldickenson.lelauncher.extensions.launchApp
 import com.russelldickenson.lelauncher.extensions.normalizeString
@@ -391,11 +389,7 @@ class AllAppsFragment(
     companion object {
         private const val ADD_TAB_TAG = "add_tab"
         private const val FAVOURITES_TAB_ID = -1L
-        private const val FAVOURITES_TINT_ALPHA = 40
-        private const val FAVOURITES_CORNER_RADIUS_DP = 20
-        private const val FAVOURITES_DARK_SURFACE = 0xFF5D5C69.toInt()
-        private const val FAVOURITES_LIGHT_TEXT = 0xFF1C1B1F.toInt()
-        private const val FAVOURITES_LIGHT_SURFACE = 0xFFE2E1E8.toInt()
+        private const val FAVOURITES_DIVIDER_ALPHA = 70
         private const val DOT_SIZE_DP = 6
         private const val DOT_MARGIN_DP = 3
         private const val DOT_ACTIVE_ALPHA = 255
@@ -515,7 +509,12 @@ class AllAppsFragment(
     @SuppressLint("NotifyDataSetChanged")
     fun refreshNotificationBadges() {
         getAdapter()?.notifyDataSetChanged()
-        favouritesPagerAdapter?.notifyDataSetChanged()
+        // refresh the existing page grids in place; notifying the pager itself rebuilds every page
+        // and the icons flicker whenever a notification arrives
+        val pager = binding.favouritesPager
+        for (i in 0 until pager.childCount) {
+            (pager.getChildAt(i) as? RecyclerView)?.adapter?.notifyDataSetChanged()
+        }
     }
 
     private fun setupAdapter(launchers: List<AppLauncher>) {
@@ -620,7 +619,7 @@ class AllAppsFragment(
 
         binding.searchButton.beVisibleIf(context.config.showSearchBar && !isSelecting())
         binding.searchButton.setColorFilter(context.getAppDrawerTextColor())
-        setupFavouritesBackground()
+        setupFavouritesDivider()
         binding.searchButton.setOnClickListener { openSearch() }
         binding.searchBar.setEndIconOnClickListener { closeSearch() }
         if (!context.config.showSearchBar) {
@@ -902,15 +901,11 @@ class AllAppsFragment(
         }
     }
 
-    // the favourites panel uses the opposite of the system theme so it stands out from the drawer
-    private fun favouritesTextColor() = if (context.isSystemInLightMode()) Color.WHITE else FAVOURITES_LIGHT_TEXT
+    private fun favouritesTextColor() = context.getAppDrawerTextColor()
 
-    private fun setupFavouritesBackground() {
-        val base = if (context.isSystemInLightMode()) FAVOURITES_DARK_SURFACE else FAVOURITES_LIGHT_SURFACE
-        binding.favouritesSection.background = GradientDrawable().apply {
-            setColor(ColorUtils.compositeColors(ColorUtils.setAlphaComponent(context.getProperPrimaryColor(), FAVOURITES_TINT_ALPHA), base))
-            cornerRadius = FAVOURITES_CORNER_RADIUS_DP * resources.displayMetrics.density
-        }
+    private fun setupFavouritesDivider() {
+        binding.favouritesLabel.setTextColor(favouritesTextColor())
+        binding.favouritesDivider.setBackgroundColor(ColorUtils.setAlphaComponent(favouritesTextColor(), FAVOURITES_DIVIDER_ALPHA))
     }
 
     private fun submitFavourites(favourites: List<AppLauncher>) {
