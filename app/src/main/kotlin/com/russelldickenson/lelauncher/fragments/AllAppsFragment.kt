@@ -6,9 +6,10 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.InsetDrawable
+import android.graphics.drawable.LayerDrawable
 import android.graphics.drawable.StateListDrawable
 import android.util.AttributeSet
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
@@ -232,7 +233,8 @@ class AllAppsFragment(
             val textColor = context.getAppDrawerTextColor()
             tabLayout.setTabTextColors(ColorUtils.setAlphaComponent(textColor, 150), textColor)
             for (i in 0 until tabLayout.tabCount) {
-                tabLayout.getTabAt(i)?.view?.background = createTabBackground()
+                // no divider after the last tab (the "+")
+                tabLayout.getTabAt(i)?.view?.background = createTabBackground(showDivider = i < tabLayout.tabCount - 1)
             }
             tabLayout.setBackgroundColor(context.getAppDrawerBackgroundColor())
             tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -258,25 +260,42 @@ class AllAppsFragment(
         isBuildingTabs = false
     }
 
-    // each tab is its own tinted pill, inset so neighbouring pills never touch; the selected one is
-    // tinted more strongly, which replaces the indicator line
-    private fun createTabBackground(): Drawable {
+    // tabs are plain text separated by thin vertical dividers; the selected one gets a border along
+    // its bottom edge, which replaces the indicator line
+    private fun createTabBackground(showDivider: Boolean): Drawable {
         val density = resources.displayMetrics.density
-        val primary = context.getProperPrimaryColor()
-        fun pill(alpha: Int) = InsetDrawable(
-            GradientDrawable().apply {
-                setColor(ColorUtils.setAlphaComponent(primary, alpha))
-                cornerRadius = TAB_CORNER_RADIUS_DP * density
-            },
-            (TAB_INSET_HORIZONTAL_DP * density).toInt(),
-            (TAB_INSET_VERTICAL_DP * density).toInt(),
-            (TAB_INSET_HORIZONTAL_DP * density).toInt(),
-            (TAB_INSET_VERTICAL_DP * density).toInt()
-        )
+        val dividerWidth = (TAB_DIVIDER_WIDTH_DP * density).toInt()
+        val dividerInset = (TAB_DIVIDER_INSET_DP * density).toInt()
+        val borderHeight = (TAB_BORDER_HEIGHT_DP * density).toInt()
+        val dividerColor = ColorUtils.setAlphaComponent(context.getAppDrawerTextColor(), TAB_DIVIDER_ALPHA)
+
+        fun layers(selected: Boolean): Drawable {
+            val drawables = mutableListOf<Drawable>()
+            if (showDivider) {
+                drawables.add(GradientDrawable().apply { setColor(dividerColor) })
+            }
+            if (selected) {
+                drawables.add(GradientDrawable().apply { setColor(context.getProperPrimaryColor()) })
+            }
+
+            return LayerDrawable(drawables.toTypedArray()).apply {
+                var index = 0
+                if (showDivider) {
+                    setLayerGravity(index, Gravity.END)
+                    setLayerWidth(index, dividerWidth)
+                    setLayerInset(index, 0, dividerInset, 0, dividerInset)
+                    index++
+                }
+                if (selected) {
+                    setLayerGravity(index, Gravity.BOTTOM)
+                    setLayerHeight(index, borderHeight)
+                }
+            }
+        }
 
         return StateListDrawable().apply {
-            addState(intArrayOf(android.R.attr.state_selected), pill(TAB_SELECTED_ALPHA))
-            addState(intArrayOf(), pill(TAB_UNSELECTED_ALPHA))
+            addState(intArrayOf(android.R.attr.state_selected), layers(selected = true))
+            addState(intArrayOf(), layers(selected = false))
         }
     }
 
@@ -294,11 +313,10 @@ class AllAppsFragment(
         private const val DOT_INACTIVE_ALPHA = 90
         private const val SEARCH_POPOUT_DURATION_MS = 180L
         private const val SEARCH_POPOUT_START_SCALE = 0.3f
-        private const val TAB_CORNER_RADIUS_DP = 16
-        private const val TAB_INSET_HORIZONTAL_DP = 4
-        private const val TAB_INSET_VERTICAL_DP = 6
-        private const val TAB_SELECTED_ALPHA = 90
-        private const val TAB_UNSELECTED_ALPHA = 36
+        private const val TAB_DIVIDER_WIDTH_DP = 1
+        private const val TAB_DIVIDER_INSET_DP = 12
+        private const val TAB_DIVIDER_ALPHA = 70
+        private const val TAB_BORDER_HEIGHT_DP = 3
     }
 
     override fun onTabLongPressed(tab: DrawerTab) {
