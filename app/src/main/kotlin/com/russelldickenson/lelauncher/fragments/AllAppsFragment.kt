@@ -285,7 +285,7 @@ class AllAppsFragment(
         private const val FAVOURITES_TAB_ID = -1L
         private const val FAVOURITES_TINT_ALPHA = 40
         private const val FAVOURITES_CORNER_RADIUS_DP = 20
-        private const val FAVOURITES_DARK_SURFACE = 0xFF3A3940.toInt()
+        private const val FAVOURITES_DARK_SURFACE = 0xFF5D5C69.toInt()
         private const val FAVOURITES_LIGHT_TEXT = 0xFF1C1B1F.toInt()
         private const val FAVOURITES_LIGHT_SURFACE = 0xFFE2E1E8.toInt()
         private const val DOT_SIZE_DP = 6
