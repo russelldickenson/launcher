@@ -14,6 +14,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.widget.LinearLayout
+import android.view.animation.DecelerateInterpolator
 import android.view.inputmethod.EditorInfo
 import androidx.core.graphics.ColorUtils
 import androidx.core.view.isVisible
@@ -85,6 +86,10 @@ class AllAppsFragment(
     // null is the implicit "All" tab
     private var selectedTabId: Long? = null
     private var isBuildingTabs = false
+    private var lastTabPosition = 0
+
+    // +1 / -1 while a tab switch waits for its new list to be laid out, so it can slide in from that side
+    private var pendingSlideDirection = 0
 
     // set while the folder "Add" flow (from the folder's ellipsis/long-press menu) is active -
     // see startFolderSelectionMode()/exitFolderSelectionMode()
@@ -118,6 +123,60 @@ class AllAppsFragment(
         )
     }
 
+    // a mostly-horizontal drag across the grid moves to the neighbouring tab; the drag helper is
+    // registered first, so an armed long-press drag claims the gesture before this sees it
+    private val tabSwipeListener = object : RecyclerView.OnItemTouchListener {
+        private var downX = 0f
+        private var downY = 0f
+        private var swiping = false
+
+        override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+            when (e.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    downX = e.x
+                    downY = e.y
+                    swiping = false
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+                    val dx = abs(e.x - downX)
+                    val dy = abs(e.y - downY)
+                    val slop = ViewConfiguration.get(rv.context).scaledTouchSlop
+                    if (!ignoreTouches && !isSelecting() && dx > slop && dx > TAB_SWIPE_DIRECTION_RATIO * dy) {
+                        swiping = true
+                    }
+                }
+            }
+
+            return swiping
+        }
+
+        override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+            when (e.actionMasked) {
+                MotionEvent.ACTION_UP -> {
+                    val dx = e.x - downX
+                    if (swiping && abs(dx) > TAB_SWIPE_MIN_DISTANCE_DP * rv.resources.displayMetrics.density) {
+                        switchTabBy(if (dx < 0) 1 else -1)
+                    }
+                    swiping = false
+                }
+
+                MotionEvent.ACTION_CANCEL -> swiping = false
+            }
+        }
+
+        override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) = Unit
+    }
+
+    // the last tab is the "+" action, not a destination
+    private fun switchTabBy(offset: Int) {
+        val tabLayout = binding.drawerTabs
+        val target = tabLayout.selectedTabPosition + offset
+        if (target in 0 until tabLayout.tabCount - 1) {
+            tabLayout.getTabAt(target)?.select()
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun setupFragment(activity: MainActivity) {
         this.activity = activity
@@ -132,6 +191,7 @@ class AllAppsFragment(
         }
 
         folderDragHelper.attach()
+        binding.allAppsGrid.addOnItemTouchListener(tabSwipeListener)
 
         PagerSnapHelper().attachToRecyclerView(binding.favouritesPager)
         binding.favouritesPager.addOnScrollListener(object : OnScrollListener() {
@@ -249,6 +309,8 @@ class AllAppsFragment(
                         activity?.showNewTabDialog()
                     } else {
                         selectedTabId = tab.tag as Long?
+                        startTabSlide(if (tab.position > lastTabPosition) 1 else -1)
+                        lastTabPosition = tab.position
                         submitList(launchers)
                     }
                 }
@@ -258,6 +320,33 @@ class AllAppsFragment(
             })
         }
         isBuildingTabs = false
+        lastTabPosition = binding.drawerTabs.selectedTabPosition.coerceAtLeast(0)
+    }
+
+    // hides the grid off to one side until its new contents are in, then slides it into view
+    private fun startTabSlide(direction: Int) {
+        val grid = binding.allAppsGrid
+        grid.animate().cancel()
+        pendingSlideDirection = direction
+        grid.alpha = 0f
+        grid.translationX = direction * grid.width * TAB_SLIDE_OFFSET_FRACTION
+        // the list normally reports back through showNoResultsPlaceholderIfNeeded(); this covers
+        // the paths that don't, so the grid can never stay hidden
+        grid.postDelayed({ playTabSlideIn() }, TAB_SLIDE_FALLBACK_MS)
+    }
+
+    private fun playTabSlideIn() {
+        if (pendingSlideDirection == 0) {
+            return
+        }
+
+        pendingSlideDirection = 0
+        binding.allAppsGrid.animate()
+            .translationX(0f)
+            .alpha(1f)
+            .setDuration(TAB_SLIDE_DURATION_MS)
+            .setInterpolator(DecelerateInterpolator())
+            .start()
     }
 
     // tabs are plain text separated by thin vertical dividers; the selected one gets a border along
@@ -313,6 +402,11 @@ class AllAppsFragment(
         private const val DOT_INACTIVE_ALPHA = 90
         private const val SEARCH_POPOUT_DURATION_MS = 180L
         private const val SEARCH_POPOUT_START_SCALE = 0.3f
+        private const val TAB_SLIDE_OFFSET_FRACTION = 0.3f
+        private const val TAB_SLIDE_DURATION_MS = 220L
+        private const val TAB_SLIDE_FALLBACK_MS = 150L
+        private const val TAB_SWIPE_DIRECTION_RATIO = 2
+        private const val TAB_SWIPE_MIN_DISTANCE_DP = 64
         private const val TAB_DIVIDER_WIDTH_DP = 1
         private const val TAB_DIVIDER_INSET_DP = 12
         private const val TAB_DIVIDER_ALPHA = 70
@@ -608,6 +702,7 @@ class AllAppsFragment(
         val adapter = getAdapter() ?: return
         val hasResults = adapter.currentList.any { it is DrawerGridItem.App || it is DrawerGridItem.Folder }
         binding.noResultsPlaceholder.beVisibleIf(!hasResults)
+        playTabSlideIn()
     }
 
     override fun onFolderClicked(folder: DrawerFolder) {
