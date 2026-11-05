@@ -17,6 +17,14 @@ interface DrawerTabsDao {
     @Query("UPDATE drawer_tabs SET title = :title WHERE id = :id")
     fun renameTab(id: Long, title: String)
 
+    @Query("UPDATE drawer_tabs SET `order` = :order WHERE id = :id")
+    fun updateOrder(id: Long, order: Int)
+
+    @Transaction
+    fun saveOrder(orderedIds: List<Long>) {
+        orderedIds.forEachIndexed { index, id -> updateOrder(id, index) }
+    }
+
     @Query("UPDATE apps SET tab_id = NULL WHERE tab_id = :tabId")
     fun ungroupMembers(tabId: Long)
 

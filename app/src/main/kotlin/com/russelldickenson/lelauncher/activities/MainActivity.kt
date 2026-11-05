@@ -1216,22 +1216,44 @@ class MainActivity : SimpleActivity(), FlingListener {
     }
 
     fun showTabMenu(tab: DrawerTab) {
-        val items = arrayOf(
-            getString(R.string.add_apps_to_tab),
-            getString(R.string.rename_tab),
-            getString(R.string.delete_tab)
+        val index = IconCache.tabs.indexOfFirst { it.id == tab.id }
+        val actions = mutableListOf<Pair<String, () -> Unit>>(
+            getString(R.string.add_apps_to_tab) to { binding.allAppsFragment.root.startTabSelectionMode(tab) }
         )
+        if (index > 0) {
+            actions.add(getString(R.string.move_tab_left) to { moveTab(tab, -1) })
+        }
+        if (index in 0 until IconCache.tabs.size - 1) {
+            actions.add(getString(R.string.move_tab_right) to { moveTab(tab, 1) })
+        }
+        actions.add(getString(R.string.rename_tab) to { renameTab(tab) })
+        actions.add(getString(R.string.delete_tab) to { confirmDeleteTab(tab) })
+
         MaterialAlertDialogBuilder(this)
             .setTitle(tab.title)
-            .setItems(items) { _, which ->
-                when (which) {
-                    0 -> binding.allAppsFragment.root.startTabSelectionMode(tab)
-                    1 -> renameTab(tab)
-                    else -> confirmDeleteTab(tab)
-                }
-            }
+            .setItems(actions.map { it.first }.toTypedArray()) { _, which -> actions[which].second() }
             .setNegativeButton(R.string.cancel, null)
             .show()
+    }
+
+    // order values are renumbered 0..n-1 on every move, since tabs created before reordering may share one
+    private fun moveTab(tab: DrawerTab, offset: Int) {
+        val tabs = IconCache.tabs.toMutableList()
+        val from = tabs.indexOfFirst { it.id == tab.id }
+        val to = from + offset
+        if (from == -1 || to !in tabs.indices) {
+            return
+        }
+
+        tabs.add(to, tabs.removeAt(from))
+        val reordered = tabs.mapIndexed { index, it -> it.copy(order = index) }
+        ensureBackgroundThread {
+            drawerTabsDB.saveOrder(reordered.map { it.id!! })
+            IconCache.tabs = reordered
+            runOnUiThread {
+                binding.allAppsFragment.root.gotLaunchers(IconCache.launchers)
+            }
+        }
     }
 
     private fun renameTab(tab: DrawerTab) {
