@@ -118,6 +118,7 @@
     <!-- M3 Type Scale styles for launcher items & dialogs -->
     <style name="LauncherLabelStyle" parent="@style/TextAppearance.Material3.BodySmall">
         <item name="android:textSize">@dimen/smaller_text_size</item>
+        <item name="android:lineSpacingMultiplier">0.9</item>
     </style>
 
     <style name="WidgetSectionTitleStyle" parent="@style/TextAppearance.Material3.TitleMedium" />
