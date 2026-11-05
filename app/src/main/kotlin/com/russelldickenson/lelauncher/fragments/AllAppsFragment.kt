@@ -615,7 +615,12 @@ class AllAppsFragment(
 
         setupDrawerBackground(context.getAppDrawerBackgroundColor())
         getAdapter()?.updateTextColor(context.getAppDrawerTextColor())
-        favouritesPagerAdapter?.notifyDataSetChanged()
+        // update the existing pages instead of notifying the pager, which rebuilds them and flickers
+        // the icons every time the launcher comes back to the foreground
+        for (i in 0 until binding.favouritesPager.childCount) {
+            val pageAdapter = (binding.favouritesPager.getChildAt(i) as? RecyclerView)?.adapter as? LaunchersAdapter
+            pageAdapter?.updateTextColor(favouritesTextColor())
+        }
 
         binding.searchButton.beVisibleIf(context.config.showSearchBar && !isSelecting())
         binding.searchButton.setColorFilter(context.getAppDrawerTextColor())
@@ -914,8 +919,10 @@ class AllAppsFragment(
         val perPage = if (maxRows == FAVOURITES_ROWS_UNLIMITED) favourites.size else maxRows * columns
         val pages = if (favourites.isEmpty()) emptyList() else favourites.chunked(perPage)
 
-        // tab switches resubmit the same favourites; rebinding them would make the row flicker
-        val signature = listOf(columns, perPage) + favourites.map { listOf(it.getLauncherIdentifier(), it.title, it.customTitle, it.drawable) }
+        // tab switches and every app rescan resubmit the same favourites; rebinding them would make the
+        // row flicker. a rescan builds new drawable instances, so the icon's colour stands in for it
+        val signature = listOf(columns, perPage) +
+            favourites.map { listOf(it.getLauncherIdentifier(), it.title, it.customTitle, it.thumbnailColor) }
         if (signature == favouritesSignature) return
         favouritesSignature = signature
 
